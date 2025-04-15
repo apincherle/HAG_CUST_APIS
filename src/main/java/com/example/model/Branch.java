@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class Branch {
     @JsonProperty("_xid")
-    private String _xid;
+    private String xid;
     private String name;
 } 
