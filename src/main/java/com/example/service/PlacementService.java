@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlacementService {
@@ -37,6 +39,19 @@ public class PlacementService {
         // Validate against schema
         schema.validate(jsonData);
         // If validation passes, save to MongoDB
+        return repository.save(placement);
+    }
+
+    public List<Placement> findAll() {
+        return repository.findAll();
+    }
+
+    public Optional<Placement> findById(String id) {
+        return repository.findById(id);
+    }
+
+    public Placement save(Placement placement) {
+        // Here you could add validation logic using the JSON schema
         return repository.save(placement);
     }
 } 
