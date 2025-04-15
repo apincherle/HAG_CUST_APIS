@@ -1,0 +1,357 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "submission_requests",
+    "description": "Submission requests store the top level structure and the links for the contents which are sent at the same time as part of a submission pack. Submission requests can assume values like draft, pending, rejected, accepted (is this case ready for submissions), etc.",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Submission Request, with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "_metadata": {
+            "type": "object",
+            "properties": {
+                "creation_date": {
+                    "type": "string",
+                    "description": "The date at which the entity was created.",
+                    "examples": [
+                        "ISODate(\"2021-10-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "creation_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the entity, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "creation_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user creating the entity.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "modified_date": {
+                    "type": "string",
+                    "description": "The date at which the change was made.",
+                    "examples": [
+                        "ISODate(\"2021-12-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "modified_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the change, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "modified_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user making the change.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "creation_date",
+                "creation_channel",
+                "creation_user",
+                "modified_date",
+                "modified_channel",
+                "modified_user"
+            ]
+        },
+        "placement": {
+            "type": "string",
+            "description": "ID of the placement correspondent to this submission_request.",
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "type": {
+            "type": "string",
+            "description": "**Reference Data**\n\nHolds the type of the submission request (e.g. firm_order)\n\nSubmissionPackType in Reference Data\n\n---\n\nLDM Ref: Submission Pack.Submission Pack Type Code"
+        },
+        "sub_type": {
+            "type": "string",
+            "description": "**Reference Data**\n\nExamples: cancel_and_replace, cancel_contract, cancel_line, panel_amendment, expression_of_interest, follow_quote, for_information_only, lead_quote, facility_lead_quote, facility_follow_quote\n\n\nSubmission Pack Sub Type Code\n\n---\n\nLDM Ref: Submission Pack Sub Type Code\n"
+        },
+        "name": {
+            "type": "string",
+            "description": "Name to be shown for the given Submission Pack"
+        },
+        "general_message": {
+            "type": "string",
+            "description": "General message to be sent to the UWs in each submission belonging to this Submission Pack"
+        },
+        "status": {
+            "type": "string",
+            "description": "Holds the status of the submission_request (draft, sent)"
+        },
+        "created_date": {
+            "type": "string",
+            "format": "date"
+        },
+        "sent_date": {
+            "type": "string",
+            "format": "date"
+        },
+        "created_by": {
+            "type": "object",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id field of the user in the users collection.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "first_name": {
+                    "type": "string",
+                    "examples": [
+                        "Hilary"
+                    ]
+                },
+                "last_name": {
+                    "type": "string",
+                    "examples": [
+                        "Green"
+                    ]
+                },
+                "organisation_name": {
+                    "type": "string",
+                    "description": "Name of the organisation the user belongs to. \nRemoves need for lookup when showing brokers and underwriters info under other collections context."
+                },
+                "company_name": {
+                    "type": "string",
+                    "description": "The company name of the user belongs to.\nRemoves need for lookup when showing brokers and underwriters info under other collections context."
+                },
+                "company_xid": {
+                    "type": "string",
+                    "description": "_id field of the User's Company.",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "organisation_xid": {
+                    "type": "string",
+                    "description": "_id field of the User's Organisation.",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "description": "The user information who is performing some action within a certain context. \n\nThis is normally either a broker OR an underwriter.",
+            "required": [
+                "_xid",
+                "first_name",
+                "last_name",
+                "organisation_name",
+                "company_name",
+                "company_xid",
+                "organisation_xid"
+            ]
+        },
+        "sent_by": {
+            "type": "object",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id field of the user in the users collection.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "first_name": {
+                    "type": "string",
+                    "examples": [
+                        "Hilary"
+                    ]
+                },
+                "last_name": {
+                    "type": "string",
+                    "examples": [
+                        "Green"
+                    ]
+                },
+                "organisation_name": {
+                    "type": "string",
+                    "description": "Name of the organisation the user belongs to. \nRemoves need for lookup when showing brokers and underwriters info under other collections context."
+                },
+                "company_name": {
+                    "type": "string",
+                    "description": "The company name of the user belongs to.\nRemoves need for lookup when showing brokers and underwriters info under other collections context."
+                },
+                "company_xid": {
+                    "type": "string",
+                    "description": "_id field of the User's Company.",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "organisation_xid": {
+                    "type": "string",
+                    "description": "_id field of the User's Organisation.",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "description": "The user information who is performing some action within a certain context. \n\nThis is normally either a broker OR an underwriter.",
+            "required": [
+                "_xid",
+                "first_name",
+                "last_name",
+                "organisation_name",
+                "company_name",
+                "company_xid",
+                "organisation_xid"
+            ]
+        },
+        "broker_team": {
+            "type": "object",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid",
+                "name"
+            ]
+        },
+        "total_submissions": {
+            "type": "number",
+            "description": "The field has all the submissions sent by the broker and underwriters for a specific submission pack.",
+            "$comment": "If a broker sends 1 submission to the UW leader and the leader sends 2 submissions for the next group then the \"total_submisisons\" will be 3. The groups are just a solution for not sending all the submissions at once."
+        },
+        "approval": {
+            "type": "array",
+            "description": "Array to store the approval flow, including requesters and approvers.",
+            "$comment": "First entry will have the information of the requester, and the second entry is created at the same time with information from the approver. Once the approver takes an action, the status is changed (refer to status field description), and if another action is needed from the requester, a new entry is created, with information from the requester, who can withdrawl the approval process, or again send it to the same approver or a new one.",
+            "additionalItems": true,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "_xid": {
+                                "type": "string",
+                                "description": "_id field of the user in the users collection.",
+                                "examples": [
+                                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                                ],
+                                "maxLength": 36,
+                                "minLength": 36,
+                                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                            },
+                            "first_name": {
+                                "type": "string",
+                                "examples": [
+                                    "Hilary"
+                                ]
+                            },
+                            "last_name": {
+                                "type": "string",
+                                "examples": [
+                                    "Green"
+                                ]
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "_xid",
+                            "first_name",
+                            "last_name"
+                        ]
+                    },
+                    "sent_date": {
+                        "type": "string",
+                        "description": "The date that the request or approval response was sent.",
+                        "format": "date"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Message sent by the user to include in the approval flow."
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Action performed by the user. \n\n\t\t R - Requested\n\t\t R - Pending Request\n\t\t R - Withdrawn\n\t\t A - Pending Approval\n\t\t A - Approved\n\t\t A - Rejected\n\n"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "_id",
+                    "user",
+                    "status"
+                ]
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "_id",
+        "_metadata",
+        "placement",
+        "type",
+        "name",
+        "status",
+        "created_date",
+        "created_by",
+        "broker_team"
+    ]
+}

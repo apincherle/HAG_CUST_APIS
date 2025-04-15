@@ -1,0 +1,306 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "stamps",
+    "description": "The syndicate under which insurance business is underwritten. This may be a Lloyd's or LBS syndicate, and is specific to a particular carrier at a point in time. Each stamp can change over time, and as such year of account is used as part of contract details to identify the stamp owner at a point in time. \n\nThe access to a stamp is confirmed on stamps_links collection, where it is represented all the connections between a stamp and a company/underwriter.\n\n---\n\nLDM Ref: Stamp",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Stamp, with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.\n\n---\n\nLDM Ref: Stamp.Stamp ID",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "_metadata": {
+            "type": "object",
+            "properties": {
+                "creation_date": {
+                    "type": "string",
+                    "description": "The date at which the entity was created.",
+                    "examples": [
+                        "ISODate(\"2021-10-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "creation_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the entity, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "creation_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user creating the entity.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "modified_date": {
+                    "type": "string",
+                    "description": "The date at which the change was made.",
+                    "examples": [
+                        "ISODate(\"2021-12-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "modified_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the change, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "modified_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user making the change.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "creation_date",
+                "creation_channel",
+                "creation_user",
+                "modified_date",
+                "modified_channel",
+                "modified_user"
+            ]
+        },
+        "name": {
+            "type": "string",
+            "description": "The name of the stamp. This usually reflects the wet stamp and will be based on the syndicate number for Lloyd's syndicates, or entered by the broker or underwriter in the PPL platform.\n\n---\n\nLDM Ref: Stamp.Stamp Name",
+            "examples": [
+                "ABC1234"
+            ]
+        },
+        "logo": {
+            "type": "string",
+            "description": "The URI for the logo of the stamp.\n\n---\n\nLDM Ref: Stamp.Stamp Logo"
+        },
+        "agency_code": {
+            "type": "string",
+            "description": "The number that represents the stamp.\n \nFor example this will be the 4-digit syndicate number for Lloyd's stamps.\n\n---\n\nLDM Ref: Stamp.Stamp Number"
+        },
+        "stamp_type": {
+            "type": "string",
+            "description": "**Reference Data**\n\nThe code that represents the stamp type.\n\nExample: Company Bureau\n\nStampType in Reference Data\n\n---\n\nLDM Ref: Stamp.Stamp Type Code",
+            "enum": [
+                "company_bureau",
+                "company_non_bureau",
+                "consortium",
+                "facility",
+                "lloyds_syndicate",
+                "pool"
+            ]
+        },
+        "permitted_territory": {
+            "type": "string",
+            "description": "**Reference Data**\n\nThe code that represents the permitted territory type.\n\nExample: EEA & UK\n\nStampPermissionType in Reference Data\n\n---\n\nLDM Ref: Stamp.Stamp Permission Type Code",
+            "enum": [
+                "eea_only",
+                "ww_incl_eea_excl_uk",
+                "eea_and_uk",
+                "ww",
+                "ww_incl_uk_excl_eea",
+                "uk_only"
+            ]
+        },
+        "agency_type": {
+            "type": "string",
+            "description": "**Reference Data**\n\nThe code that represents the agency type.\n\nExample: LIRMA\n\nAgencyType in Reference Data\n\n---\n\nLDM Ref: Stamp.Agency Type Code",
+            "enum": [
+                "institute_of_london_underwriters",
+                "international_underwriting_association_of_london",
+                "lloyds_brussels",
+                "lloyds",
+                "london_insurance_and_reinsurance_market_association",
+                "non_specified"
+            ]
+        },
+        "endorsements_to": {
+            "type": "string",
+            "description": "The date by which the stamp ceases to accommodate new endorsements.\n\n---\n\nLDM Ref: Stamp.Endorsements To Date",
+            "format": "date"
+        },
+        "endorsements_from": {
+            "type": "string",
+            "description": "The date from which the stamp is able to accommodate new endorsements.\n\n---\n\nLDM Ref: Stamp.Endorsements From Date",
+            "format": "date"
+        },
+        "stamp_codes": {
+            "type": "array",
+            "description": "A mapping table between Stamp and Stamp Code Type. This captures multiple codes against a stamp in a standard way.\n\nA stamp can have many stamp codes, and each stamp code can have a stamp code type\n\n---\n\nLDM Ref:  Stamp (1) <-> Stamp Code (0-N)",
+            "$comment": "we have decided not to add _id field into the array since it will not be used in a join operation and will be used in only in stamp collection.",
+            "additionalItems": false,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "The code that is associated with the stamp.\n\n---\n\nLDM Ref:  Stamp Code.Stamp code"
+                    },
+                    "code_type": {
+                        "type": "string",
+                        "description": "**Reference Data**\n\nThe code that represents the stamp code type.\n\nExample: LORS\n\nStampCodeType in Reference Data\n\n---\n\nLDM Ref: Stamp code.Stamp code type code",
+                        "enum": [
+                            "lloyds_outward_reinsurance"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "code",
+                    "code_type"
+                ]
+            }
+        },
+        "effective_to": {
+            "type": "string",
+            "description": "The date by which the stamp is ceases to write new business.\n\n---\n\nLDM Ref: Stamp.New Business To Date",
+            "format": "date"
+        },
+        "effective_from": {
+            "type": "string",
+            "description": "The date from which the stamp is able to write new business.\n\n---\n\nLDM Ref: Stamp.New Business From Date",
+            "format": "date"
+        },
+        "stamp_pseudonym": {
+            "type": "string",
+            "description": "The three character code that represents the syndicate.\n \nFor example ABC for ABC syndicate 1234.\n\n---\n\nLDM Ref: Stamp.Syndicate Pseudonym"
+        },
+        "organisation": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Organisation, with a format and structure defined by the technology used.",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "year_of_account": {
+            "type": "integer",
+            "description": "The year of account in which the stamp is active, primarily for consortium stamps.\n\n---\n\nLDM Ref: Stamp.Year Of Account"
+        },
+        "membership": {
+            "type": "array",
+            "description": "Details on the breakdown of consortium and facility stamps.\n \nA consortium stamp has a unique 9000 series number that allows a group of syndicates to operate as a consortium with predefined proportions. The following syndicates delegate authority to the lead to underwrite on their behalf and to administer the policies bound (including to handle claims).\n\n---\n\nLDM Ref: Stamp(1) <->Stamp Membership(0-1)",
+            "additionalItems": false,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "_xid": {
+                        "type": "string",
+                        "description": "The ID of the stamp that represents the member.\n\n---\n\nLDM Ref: Stamp Membership.Member Stamp ID",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "lead_indicator": {
+                        "type": "boolean",
+                        "description": "Indicates that the stamp is the membership lead when True.\n\n---\n\nLDM Ref: Stamp Membership.Membership Lead Indicator"
+                    },
+                    "proportion_percentage": {
+                        "type": "number",
+                        "description": "The proportion of the membership made up by the stamp.\n \nFor example 20%.\n\n---\n\nLDM Ref: Stamp Membership.Member Proportion Percentage"
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "sdc_enabled": {
+            "type": "boolean",
+            "description": "Indicates that the stamp uses Structured Data Capture (SDC) integration when True.\n\n---\n\nLDM Ref: Stamp.SDC Integration Indicator"
+        },
+        "sdc_integration_point": {
+            "type": "array",
+            "description": "A mapping table between Stamp and SDC Event Type. This captures the point at which the carrier has chosen to trigger SDC for the stamp. A stamp can have multiple points of SDC integration.\n\n---\n\nLDM Ref: Stamp(1) <-> SDC Integration Point(0-N)",
+            "additionalItems": false,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "event_type": {
+                        "type": "string",
+                        "description": "**Reference Data**\n\nThe code that represents the SDC event type.\n\nExample: Cancel and Replace Update\n\nSDCEventType in Reference Data\n\n---\n\nLDM Ref: SDC Integration Point.SDC Event Type Code\t"
+                    },
+                    "effective_from": {
+                        "type": "string",
+                        "description": "This field is populated and iterated when there is a business-relevant change. It allows users to identify the version of the data that was applied at a particular point in time.\n \nFor example if a participant on a contract goes bust and a new carrier joins the panel, the Effective To attribute on the former stamp’s record will be populated and a new record for the new stamp will be created with a populated Effective From attribute.\n\n---\n\nLDM Ref: SDC Integration Point.Effective From Datetime",
+                        "format": "date"
+                    },
+                    "effective_to": {
+                        "type": "string",
+                        "description": "This field is populated and iterated when there is a business-relevant change. It allows users to identify the version of the data that was applied at a particular point in time.\n \nFor example if a participant on a contract goes bust and a new carrier joins the panel, the Effective To attribute on the former stamp’s record will be populated and a new record for the new stamp will be created with a populated Effective From attribute.\n\n---\n\nLDM Ref: SDC Integration Point.Effective To Datetime",
+                        "format": "date"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "_id"
+                ]
+            }
+        },
+        "access_allowed": {
+            "type": "array",
+            "description": "** Only applicable for restricted stamps **\n\n---\n\nList of Broker company IDs that _can_ form a link with the Stamp (e.g. this stamp is visible to the Broker company and they can choose to associate with it).",
+            "additionalItems": false,
+            "items": {
+                "type": "string",
+                "description": "list of broker company IDs can link",
+                "examples": [
+                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                ],
+                "maxLength": 36,
+                "minLength": 36,
+                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+            },
+            "uniqueItems": true
+        },
+        "modified_risk_codes": {
+            "type": "boolean",
+            "description": "When a negotiation is changed from draft to sent as part of the negotiation process, we would query this field on each participation document to determine if the risk codes within this document need to be made common across all other participating underwriters. If “modified_risk_codes” was true, we would know to perform this action then subsequently set this value back to false after the computation has been completed."
+        },
+        "active": {
+            "type": "boolean",
+            "description": "Active field is a boolean top-level field that checks if a stamp is active (i.e. if it is inside the effective time range).\n\nLink to ticket: https://pplnextgen.atlassian.net/browse/PNG-29739"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "_id",
+        "_metadata",
+        "name",
+        "agency_code",
+        "stamp_type",
+        "permitted_territory",
+        "agency_type",
+        "effective_from",
+        "organisation",
+        "sdc_enabled",
+        "active"
+    ]
+}

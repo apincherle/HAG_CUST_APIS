@@ -1,0 +1,195 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "stamps_links",
+    "description": "This collection resumes all the links between a stamp (field required), a company and an underwriter.",
+    "$comment": "This collection stores all possible links that involve a stamp. If we want to represent a link between a broker and an underwriter, we fill company_xid with the broker company _id, underwriter_xid with the underwriter _id and stamp_xid with the stamp _id. \n\nThe field stamp_xid is required, since it is the stamp that links companies and underwriters in this purpose. For example, for a stamp that has 1 broker company, 1 carrier company and 3 underwriters, we will have 6 stamp connections for this stamp, as we have:\n\n- 2 companies\n- 3 underwriters\n- 1 stamp \n\nThis collection does not need any _metadata field, because all the changes on this collection will be always tracked on audit logs. Audit logs keep record of all the org config changes.",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Stamp Connection, with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "company": {
+            "type": "object",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "The _id of the company.",
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The given name of the party. For example \"Joe Bloggs\", \"ABC Corp\" etc.\n\n---\n\nLDM Ref: Party.Party Given Name"
+                },
+                "role": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type of role that a particular party can play.\n \nFor example Carrier, Broker.\n\n---\n\nLDM Ref: Party Role Type"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Calculated status indicating whether an entity is active, inactive or parent inactive."
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid",
+                "name",
+                "role",
+                "status"
+            ]
+        },
+        "underwriter": {
+            "type": "object",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "_id field of the underwriter in the users collection.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "first_name": {
+                    "type": "string",
+                    "description": "The first name of the person. Where there is more than one first name, this will also be captured.\n\n---\n\nLDM Ref: Person.First Name",
+                    "examples": [
+                        "Joeseph"
+                    ]
+                },
+                "last_name": {
+                    "type": "string",
+                    "description": "The last name of the person.\n\n---\n\nLDM Ref: Person.Last Name",
+                    "examples": [
+                        "Bloggs"
+                    ]
+                },
+                "active_underwriter": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid",
+                "first_name",
+                "last_name"
+            ]
+        },
+        "stamp": {
+            "type": "object",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "_id of the stamp in stamps collection.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the stamp. This usually reflects the wet stamp and will be based on the syndicate number for Lloyd's syndicates, or entered by the broker or underwriter in the PPL platform.\n\n---\n\nLDM Ref: Stamp.Stamp Name",
+                    "examples": [
+                        "ABC1234"
+                    ]
+                },
+                "active": {
+                    "type": "boolean",
+                    "description": "Active field is a boolean top-level field that checks if a stamp is active (i.e. if it is inside the effective time range)."
+                },
+                "organisation": {
+                    "type": "object",
+                    "description": "Organisation to which the stamp is associated. Always the same organisation as the associated underwriter.",
+                    "properties": {
+                        "_xid": {
+                            "type": "string",
+                            "examples": [
+                                "0f8fad5b-d9cb-469f-a165-70867728950e"
+                            ],
+                            "maxLength": 36,
+                            "minLength": 36,
+                            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "The given name of the party. For example \"Joe Bloggs\", \"ABC Corp\" etc.\n\n---\n\nLDM Ref: Party.Party Given Name"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "_xid",
+                        "name"
+                    ]
+                },
+                "effective_from": {
+                    "type": "string",
+                    "description": "The date from which the stamp is able to write new business.\n\n---\n\nLDM Ref: Stamp.New Business From Date",
+                    "format": "date"
+                },
+                "effective_to": {
+                    "type": "string",
+                    "description": "The date by which the stamp is ceases to write new business.\n\n---\n\nLDM Ref: Stamp.New Business To Date",
+                    "format": "date"
+                },
+                "permitted_territory": {
+                    "type": "string",
+                    "description": "**Reference Data**\n\nThe code that represents the permitted territory type.\n\nExample: EEA & UK\n\nStampPermissionType in Reference Data\n\n---\n\nLDM Ref: Stamp.Stamp Permission Type Code"
+                },
+                "stamp_type": {
+                    "type": "string",
+                    "description": "**Reference Data**\n\nThe code that represents the stamp type.\n\nExample: Company Bureau\n\nStampType in Reference Data\n\n---\n\nLDM Ref: Stamp.Stamp Type Code",
+                    "enum": [
+                        "company_bureau",
+                        "company_non_bureau",
+                        "consortium",
+                        "facility",
+                        "lloyds_syndicate",
+                        "pool"
+                    ]
+                },
+                "agency_type": {
+                    "type": "string",
+                    "description": "**Reference Data**\n\nThe code that represents the agency type.\n\nExample: LIRMA\n\nAgencyType in Reference Data\n\n---\n\nLDM Ref: Stamp.Agency Type Code",
+                    "enum": [
+                        "institute_of_london_underwriters",
+                        "international_underwriting_association_of_london",
+                        "lloyds_brussels",
+                        "lloyds",
+                        "london_insurance_and_reinsurance_market_association",
+                        "non_specified"
+                    ]
+                },
+                "agency_code": {
+                    "type": "string",
+                    "description": "The number that represents the stamp.\n \nFor example this will be the 4-digit syndicate number for Lloyd's stamps.\n\n---\n\nLDM Ref: Stamp.Stamp Number"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid",
+                "name",
+                "organisation",
+                "effective_from",
+                "permitted_territory",
+                "stamp_type",
+                "agency_type",
+                "agency_code"
+            ]
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "_id"
+    ]
+}

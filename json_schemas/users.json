@@ -1,0 +1,319 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "users",
+    "description": "An individual access account providing some level of read and/or write capability on the PPL platform. One person may have multiple user accounts, for example if they have both broker and underwriter rights. These rights are held as two separate \"users\" to enable audit trails and ensure Chinese walls.\n\n---\n\nLDM Ref: User",
+    "$comment": "The users collection is a simple collection, often referenced from other collections, assumed to support a high read to write ratio. The _id field of the users collection is key to many other reference structures (related by the _xid field) and appears in the access array of other documents throughout the system.\n\nUsers are often referenced via the [extended reference pattern](https://www.mongodb.com/blog/post/building-with-patterns-the-extended-reference-pattern). \n\nThe schema for this collection deviates from the Mongo Design Principles in that it does not have an access array. The justification for this is that access is that user access is defined through business rules and associated context (e.g. GET all users for a particular team within an organisation structure; the team has its own access array).",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a User, with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.\n\n---\n\nLDM Ref: User.User ID",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "_xid": {
+            "type": "string",
+            "description": "Azure oid of user.",
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "active": {
+            "type": "boolean",
+            "description": "Field that specifies if a User is active or not. If True the User is active, False not active.\n\n---\n\nLDM Ref: User.Effective From Datetime and User.Effective To Datetime"
+        },
+        "first_name": {
+            "type": "string",
+            "description": "The first name of the person. Where there is more than one first name, this will also be captured.\n\n---\n\nLDM Ref: Person.First Name",
+            "examples": [
+                "Joeseph"
+            ]
+        },
+        "last_name": {
+            "type": "string",
+            "description": "The last name of the person.\n\n---\n\nLDM Ref: Person.Last Name",
+            "examples": [
+                "Bloggs"
+            ]
+        },
+        "job_title": {
+            "type": "string",
+            "description": "The job role of the person.\n\n---\n\nLDM Ref: Person.Job Role",
+            "examples": [
+                "Broker admin"
+            ]
+        },
+        "telephone_number": {
+            "type": "string",
+            "description": "The telephone number of the person.\n\n---\n\nLDM Ref: Person.Telephone Number",
+            "examples": [
+                "01234 567890"
+            ]
+        },
+        "email": {
+            "type": "string",
+            "description": "The email address of the person. This is for contact information purposes and may not necessarily be the used for platform login.\n\n---\n\nLDM Ref: Person.Email Address",
+            "examples": [
+                "joebloggs@email.com"
+            ],
+            "format": "email"
+        },
+        "organisation": {
+            "type": "object",
+            "description": "Sub-Document that references the organisation the user belongs to.",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "The reference to the Organisations collection, point to the organisation the user belongs to. This reference is the points to the _id field in the organisations collection.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the Organisation the user is a member of.",
+                    "examples": [
+                        "Broker Org"
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type of role that a particular party can play. In this case, we only have two possible values that characterize an organisation: Broker and Carrier.\n\n---\n\nLDM Ref: Party Role Type",
+                    "enum": [
+                        "carrier",
+                        "broker"
+                    ]
+                },
+                "off_platform": {
+                    "type": "boolean",
+                    "description": "Indicates that the carrier is not on the PPL platform when True.\n\n---\n\nLDM Ref: Carrier.Carrier Off-platform Indicator"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid",
+                "name",
+                "type"
+            ]
+        },
+        "default_team": {
+            "type": "object",
+            "description": "Sub-Document that represents the default team of a User.",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "_id of the Team the user set as its default. This reference points to the ID of a Team. This ID is stored in the Organisations collection in documents of type branch.",
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the Team the user set as its default team."
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid",
+                "name"
+            ]
+        },
+        "teams": {
+            "type": "array",
+            "description": "Array of Teams a user belongs to.",
+            "additionalItems": false,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "_xid": {
+                        "type": "string",
+                        "description": "_id of a Team the user belongs to. This reference points to the ID of a Team. This ID is stored in the Organisations collection in documents of type branch.",
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the Team the user belongs to."
+                    },
+                    "role": {
+                        "type": "string",
+                        "description": "**Reference Data**\n\nThe role the user plays in the team he belongs to.\n\nExample: placing_broker\n\nTeamRoleType in Reference Data",
+                        "enum": [
+                            "broker_admin_without_markets",
+                            "broker_admin_with_markets",
+                            "monitored_placing_broker",
+                            "placing_broker",
+                            "placing_broker_and_approver",
+                            "assistant_underwriter",
+                            "broker",
+                            "broker_admin",
+                            "broker_read_only",
+                            "broker_team_manager",
+                            "underwriter",
+                            "underwriter_read_only",
+                            "underwriting_team_manager",
+                            "placing_broker_team_lead_and_approver",
+                            "underwriter_admin",
+                            "underwriter_team_lead_and_approver",
+                            "monitored_underwriter",
+                            "underwriter_quotes_and_endorsements_only",
+                            "platform_admin",
+                            "broker_backload_admin",
+                            "historic_upload_broker",
+                            "tech_read_broker",
+                            "tech_read_underwriter",
+                            "tech_impersonator_broker",
+                            "tech_impersonator_underwriter",
+                            "technical_broker",
+                            "technical_read_only_broker",
+                            "technical_read_only_underwriter",
+                            "technical_underwriter",
+                            "broker_company_read_only",
+                            "broker_organisation_admin",
+                            "underwriter_company_read_only",
+                            "underwriter_organisation_admin",
+                            "template_manager"
+                        ]
+                    },
+                    "team_status": {
+                        "type": "string",
+                        "description": "The status of the Team associated with the User. The status can have the following values: Active, Inactive or ParentInactive.",
+                        "enum": [
+                            "active",
+                            "inactive",
+                            "parentInactive"
+                        ]
+                    },
+                    "membership_active": {
+                        "type": "boolean",
+                        "description": "Boolean value that states if the User membership in a team is still active. When this field is set to True the user membership in a team is active."
+                    },
+                    "_id": {
+                        "type": "string",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "company_name": {
+                        "type": "string",
+                        "description": "The name of the company the User belongs to.\n"
+                    },
+                    "company_xid": {
+                        "type": "string",
+                        "description": "_id of the company the User belongs to.\n",
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "branch_name": {
+                        "type": "string",
+                        "description": "The name of the branch the User belongs to.\n"
+                    },
+                    "branch_xid": {
+                        "type": "string",
+                        "description": "_id of the branch the User belongs to.\n",
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "endorsements_to_block_corrections": {
+                        "type": "boolean",
+                        "description": "This field is used by the platform to block corrections after an endorsement is created. When true this field blocks the corrections when false it doesn't block corrections. Check OC141."
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "_xid",
+                    "name",
+                    "role",
+                    "team_status",
+                    "membership_active",
+                    "_id",
+                    "company_name",
+                    "company_xid",
+                    "branch_name",
+                    "branch_xid"
+                ]
+            }
+        },
+        "is_technical_user": {
+            "type": "boolean",
+            "description": "flag for technical user account."
+        },
+        "app_access": {
+            "type": "array",
+            "additionalItems": false,
+            "items": {
+                "type": "object",
+                "description": "A person who is insured under a contract of insurance. Where there is one Insured this person may also be referred to as the policyholder. This can be an insured, assured, reinsured or retrocessionaire.\n\n---\n\nLDM Ref: Insured",
+                "properties": {
+                    "context_type": {
+                        "type": "string",
+                        "description": "for example: billing_entity",
+                        "enum": [
+                            "billing_entity"
+                        ]
+                    },
+                    "context_xid": {
+                        "type": "string",
+                        "description": "ID of the billing entity (refers to application.billing_entities._id).",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "context_name": {
+                        "type": "string",
+                        "description": "Name of the billing entity"
+                    },
+                    "role_type": {
+                        "type": "string",
+                        "description": "for example: billing_manager",
+                        "enum": [
+                            "billing_manager"
+                        ]
+                    },
+                    "role_effective_date": {
+                        "type": "string",
+                        "description": "Date the role becomes effective, on creation",
+                        "format": "date"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "context_type",
+                    "context_xid",
+                    "context_name",
+                    "role_type",
+                    "role_effective_date"
+                ]
+            },
+            "uniqueItems": true
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "_id",
+        "active",
+        "first_name",
+        "last_name",
+        "email",
+        "organisation",
+        "default_team",
+        "teams",
+        "is_technical_user"
+    ]
+}

@@ -1,0 +1,290 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "reports",
+    "description": "Details on different types of report and their metadata.\t\n\n---\n\nLDM Ref: Report",
+    "$comment": "The reports collection makes use of the [Attributes Pattern](https://www.mongodb.com/blog/post/building-with-patterns-the-attribute-pattern) to provide flexibility over reporting parameters. \n\nRather than embedding large data structures or creating complex (bespoke) fields, the parameters field provides the consumer with the ability to store and retrieve values in a unified manner.",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Report, with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.\n\n---\n\nLDM Ref: Report ID",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "_metadata": {
+            "type": "object",
+            "properties": {
+                "creation_date": {
+                    "type": "string",
+                    "description": "The date at which the entity was created.",
+                    "examples": [
+                        "ISODate(\"2021-10-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "creation_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the entity, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "creation_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user creating the entity.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "modified_date": {
+                    "type": "string",
+                    "description": "The date at which the change was made.",
+                    "examples": [
+                        "ISODate(\"2021-12-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "modified_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the change, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "modified_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user making the change.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "creation_date",
+                "creation_channel",
+                "creation_user",
+                "modified_date",
+                "modified_channel",
+                "modified_user"
+            ]
+        },
+        "access": {
+            "type": "array",
+            "description": "In the case of a saved report, array of user _id's that have access to the report.\n\nIn the case of a report template, the creator of the report and the roles that have access to the report.\n\n---\n\nLDM Ref: Report Access.Team Role Type Code",
+            "additionalItems": true,
+            "items": {
+                "type": "string",
+                "examples": [
+                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                ],
+                "maxLength": 36,
+                "minLength": 36,
+                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+            },
+            "uniqueItems": true
+        },
+        "parent": {
+            "type": "string",
+            "description": "The ID of the parent report. This ID points to a System Template Report and is only filled in a User Saved Report.\n\n---\n\nLDM Ref: Report.Parent Report ID",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "name": {
+            "type": "string",
+            "description": "The name of the report.\n\n---\n\nLDM Ref: Report.Report Name",
+            "examples": [
+                "My report"
+            ]
+        },
+        "report_type": {
+            "type": "string",
+            "description": "**Reference Data**\n\nThe type that describes the report.\n \nFor example Template Report or Saved Report.\n\n---\n\nLDM Ref: Report Type.Report Type Code",
+            "examples": [
+                "saved"
+            ]
+        },
+        "group_type": {
+            "type": "string",
+            "description": "**Reference Data**\n\nThe type that describes the report group.\n \nFor example Firm Order, Facility, Endorsement, Operational, Quote, Transactional.\n\n---\n\nLDM Ref: Report Group Type.Report Group Type Code",
+            "examples": [
+                "firm order"
+            ]
+        },
+        "status": {
+            "type": "string",
+            "description": "**Reference Data**\n\nThe status of the report.\n  \nFor example New, Active, Inactive.\n\n---\n\nLDM Ref: Report.Report Status Code",
+            "examples": [
+                "new"
+            ]
+        },
+        "generation": {
+            "type": "object",
+            "description": "Sub-Document that represents the generation of the report. This sub-document is filled with relevant data regarding the generation of the report. \n\nIf the report generation failed the timestamp and error fields will be filled. \n\nIf the report generation was successful the timestamp, expiry and uri fields  are filled.",
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "The date and time at which the report was last generated.\n\n---\n\nLDM Ref: Report.Last GeneratedDatetime",
+                    "examples": [
+                        "ISODate(\"2020-06-01T12:00:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "expiry": {
+                    "type": "string",
+                    "description": "The date and time at which the report expires.\n\n---\n\nLDM Ref: Report.Expiry Datetime",
+                    "examples": [
+                        "ISODate(\"2020-06-08T12:00:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "uri": {
+                    "type": "string",
+                    "description": "The UID of the report.\n\n---\n\nLDM Ref: Report.Report UID"
+                },
+                "error": {
+                    "type": "string",
+                    "description": "Field that stores error messages that might succeed during the generation of a report. If the report generation does not throw any errors this field will not be populated."
+                }
+            },
+            "additionalProperties": false
+        },
+        "parameters": {
+            "type": "array",
+            "description": "Parameters are an array of key-value pairs to support the listing of parameters and their associated groupings.",
+            "additionalItems": true,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "group": {
+                        "type": "string",
+                        "description": "Top level grouping for the parameter. \n\nFor example: 'Period Range'"
+                    },
+                    "key": {
+                        "type": "string",
+                        "description": "Name of the parameter. These values are used by the OutSystems to map the parameter."
+                    },
+                    "unit": {
+                        "type": "string",
+                        "description": "Optional unit of the parameter. For example, region or country."
+                    },
+                    "value": {
+                        "type": "array",
+                        "description": "The value(s) selected for the given parameter.",
+                        "additionalItems": true,
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "field": {
+                                    "type": "string",
+                                    "description": "This field is used by the OutSystems to produce the report. Is key to identify some values and then inject them into the pipeline."
+                                },
+                                "parent": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": [
+                                        "object",
+                                        "string"
+                                    ],
+                                    "description": "Field that stores the value of the parameter.",
+                                    "pattern": "^[a-fA-F0-9]{24}$"
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    }
+                },
+                "additionalProperties": true
+            }
+        },
+        "email": {
+            "type": "boolean",
+            "description": "Boolean that stores whether the user wants the generated report to be emaild to him.\n\n---\n\nLDM Ref: Report.Email Report Indicator"
+        },
+        "progress": {
+            "type": "string",
+            "description": "**Reference Data**\n\nField that stores the Report Progress Status. \n  \nFor example New, Loading, Download, Expired, Error.\n\nSee ReportRunStatus in reference_data.\n\n---\n\nLDM Ref: Report.\tReport Run Status Code"
+        },
+        "role_type": {
+            "type": "string",
+            "description": "**Reference Data**\n\nRole type of template report either: broker or carrier.\n  \nFor example Broker, Carrier, PPL Admin.\n\nSee ReportUserRoleType in reference data.\n"
+        },
+        "query": {
+            "type": "object",
+            "description": "Sub-Document that stores the information for the OutSystems to fetch the data. This sub-document consists of the pipeline responsible to fetch the data, the target collection, and an array of aggregation snippets that will be used to apply the filters according to their choices.\n\nThis is a purely technical field, adding no business logic.",
+            "properties": {
+                "collection": {
+                    "type": "string",
+                    "description": "The target collection name where the pipeline will be run.\n"
+                },
+                "pipeline": {
+                    "type": "string",
+                    "description": "Aggregation pipeline responsible to fetch the data.\n"
+                },
+                "period_range": {
+                    "type": "array",
+                    "description": "An array with all possible temporal filters that can be applied to produce a specific report. The filters are composed of key, replacer, and value. Depending on the user's temporal filter choice the OutSystems will traverse this array and add the correspondent temporal filter to the aggregation pipeline.",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "key": {
+                                "type": "string",
+                                "description": "**Reference Data**\n\nThe code that represents the report period type.\n  \nFor example Contract Created Date, Endorsement Requested Date, \t\nFirst Firm Order Requested Date.\n\nSee \tReportDateType in Reference Data.\n\n"
+                            },
+                            "replacer": {
+                                "type": "string",
+                                "description": "Value to replace in the pipeline. Field serves as a flag in the aggregation pipeline that the OutSystems replace with a filter aggregation snippet. This field was created because reports can have several filters and they are applied in different positions in the pipeline.\n\nExample: <match_period_range1>",
+                                "examples": [
+                                    "<match_period_range1>"
+                                ]
+                            },
+                            "value": {
+                                "type": "string",
+                                "description": "Aggregation pipeline snippet that the OutSystems inject into the pipeline. OutSystems use the replacer mark to perform this operation."
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "active_parameters": {
+            "type": "array",
+            "description": "Array that stores the parameters groups this report uses. This field is used by the OutSystems to display the parameters groups specific for each report.\n\nThis array only exists in reports of the type 'system_template'.\n\nExample:  [ 'Period Range', 'Organisation Hierarchy', 'Class of Business' ]",
+            "additionalItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "columns": {
+            "type": "array",
+            "description": "Array that stores all the column names of the report output file. The order matters since it will be used by the OutSystems to produce the excel file and the column order will appear in the same order as it is in the array.\n\nExample:\n\n[ First column name - first element of the array,\n Second column name - second element of the array,\n ....\n Nth column name - nth element of the array]\n\nThis array only exists in reports of the type 'system_template'.",
+            "additionalItems": true,
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "additionalProperties": true,
+    "required": [
+        "_id",
+        "access"
+    ]
+}

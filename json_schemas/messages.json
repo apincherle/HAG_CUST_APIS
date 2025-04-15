@@ -1,0 +1,296 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "messages",
+    "description": "Details on messages shared between users on the platform as part of a conversation.\n\n---\nLDM Ref: Collaboration / Messages\n\nER Diagram \"Collaboration\"",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Message, with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.\n\n---\n\nLDM Ref: Message.Message ID",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "sender": {
+            "type": "object",
+            "description": "Sub-Document that references the sender of the message.",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "description": "A system-generated unique identifier As a technical attribute, it has no business meaning.\n",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "_xid": {
+                    "type": "string",
+                    "description": "The ID of the user that sent the message. Points to an user in the user's collection.\n\n---\n\nLDM Ref: Message.User ID",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "first_name": {
+                    "type": "string",
+                    "description": "The first name of the user responsible for sending the message.\n\n---\n\nLDM Ref: Person.First Name",
+                    "examples": [
+                        "Joeseph"
+                    ]
+                },
+                "last_name": {
+                    "type": "string",
+                    "description": "The last name of the user responsible for sending the message.\n\n---\n\nLDM Ref: Person.Last Name",
+                    "examples": [
+                        "Bloggs"
+                    ]
+                },
+                "team_id": {
+                    "type": "string",
+                    "description": "ID of the Team user belongs to.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "organisation_name": {
+                    "type": "string",
+                    "description": "The name of the organisation to which the user that sent the message belongs."
+                },
+                "organisation_type": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type of role that a particular party can play. In this case, we only have two possible values that characterize an organisation: Broker and Carrier.\n\n---\n\nLDM Ref: Party Role Type",
+                    "enum": [
+                        "broker",
+                        "carrier"
+                    ]
+                },
+                "company_name": {
+                    "type": "string",
+                    "description": "The name of the company to which the user that sent the message belongs."
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_id",
+                "_xid",
+                "first_name",
+                "last_name",
+                "team_id",
+                "organisation_name",
+                "organisation_type",
+                "company_name"
+            ]
+        },
+        "recipients": {
+            "type": "array",
+            "description": "The ID of the user that received the message.  One message can be sent to multiple recipients.\n\nIf there are multiple recipients then it is sent as part of a group. This can be used to identify all the recipients of that group.\nThis covers the functionality of Group Reference (field Name in LDM) \n\n---\n\nLDM Ref: Collaboration.Message.Recipient User ID",
+            "additionalItems": false,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "description": "A system-generated unique identifier As a technical attribute, it has no business meaning.",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "_xid": {
+                        "type": "string",
+                        "description": "The ID of the user that received the message. Points to an user in the user's collection.\n\n---\n\nLDM Ref: Message.Recipient User ID",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "description": "The first name of the user that received the message.\n\n---\n\nLDM Ref: Person.First Name",
+                        "examples": [
+                            "Joeseph"
+                        ]
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "description": "The last name of the user that received the message.\n\n---\n\nLDM Ref: Person.First Name",
+                        "examples": [
+                            "Bloggs"
+                        ]
+                    },
+                    "team_id": {
+                        "type": "string",
+                        "description": "ID of the Team receiver of the message belongs to.",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "organisation_name": {
+                        "type": "string",
+                        "description": "The organisation name the receiver of the message belongs to."
+                    },
+                    "organisation_type": {
+                        "type": "string",
+                        "description": "**Reference data**\n\nThe type of role that a particular party can play. In this case, we only have two possible values that characterize an organisation: Broker and Carrier.\n\n---\n\nLDM Ref: Party Role Type",
+                        "enum": [
+                            "broker",
+                            "carrier"
+                        ]
+                    },
+                    "active": {
+                        "type": "boolean",
+                        "description": "This field is used by Outsystem it Indicates that the receiver is active when True.\n"
+                    },
+                    "company_name": {
+                        "type": "string",
+                        "description": "The company name the receiver of the message belongs to."
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "_id",
+                    "_xid",
+                    "first_name",
+                    "last_name",
+                    "team_id",
+                    "organisation_name",
+                    "organisation_type",
+                    "active",
+                    "company_name"
+                ]
+            }
+        },
+        "message": {
+            "type": "string",
+            "description": "The content of the message.\n\n---\n\nLDM Ref: Collaboration.Message.Message"
+        },
+        "context": {
+            "type": "object",
+            "description": "This Sub-Document represents a general structure to reference several objects, with which the message can be associated. For example, a message can be associated with a contract or a placement.",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "This field represents the ID of the object the note is associated with. \n\nExample: it can be a contract or a placement.\n",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "**Reference Data**\n\nThe type of object the context points to.\n\nSee ContextType in Reference Data.\n\n---",
+                    "enum": [
+                        "contract"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid",
+                "type"
+            ]
+        },
+        "parent": {
+            "type": "string",
+            "description": "The ID of the parent message.\n\n---\n\nLDM Ref: Collaboration.Message.Parent Message ID",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "_metadata": {
+            "type": "object",
+            "properties": {
+                "creation_date": {
+                    "type": "string",
+                    "description": "The date at which the entity was created.",
+                    "examples": [
+                        "ISODate(\"2021-10-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "creation_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the entity, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "creation_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user creating the entity.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "modified_date": {
+                    "type": "string",
+                    "description": "The date at which the change was made.",
+                    "examples": [
+                        "ISODate(\"2021-12-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "modified_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the change, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "modified_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user making the change.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "creation_date",
+                "creation_channel",
+                "creation_user",
+                "modified_date",
+                "modified_channel",
+                "modified_user"
+            ]
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "_id",
+        "sender",
+        "recipients",
+        "message",
+        "context",
+        "_metadata"
+    ]
+}

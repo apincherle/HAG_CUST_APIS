@@ -1,0 +1,1504 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "participations",
+    "description": "A participation contains the relevant information relating to a specific underwriter and his participation in a specific section for a given contract.",
+    "$comment": "If you have a contract with two sections and three underwriters each, then we will have 6 participations.\n\nThis collection is only accessible by brokers\n",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Participation, with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "_metadata": {
+            "type": "object",
+            "properties": {
+                "creation_date": {
+                    "type": "string",
+                    "description": "The date at which the entity was created.",
+                    "examples": [
+                        "ISODate(\"2021-10-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "creation_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the entity, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "creation_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user creating the entity.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "modified_date": {
+                    "type": "string",
+                    "description": "The date at which the change was made.",
+                    "examples": [
+                        "ISODate(\"2021-12-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "modified_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the change, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "modified_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user making the change.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "creation_date",
+                "creation_channel",
+                "creation_user",
+                "modified_date",
+                "modified_channel",
+                "modified_user"
+            ]
+        },
+        "access": {
+            "type": "array",
+            "description": "Teams/Users that have access to the participation document.",
+            "additionalItems": true,
+            "items": {
+                "type": "string",
+                "examples": [
+                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                ],
+                "maxLength": 36,
+                "minLength": 36,
+                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+            }
+        },
+        "underwriter": {
+            "type": "object",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "_id field of the user in the users collection.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "first_name": {
+                    "type": "string",
+                    "examples": [
+                        "Hilary"
+                    ]
+                },
+                "last_name": {
+                    "type": "string",
+                    "examples": [
+                        "Green"
+                    ]
+                },
+                "organisation_name": {
+                    "type": "string",
+                    "description": "Name of the organisation the user belongs to. \nRemoves need for lookup when showing brokers and underwriters info under other collections context."
+                },
+                "off_platform": {
+                    "type": "boolean",
+                    "description": "Indicates that the carrier is not on the PPL platform when True.\n\n---\n\nLDM Ref: Carrier.Carrier Off-platform Indicator"
+                },
+                "organisation_xid": {
+                    "type": "string",
+                    "description": "_id of the organisation the underwriter belongs too, in order to avoid lookups"
+                },
+                "company_name": {
+                    "type": "string",
+                    "description": "The name of the company the User belongs to.\n"
+                },
+                "company_xid": {
+                    "type": "string",
+                    "description": "_id of the company the User belongs to.\n"
+                },
+                "default_team": {
+                    "type": "object",
+                    "description": "Sub-Document that represents the default team of an underwriter.",
+                    "properties": {
+                        "_xid": {
+                            "type": "string",
+                            "description": "_id of the Team the Underwriter set as its default. This reference points to the ID of a Team. This ID is stored in the Organisations collection in documents of type branch."
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the Team the underwriter set as its default team."
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid"
+            ]
+        },
+        "underwriter_team": {
+            "type": "object",
+            "description": "The ID of the underwriter team responsible for the submission.",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "name": {
+                    "type": "string",
+                    "examples": [
+                        "London Marine Team"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid"
+            ]
+        },
+        "broker": {
+            "type": "object",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "_id field of the user in the users collection.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "first_name": {
+                    "type": "string",
+                    "examples": [
+                        "Hilary"
+                    ]
+                },
+                "last_name": {
+                    "type": "string",
+                    "examples": [
+                        "Green"
+                    ]
+                },
+                "organisation_name": {
+                    "type": "string",
+                    "description": "Name of the organisation the user belongs to. \nRemoves need for lookup when showing brokers and underwriters info under other collections context."
+                },
+                "company_name": {
+                    "type": "string",
+                    "description": "The name of the company the User belongs to.\n"
+                },
+                "company_xid": {
+                    "type": "string",
+                    "description": "_id of the company the User belongs to.\n"
+                },
+                "organisation_xid": {
+                    "type": "string",
+                    "description": "_id of the organisation the underwriter belongs too, in order to avoid lookups"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid"
+            ]
+        },
+        "broker_team": {
+            "type": "object",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid",
+                "name"
+            ]
+        },
+        "placement": {
+            "type": "string",
+            "description": "Holds the _id of the placement it belongs to in order to improve performance on queries.",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "contract": {
+            "type": "string",
+            "description": "Contract _id this participation refers to",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "section": {
+            "type": "string",
+            "description": "The ID of the section that is associated with the participation.\n\n---\n\nLDM Ref: Participation.Section ID",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "written_line_basis": {
+            "type": "string",
+            "description": "The basis on which the underwriter's written lines are applied to the order or contract.\n  \nFor example percentage of whole, percentage of order, part of whole, part of order.\n\n---\n\nLDM Ref: Binding Information.Written Line Basis",
+            "examples": [
+                "whole"
+            ]
+        },
+        "proposed": {
+            "type": "object",
+            "properties": {
+                "line_percentage_min": {
+                    "type": "number",
+                    "description": "The minimum percentage of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Participation.Proposed Min Written Line Percentage",
+                    "examples": [
+                        "40"
+                    ]
+                },
+                "line_percentage_max": {
+                    "type": "number",
+                    "description": "The maximum percentage of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Participation.Proposed Mac Written Line Percentage",
+                    "examples": [
+                        "60"
+                    ]
+                },
+                "line_percentage": {
+                    "type": "number",
+                    "description": "The percentage of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite. This is commonly expressed as a percentage of the sum insured. If, on completion of the broking exercise, the written lines exceed 100% then they will be signed down by the broker (reduced proportionately so that they total 100%).\n\n---\n\nLDM Ref: Participation.Proposed Written Line Percentage",
+                    "examples": [
+                        "50"
+                    ]
+                },
+                "amount_min": {
+                    "type": "number",
+                    "description": "The minimum monetary amount of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Participation.Proposed Min Written Amount",
+                    "examples": [
+                        "500"
+                    ]
+                },
+                "amount_max": {
+                    "type": "number",
+                    "description": "The maximum monetary amount of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Participation.Proposed Max Written Amount",
+                    "examples": [
+                        "1500"
+                    ]
+                },
+                "amount": {
+                    "type": "number",
+                    "description": "The amount of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Proposed Written Amount",
+                    "examples": [
+                        "1000"
+                    ]
+                },
+                "currency_code": {
+                    "type": "string",
+                    "description": "*** Reference data **\n\nThe alphabetic code that represents the currency in the ISO 4217 standard.\n\n--- \n\nLDM Ref: Participation.Proposed Written Currency Code",
+                    "examples": [
+                        "gbp"
+                    ]
+                },
+                "last_proposed": {
+                    "type": "number",
+                    "description": "Save the last proposed value by the underwriter in declaration."
+                },
+                "last_overall": {
+                    "type": "number",
+                    "description": "Save the last overall value proposed by the underwriter in declarations."
+                }
+            },
+            "additionalProperties": false
+        },
+        "written": {
+            "type": "object",
+            "properties": {
+                "line_percentage": {
+                    "type": "number",
+                    "description": "The percentage of a risk that an underwriter is willing to accept on behalf of the members of the syndicate or company for which they underwrite. This is commonly expressed as a percentage of the sum insured. If, on completion of the broking exercise, the written lines exceed 100% then they will be signed down by the broker (reduced proportionately so that they total 100%).\n\n---\n\nLDM Ref: Participation.Written Line Percentage",
+                    "examples": [
+                        "50"
+                    ]
+                },
+                "amount": {
+                    "type": "number",
+                    "description": "The amount of a risk that an underwriter is willing to accept on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Participation.Written Amount",
+                    "examples": [
+                        "1000"
+                    ]
+                },
+                "currency_code": {
+                    "type": "string",
+                    "description": "** Reference data **\n\nThe alphabetic code that represents the currency in the ISO 4217 standard.\n\n---\n\nLDM Ref: Participation.Written Currency Code",
+                    "examples": [
+                        "gbp"
+                    ]
+                },
+                "datetime": {
+                    "type": "string",
+                    "description": "The date and time at which the participation is written.\n\n---\n\nLDM Ref: Participation.Written Datetime",
+                    "format": "date"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe status of the negotiation.\n\n---\n\nLDM Ref: Negotiation Status.Negotiation Status Code",
+                    "examples": [
+                        "accepted"
+                    ]
+                }
+            },
+            "additionalProperties": false
+        },
+        "calculated": {
+            "type": "object",
+            "properties": {
+                "line_percentage": {
+                    "type": "number",
+                    "description": "The percentage of a risk that a broker is calculating in the UI for the underwriter to accept on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Participation.Calculated Line Percentage",
+                    "examples": [
+                        50
+                    ]
+                }
+            },
+            "additionalProperties": false
+        },
+        "signed": {
+            "type": "object",
+            "properties": {
+                "line_percentage": {
+                    "type": "number",
+                    "description": "The percentage of a risk that an underwriter has agreed to accept. It may be the same as the underwriter’s written line or a lower amount if there is signing down.\n\n---\n\nLDM Ref: Participation.Signed Line Percentage",
+                    "examples": [
+                        "50"
+                    ]
+                },
+                "amount": {
+                    "type": "number",
+                    "description": "The amount of a given risk that an underwriter has agreed to accept. It may be the same as the underwriter’s written line or a lower amount if there is signing down.\n\n---\n\nLDM Ref: Participation.Signed Amount",
+                    "examples": [
+                        "1000"
+                    ]
+                },
+                "currency_code": {
+                    "type": "string",
+                    "description": "** Reference data **\n\nThe alphabetic code that represents the currency in the ISO 4217 standard.\n\n---\n\nLDM Ref: Participation.Signed Currency Code",
+                    "examples": [
+                        "gbp"
+                    ]
+                },
+                "datetime": {
+                    "type": "string",
+                    "description": "The date and time at which the participation is signed.\n\n---\n\nLDM Ref: Participation.Signed Datetime",
+                    "format": "date"
+                }
+            },
+            "additionalProperties": false
+        },
+        "roles": {
+            "type": "array",
+            "description": "A mapping between Participation and Participation Role Type. This allows multiple roles to be captured against a single participation, for example both Slip Lead and Lloyd's Lead.\n\n---\n\nLDM Ref: Participation Role Mapping",
+            "additionalItems": true,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ]
+                    },
+                    "key": {
+                        "type": "string",
+                        "description": "**Reference data**\n\nThe type of role that an underwriter plays through their participation.\n\n---\n\nLDM Ref: Participation Role Type.Participation Role Type Code",
+                        "examples": [
+                            "lead"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "**Reference data**\n\nThe status of the negotiation.\n\n---\n\nLDM Ref: Negotiation Status.Negotiation Status Code",
+                        "examples": [
+                            "accepted"
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "settlement": {
+            "type": "object",
+            "description": "Settlement information specific to the section.\n\n---\n\nLDM Ref: Settlement Information",
+            "properties": {
+                "year_of_account": {
+                    "type": "integer",
+                    "description": "A breakdown of the premium by year of account, required on risks where the contract period exceeds 18 months.\n\n---\n\nLDM Ref: Settlement Information.Year of Account"
+                },
+                "due_date": {
+                    "type": "string",
+                    "description": "The date and time by which the insurers wish to receive their premium.\n\n---\n\nLDM Ref: Settlement Information.Settlement Due Datetime",
+                    "format": "date"
+                },
+                "instalment_credit_period_days": {
+                    "type": "integer",
+                    "description": "The number of days added to the client due dates of subsequent instalments.\n\n---\n\nLDM Ref: Settlement Information.Instalment Credit Period Days"
+                },
+                "adjustment_credit_period_days": {
+                    "type": "integer",
+                    "description": "The number of days after the date(s) specified for the provision of adjustments that insurers expect the final adjustment(s) of premium (if any) to be paid.\n\n---\n\nLDM Ref: Settlement Information.Adjustment Credit Period Days"
+                }
+            },
+            "additionalProperties": false
+        },
+        "stamps": {
+            "type": "array",
+            "description": "A mapping between Participation and Underwriter Stamp. This allows an underwriter to split their participation into multiple stamps.\n\n---\n\nLDM Ref: Participation Stamp",
+            "additionalItems": true,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "_xid": {
+                        "type": "string",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the stamp. This usually reflects the wet stamp and will be based on the syndicate number for Lloyd's syndicates, or entered by the broker or underwriter in the PPL platform.\n \nFor example \"ABC1234\", \"ABC Consortium 9999\", \"ABC B12345678987654 2019 Energy Facility - ABC 1234 (25.25%) DEF 5678 (50.00%) GHI 8101 (24.75%). Premium/claims settled direct with ABC\"\n\n---\n\nLDM Ref: Stamp.Stamp Name",
+                        "examples": [
+                            "ABC Consortium 9999"
+                        ]
+                    },
+                    "written_line_percentage": {
+                        "type": "number",
+                        "description": "The percentage of a risk that an underwriter is willing to accept on behalf of the members of the syndicate or company for which they underwrite. This is commonly expressed as a percentage of the sum insured. If, on completion of the broking exercise, the written lines exceed 100% then they will be signed down by the broker (reduced proportionately so that they total 100%).\n\n---\n\nLDM Ref: Participation Stamp.Written Line Percentage",
+                        "examples": [
+                            "50"
+                        ]
+                    },
+                    "written_line_amount": {
+                        "type": "number",
+                        "description": "The amount of a risk that an underwriter is willing to accept on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nParticipation Stamp.Written Amount",
+                        "examples": [
+                            "1000"
+                        ]
+                    },
+                    "written_line_currency_code": {
+                        "type": "string",
+                        "description": "**Reference data**\n\nThe alphabetic code that represents the currency in the ISO 4217 standard.\n\n---\n\nLDM Ref: Participation Stamp.Written Currency Code"
+                    },
+                    "calculated_line_percentage": {
+                        "type": "number",
+                        "description": "The percentage of a risk that a broker is calculating in the UI for the underwriter to accept on behalf of the members of the syndicate or company for which they underwrite.\n\nLDM Ref: N/A\n                 "
+                    },
+                    "signed_line_percentage": {
+                        "type": "number",
+                        "description": "The percentage of a risk that an underwriter has agreed to accept. It may be the same as the underwriter’s written line or a lower amount if there is signing down.\n\nLDM Ref: Participation Stamp.Signed Line Percentage\n                "
+                    },
+                    "line_conditions": {
+                        "type": "array",
+                        "description": "A mapping between Participation Stamp and Line Condition. Each carrier has their own list of line conditions which an underwriter can select from and apply to a stamp's participation.\n\n---\n\nLDM Ref: Participation Line Condition",
+                        "additionalItems": true,
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "_xid": {
+                                    "type": "string",
+                                    "examples": [
+                                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                                    ],
+                                    "maxLength": 36,
+                                    "minLength": 36,
+                                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "A description of the line condition.\n\n---\n\nLDM Ref: Line Condition.Line Condition Description",
+                                    "examples": [
+                                        "Lines to stand"
+                                    ]
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "description": "**Reference data**\n\nThe status of the negotiation.\n\n---\n\nLDM Ref: Negotiation Status.Negotiation Status Code",
+                                    "examples": [
+                                        "accepted"
+                                    ]
+                                },
+                                "code": {
+                                    "type": "string",
+                                    "description": "Codes:\nagreement_party_to_all_claims\nagreement_party_to_all_endorsements\nline_to_stand\n\nDescriptions:\nAgreement Party for all Claims (for their own part only)\nAgreement Party for all Endorsements\nAgreement Party for all Endorsements (for their own part only)\nLine to Stand\n\n\nLDM Ref: Stamps.Line Condition. Code Type"
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "references": {
+                        "type": "array",
+                        "description": "LDM Ref: Participation Reference Risk Code Mapping",
+                        "additionalItems": true,
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "_id": {
+                                    "type": "string",
+                                    "examples": [
+                                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                                    ]
+                                },
+                                "value": {
+                                    "type": "string",
+                                    "description": "The reference allocated by the underwriter against a risk code. The format is defined by the underwriter and isn't constrained by UMR standards.\n\n---\n\nLDM Ref: Participation Reference.Underwriter Reference"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "A description of the participation reference supplied by the underwriter.\n\n---\n\nLDM Ref: Participation Reference.Participation Reference Description"
+                                },
+                                "risk_codes": {
+                                    "type": "array",
+                                    "additionalItems": true,
+                                    "items": {
+                                        "type": "string",
+                                        "description": "**Reference data**\n\nThe 1 or 2 character risk code.\n\n---\n\nLDM Ref: Risk Code.Risk Code",
+                                        "examples": [
+                                            "1E"
+                                        ]
+                                    }
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "risk_codes": {
+                        "type": "array",
+                        "additionalItems": true,
+                        "items": {
+                            "type": "string",
+                            "description": "**Reference data**\n\nThe 1 or 2 character risk code.\n\n---\n\nLDM Ref: Risk Code.Risk Code",
+                            "examples": [
+                                "1E"
+                            ]
+                        }
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "**Reference data**\n\nThe status of the negotiation.\n\n---\n\nLDM Ref: Negotiation Status.Negotiation Status Code",
+                        "examples": [
+                            "accepted"
+                        ]
+                    },
+                    "agency_code": {
+                        "type": "string",
+                        "description": "Agency code will be determined from the stamp collection on the initial lookup of this model.\n\n---\n\nIts used by API Team"
+                    },
+                    "agency_type": {
+                        "type": "string",
+                        "description": "The code that represents the agency type.\n\n---\nLDM Ref: Stamp.Agency Type Code"
+                    },
+                    "stamp_role": {
+                        "type": "string",
+                        "description": "Backend field. When we assign a role via the Assign Roles functionality at the Placement side, we need to populate this Stamp Role field with the Contractual Role type e.g. Lloyds Leader."
+                    },
+                    "master_facility_signed_line_percentage": {
+                        "type": "number",
+                        "description": "This field is added for Jira 'PNG-50496' due to Defect fix to store signed line percentage for master facility at stamp level."
+                    },
+                    "order": {
+                        "type": "number",
+                        "description": "Order of the stamp."
+                    },
+                    "permission_type": {
+                        "type": "string",
+                        "description": "The code that represents the permitted territory type.\n\n---\n\nLDM Ref: Section.Stamp Permission Type Code"
+                    },
+                    "calculation_decimal_places": {
+                        "type": "integer",
+                        "description": "Calculation Decimal Places should default to 7 in cases where calculations have not been previously performed.\n\n---\n\nIts used by API Team",
+                        "examples": [
+                            "50"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "_xid"
+                ]
+            }
+        },
+        "type": {
+            "type": "string",
+            "description": "Holds the type of participation (firm_order, endorsement)"
+        },
+        "status": {
+            "type": "string",
+            "description": "**Reference data**\n\nThe status of the participation.\n \nFor example Request for Line, Request for Negotiation, Decline Line, Unconditional Acceptance, Conditional Acceptance, Conditions Accepted, Signed Line, Cancelled etc.\n\n---\n\nLDM Ref: Participation.Participation Satus Code\n"
+        },
+        "quote_status": {
+            "type": "string",
+            "description": "**Reference data**\n\nThe status of the participation, but only for quotes (use code identifier related to quotes).\n \nFor example Request for Line, Request for Negotiation, Decline Line, Unconditional Acceptance, Conditional Acceptance, Conditions Accepted, Signed Line, Cancelled etc.\n\n---\n\nLDM Ref: Participation.Participation Status Code"
+        },
+        "status_reason": {
+            "type": "string",
+            "description": "**Reference data**\nReasons that are associated with a specific participation status.\n\n---\n\nLDM Ref: Participation.Status Reason Code"
+        },
+        "subjectivities": {
+            "type": "array",
+            "description": "A description of the subjectivity and any associated terms. It will include the following details:\n- the condition/action that needs to occur, by whom and to what standard\n- the applicable timescale, if any, within which the condition is to be met\n\n\n---\nLDM Ref: Participation.Subjectivity",
+            "additionalItems": true,
+            "items": {
+                "type": "object",
+                "description": "Requirements which must be met (e.g. produce a survey report in 90 days) or maintained (e.g. fire sprinklers must be active at all times) before the insurer will agree to provide cover under the terms of the section of the insurance contract.\n\n---\n\nLDM Ref: Subjectivity",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "A description of the subjectivity and any associated terms. It will include the following details:\n- the condition/action that needs to occur, by whom and to what standard\n- the applicable timescale, if any, within which the condition is to be met\n\n---\n\nLDM Ref: Subjectivity.Subjectivity Description",
+                        "examples": [
+                            "Agree all claims by deadline date 12:00 (GMT) 2020-06-01"
+                        ]
+                    },
+                    "confirmation_required": {
+                        "type": "boolean",
+                        "description": "Indicates that the subjectivity requires confirmation, and therefore a Deadline, when True.\n \nFor example producing a survey report in 90 days has a True Confirmation Required Indicator and ensuring fire sprinklers are active at all times has a False Confirmation Required Indicator.\n\n---\n\nLDM Ref: Subjectivity.Confirmation Required Indicator"
+                    },
+                    "deadline": {
+                        "type": "string",
+                        "description": "The date and time by which the details in the Subjectivity Description attribute need to be met, otherwise consequences apply.\n\n---\n\nLDM Ref: Subjectivity.Subjectivity Deadline Datetime",
+                        "format": "date"
+                    },
+                    "withdrawn": {
+                        "type": "string",
+                        "description": "The date and time on which the subjectivity was withdrawn.\n\n---\n\nLDM Ref: Subjectivity.Subjectivity Withdrawn Datetime",
+                        "format": "date"
+                    },
+                    "off_cover": {
+                        "type": "boolean",
+                        "description": "Indicates that the participant wishes to be off cover until the subjectivities have been met when True.\n\n---\n\nLDM Ref: Subjectivity.Off Cover Indicator"
+                    },
+                    "subjectivity_status": {
+                        "type": "string",
+                        "description": "**Reference data**\n\nThe status of the subjectivity.\n \nFor example To do, Satisfied, Expired, Pending, Deleted.\n\n---\n\nLDM Ref: Subjectivity Status.Subjectivity Status Code",
+                        "examples": [
+                            "pending"
+                        ]
+                    },
+                    "negotiation_status": {
+                        "type": "string",
+                        "description": "**Reference data**\n\nThe status of the negotiation.\n\n---\n\nLDM Ref: Negotiation Status.Negotiation Status Code",
+                        "examples": [
+                            "accepted"
+                        ]
+                    },
+                    "saved_as_accepted": {
+                        "type": "boolean",
+                        "description": "True if the subjectivity was saved with accepted status."
+                    },
+                    "saved_as_declined": {
+                        "type": "boolean",
+                        "description": "True if the subjectivity was saved with declined status."
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "_id"
+                ]
+            }
+        },
+        "sub_panel": {
+            "type": "object",
+            "description": "The group of carriers on the contract.\n\n---\n\nLDM Ref: Sub-panel",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "description": "The name used to identify the sub-panel.\n\n---\n\nLDM Ref: Sub-panel.Sub-panel Name",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sequence_number": {
+                    "type": "integer",
+                    "description": "The sequence number in which the participations should be displayed in the UI.\n\n---\n\nLDM Ref: Sub-panel.Sub-panel Sequence Number"
+                },
+                "document_ref": {
+                    "type": "object",
+                    "properties": {
+                        "_xid": {
+                            "type": "string",
+                            "description": "_id of the Document to which we are referencing. ",
+                            "examples": [
+                                "0f8fad5b-d9cb-469f-a165-70867728950e"
+                            ],
+                            "maxLength": 36,
+                            "minLength": 36,
+                            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "The file name of the document including the extension.\n\n---\n\nLDM Ref: Document.Document File Name",
+                            "examples": [
+                                "ABC Corp Intl Casualty.docx"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "_xid"
+                    ]
+                }
+            },
+            "additionalProperties": true
+        },
+        "sequence_number": {
+            "type": "integer",
+            "description": "The sequence number that defines the order in which the participations should be displayed in the UI.\n\n---\n\nLDM Ref: Participation.Participation Sequence Number"
+        },
+        "submission_state": {
+            "type": "object",
+            "description": "This is to capture the Submission Requests State against Submission Requests. This is a technical element and not available in LDM.",
+            "properties": {
+                "firm_order": {
+                    "type": "object",
+                    "properties": {
+                        "selected": {
+                            "type": "boolean",
+                            "description": "Flag to persist the selected participations to later be included in submission_requests"
+                        },
+                        "locked": {
+                            "type": "boolean",
+                            "description": "Flag to define if this participation has been included in an active submission_request"
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "Holds the status of the current submission_request"
+                        },
+                        "personal_message": {
+                            "type": "string",
+                            "description": "Holds the personal message to be sent to the UW along with the submission."
+                        },
+                        "submission_request": {
+                            "type": "string",
+                            "description": "Holds the _id of the submission request the participation is currently included in. Should be removed when unlocked."
+                        },
+                        "is_hidden": {
+                            "type": "boolean",
+                            "description": "Flag to define if this participation is hidden from UW.\n\nThis boolean attribute will be used in a very few cases, only showing for a short period of time. This is the scenario where we need it:\n\nWhen we have a facility panel with several Firm Order roles (Leader, Co-Leader, Notification, etc) and we send a pack with this facility panel, all roles will receive the pack but only some will see the submission. We’ll do this by using the IsHidden attribute already existent in the Submissions collection.\n\nBecause we need to have the whole panel showing in the first part of the Submission Pack flow (the participations inside the submission_request) and then, on the last part of the flow we do the mapping of each participation will be hidden or not, having this new attribute in the Participations collection will help with the mapping."
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "endorsement": {
+                    "type": "object",
+                    "properties": {
+                        "selected": {
+                            "type": "boolean",
+                            "description": "Flag to persist the selected participations to later be included in submission_requests"
+                        },
+                        "locked": {
+                            "type": "boolean",
+                            "description": "Flag to define if this participation has been included in an active submission_request"
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "Holds the status of the current submission_request"
+                        },
+                        "personal_message": {
+                            "type": "string",
+                            "description": "Holds the personal message to be sent to the UW along with the submission."
+                        },
+                        "submission_request": {
+                            "type": "string",
+                            "description": "Holds the _id of the submission request the participation is currently included in. Should be removed when unlocked."
+                        },
+                        "submission_level": {
+                            "type": "integer",
+                            "description": "Order for which the submissions will be sent"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "correction": {
+                    "type": "object",
+                    "properties": {
+                        "selected": {
+                            "type": "boolean",
+                            "description": "Flag to persist the selected participations to later be included in submission_requests"
+                        },
+                        "locked": {
+                            "type": "boolean",
+                            "description": "Flag to define if this participation has been included in an active submission_request"
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "Holds the status of the current submission_request"
+                        },
+                        "personal_message": {
+                            "type": "string",
+                            "description": "Holds the personal message to be sent to the UW along with the submission."
+                        },
+                        "submission_request": {
+                            "type": "string",
+                            "description": "Holds the _id of the submission request the participation is currently included in. Should be removed when unlocked."
+                        },
+                        "is_firm_order": {
+                            "type": "boolean",
+                            "description": "This flag is used to represent participations which should be treated as a firm_order (first participation) during a corrections submission_request (for example a Cancel and Replace process) "
+                        },
+                        "is_hidden": {
+                            "type": "boolean",
+                            "description": "Flag to define if this participation is hidden from UW.\n\nThis boolean attribute will be used in a very few cases, only showing for a short period of time. This is the scenario where we need it:\n\nWhen we have a facility panel with several Firm Order roles (Leader, Co-Leader, Notification, etc) and we send a pack with this facility panel, all roles will receive the pack but only some will see the submission. We’ll do this by using the IsHidden attribute already existent in the Submissions collection.\n\nBecause we need to have the whole panel showing in the first part of the Submission Pack flow (the participations inside the submission_request) and then, on the last part of the flow we do the mapping of each participation will be hidden or not, having this new attribute in the Participations collection will help with the mapping."
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "additional_information": {
+                    "type": "object",
+                    "properties": {
+                        "is_hidden": {
+                            "type": "boolean",
+                            "description": "Flag to define if this participation is hidden from UW.\n\nThis boolean attribute will be used in a very few cases, only showing for a short period of time. This is the scenario where we need it:\n\nWhen we have a facility panel with several Firm Order roles (Leader, Co-Leader, Notification, etc) and we send a pack with this facility panel, all roles will receive the pack but only some will see the submission. We’ll do this by using the IsHidden attribute already existent in the Submissions collection.\n\nBecause we need to have the whole panel showing in the first part of the Submission Pack flow (the participations inside the submission_request) and then, on the last part of the flow we do the mapping of each participation will be hidden or not, having this new attribute in the Participations collection will help with the mapping."
+                        },
+                        "locked": {
+                            "type": "boolean",
+                            "description": "Flag to define if this participation has been included in an active submission_request"
+                        },
+                        "selected": {
+                            "type": "boolean",
+                            "description": "Flag to persist the selected participations to later be included in submission_requests"
+                        },
+                        "submission_requests": {
+                            "type": "array",
+                            "description": "Submission request extended reference the participation is currently included in. Should be removed when unlocked.",
+                            "additionalItems": true,
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "_xid": {
+                                        "type": "string",
+                                        "description": "Holds the _id of the submission request the participation is currently included in. Should be removed when unlocked."
+                                    },
+                                    "personal_message": {
+                                        "type": "string",
+                                        "description": "Holds the personal message to be sent to the UW along with the submission."
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "description": "Holds the status of the current submission_request"
+                                    }
+                                },
+                                "additionalProperties": false
+                            }
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "quote": {
+                    "type": "object",
+                    "properties": {
+                        "selected": {
+                            "type": "boolean",
+                            "description": "Flag to persist the selected participations to later be included in submission_requests"
+                        },
+                        "locked": {
+                            "type": "boolean",
+                            "description": "Flag to define if this participation has been included in an active submission_request"
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "Holds the status of the current submission_request"
+                        },
+                        "personal_message": {
+                            "type": "string",
+                            "description": "Holds the personal message to be sent to the UW along with the submission."
+                        },
+                        "submission_request": {
+                            "type": "string",
+                            "description": "Holds the _id of the submission request the participation is currently included in. Should be removed when unlocked."
+                        },
+                        "is_hidden": {
+                            "type": "boolean",
+                            "description": "Flag to define if this participation is hidden from UW.\n\nThis boolean attribute will be used in a very few cases, only showing for a short period of time. This is the scenario where we need it:\n\nWhen we have a facility panel with several Firm Order roles (Leader, Co-Leader, Notification, etc) and we send a pack with this facility panel, all roles will receive the pack but only some will see the submission. We’ll do this by using the IsHidden attribute already existent in the Submissions collection.\n\nBecause we need to have the whole panel showing in the first part of the Submission Pack flow (the participations inside the submission_request) and then, on the last part of the flow we do the mapping of each participation will be hidden or not, having this new attribute in the Participations collection will help with the mapping."
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        },
+        "backload_code": {
+            "type": "string",
+            "description": "In case participations is backloaded - code."
+        },
+        "backload_reason": {
+            "type": "string",
+            "description": "In case participation is backloaded - reason."
+        },
+        "is_backload": {
+            "type": "boolean",
+            "description": "Flag to control if participation is backloaded."
+        },
+        "not_required": {
+            "type": "boolean",
+            "description": "Flag to mark if this participation is no longer required for a given placement."
+        },
+        "calculation_decimal_places": {
+            "type": "integer",
+            "description": "Calculation Decimal Places should default to 7 in cases where calculations have not been previously performed.\n\n---\n\nIts used by API Team",
+            "examples": [
+                "50"
+            ]
+        },
+        "limit": {
+            "type": "number",
+            "description": "Monetary Validations:\n\n- Written Line Total = Greater or Equal to Limit\n- Calculated Column = Less or Equal to Written Line Divided by Limit\n- Calculated Column = Less or Equal to Written Line Divided by Limit multiplied by the Order"
+        },
+        "signed_line_basis": {
+            "type": "string",
+            "description": "The basis on which the underwriter's signed lines are applied to the order or contract.\n \nFor example percentage of whole, percentage of order, part of whole, part of order.\n\n\nLDM Ref: Binding Information.Signed Line Basis"
+        },
+        "endorsement": {
+            "type": "object",
+            "description": "Holds endorsement fields that relate an endorsement to a participation, if applicable\n\nLDM Ref: subset of Endorsement",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "Foreign key to Endorsements collection, stores endorsements._id\n\nLDM Ref: Endorsement. Endorsement ID",
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "GUID"
+                },
+                "role": {
+                    "type": "string",
+                    "description": "The role this participation plays in the endorsement.\n\nLDM Ref:  ParticipationRoleType"
+                },
+                "previous_role": {
+                    "type": "string",
+                    "description": "**Reference Data**\n\nThe role this participation plays before the Carrier changed it.\n\n---\n\nLDM Ref: ParticipationRoleType"
+                }
+            },
+            "additionalProperties": false
+        },
+        "facility_roles": {
+            "type": "array",
+            "description": "Facility underwriters can have their own roles separate to the open market.\n\n---\n\nLDM Ref: Facility Role Mapping\n\n",
+            "additionalItems": true,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "key": {
+                        "type": "string",
+                        "description": "**Reference data**\n\nThe type of facility role that an underwriter plays through their participation.\n\n---\n\nLDM Ref: Facility Role Type.Facility Role Type Code\n",
+                        "examples": [
+                            "lead"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "**Reference data**\n\nThe status of the negotiation.\n\n---\n\nLDM Ref: Negotiation Status.Negotiation Status Code",
+                        "examples": [
+                            "accepted"
+                        ]
+                    },
+                    "category_type": {
+                        "type": "string",
+                        "description": "The category of the facility role.\n\n---\nLDM ref: Facility Role Category Type.Facility Role Category Type Code\n\n---\nReference data: FacilityRoleCategoryType\n"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "_id"
+                ]
+            }
+        },
+        "default_contact_uw": {
+            "type": "object",
+            "description": "broker/underwriter can set a default contact underwriter from the main underwriter team, who will be a delegate/responsible person for negotiations etc.\n\nused with declaration placements.\n\nLDM Ref: Participations.Declaration User ID\n",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "_id field of the user in the users collection.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "first_name": {
+                    "type": "string",
+                    "examples": [
+                        "Hilary"
+                    ]
+                },
+                "last_name": {
+                    "type": "string",
+                    "examples": [
+                        "Green"
+                    ]
+                },
+                "organisation_name": {
+                    "type": "string",
+                    "description": "Name of the organisation the user belongs to. \nRemoves need for lookup when showing brokers and underwriters info under other collections context."
+                },
+                "company_name": {
+                    "type": "string",
+                    "description": "The name of the company the User belongs to.\n"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid"
+            ]
+        },
+        "change_detail_type": {
+            "type": "string",
+            "description": "Information if an UW has been add, removed, ammended on an MTMC\n\nLDM Ref: ChangeDetailType"
+        },
+        "facility_panel": {
+            "type": "object",
+            "description": "Declaration usage, separate panel for master facility participation\n\n---\n\nLDM Ref: Sub-panel",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "description": "The name used to identify the facility sub-panel.\n\n---\n\nLDM Ref: Sub-panel.Sub-panel Name",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "master_facility": {
+                    "type": "object",
+                    "properties": {
+                        "placement_xid": {
+                            "type": "string",
+                            "description": "the placement id of the master facility"
+                        },
+                        "section_xid": {
+                            "type": "string",
+                            "description": "_id of the master facility section associated with the current participation.",
+                            "examples": [
+                                "0f8fad5b-d9cb-469f-a165-70867728950e"
+                            ],
+                            "maxLength": 36,
+                            "minLength": 36,
+                            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                        },
+                        "section_name": {
+                            "type": "string",
+                            "description": "The file name of the document including the extension.\n\n---\n\nLDM Ref: Document.Document File Name",
+                            "examples": [
+                                "ABC Corp Intl Casualty.docx"
+                            ]
+                        },
+                        "period_dates": {
+                            "type": "object",
+                            "description": "Holds the effective date from and to for a  master facility section.\n\nLDM Ref: \n",
+                            "properties": {
+                                "date_from": {
+                                    "type": "string",
+                                    "format": "date"
+                                },
+                                "date_to": {
+                                    "type": "string",
+                                    "format": "date"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "permitted_territory": {
+                            "type": "string",
+                            "description": "permitted territory of the master facility section."
+                        },
+                        "line_basis": {
+                            "type": "string",
+                            "description": "master facility placement section line basis data.\n  \nFor example percentage of whole, percentage of order, part of whole, part of order.\n\nLDM Ref: Binding Information.Written Line Basis"
+                        },
+                        "line_type": {
+                            "type": "string",
+                            "description": "master facility placement section line type.\n \npercentage or amount\n\nLDM Ref: Binding Information.Written Line Type Code"
+                        },
+                        "line_percentage": {
+                            "type": "number",
+                            "description": "The order percentage from the master facility placement section.\n \nFor example \"80%\".\n\nLDM Ref: Binding Information.Signed Down Order Percentage"
+                        },
+                        "broker_team_xid": {
+                            "type": "string",
+                            "description": "The broker team which created the master facility being used in the declaration participation section",
+                            "maxLength": 36,
+                            "minLength": 36
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "section_xid"
+                    ]
+                },
+                "sequence_number": {
+                    "type": "integer",
+                    "description": "The sequence number in which the participations should be displayed in the UI.\n\n---\n\nLDM Ref: Sub-panel.Sub-panel Sequence Number"
+                },
+                "is_manual_proposed_calculation": {
+                    "type": "boolean",
+                    "description": "This flag identifies if the master facility proposed values are manually overridden."
+                },
+                "status": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe participation status at the facility panel level.\n \nFor example Request for Line, Request for Negotiation, Decline Line, Unconditional Acceptance, Conditional Acceptance, Conditions Accepted, Signed Line, Cancelled etc.\n\n---\n\nLDM Ref: Participation.Participation Satus Code\n"
+                },
+                "document_ref": {
+                    "type": "object",
+                    "properties": {
+                        "_xid": {
+                            "type": "string",
+                            "description": "_id of the Document to which we are referencing. ",
+                            "examples": [
+                                "0f8fad5b-d9cb-469f-a165-70867728950e"
+                            ],
+                            "maxLength": 36,
+                            "minLength": 36,
+                            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "The file name of the document including the extension.\n\n---\n\nLDM Ref: Document.Document File Name",
+                            "examples": [
+                                "ABC Corp Intl Casualty.docx"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "_xid"
+                    ]
+                },
+                "proposed": {
+                    "type": "object",
+                    "description": "overall proposed value at the facility panel level",
+                    "properties": {
+                        "line_percentage_min": {
+                            "type": "number",
+                            "description": "The minimum percentage of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Participation.Proposed Min Written Line Percentage",
+                            "examples": [
+                                "40"
+                            ]
+                        },
+                        "line_percentage_max": {
+                            "type": "number",
+                            "description": "The maximum percentage of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Participation.Proposed Mac Written Line Percentage",
+                            "examples": [
+                                "60"
+                            ]
+                        },
+                        "line_percentage": {
+                            "type": "number",
+                            "description": "The percentage of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite. This is commonly expressed as a percentage of the sum insured. If, on completion of the broking exercise, the written lines exceed 100% then they will be signed down by the broker (reduced proportionately so that they total 100%).\n\n---\n\nLDM Ref: Participation.Proposed Written Line Percentage",
+                            "examples": [
+                                "50"
+                            ]
+                        },
+                        "amount_min": {
+                            "type": "number",
+                            "description": "The minimum monetary amount of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Participation.Proposed Min Written Amount",
+                            "examples": [
+                                "500"
+                            ]
+                        },
+                        "amount_max": {
+                            "type": "number",
+                            "description": "The maximum monetary amount of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Participation.Proposed Max Written Amount",
+                            "examples": [
+                                "1500"
+                            ]
+                        },
+                        "amount": {
+                            "type": "number",
+                            "description": "The amount of a risk that the broker is proposing the underwriter accepts on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Proposed Written Amount",
+                            "examples": [
+                                "1000"
+                            ]
+                        },
+                        "currency_code": {
+                            "type": "string",
+                            "description": "*** Reference data **\n\nThe alphabetic code that represents the currency in the ISO 4217 standard.\n\n--- \n\nLDM Ref: Participation.Proposed Written Currency Code",
+                            "examples": [
+                                "gbp"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": true
+        },
+        "is_excluded_from_panel_participation": {
+            "type": "boolean",
+            "description": "Flag to show if this participation is excluded from the facility panel, in the context of the declaration placement participation(s)."
+        },
+        "master_facility": {
+            "type": "object",
+            "description": "Declaration usage, this element holds the values from the master facility particpation",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "The ID of the facility participation record.\n\nLDM ref: Participation.Facility Participation ID\t"
+                },
+                "written": {
+                    "type": "object",
+                    "description": "Declaration usage.\nwritten value from the original master facility participation.\n",
+                    "properties": {
+                        "line_percentage": {
+                            "type": "number",
+                            "description": "written line percentage from the master facility participation referred to by the _xid\n",
+                            "examples": [
+                                "50"
+                            ]
+                        },
+                        "amount": {
+                            "type": "integer",
+                            "description": "amount from the master facility participation referred to by the _xid",
+                            "examples": [
+                                "1000"
+                            ]
+                        },
+                        "currency_code": {
+                            "type": "string",
+                            "description": "** Reference data **\n\nThe alphabetic code that represents the currency in the ISO 4217 standard.\n\n---\n\nLDM Ref: Participation.Signed Currency Code",
+                            "examples": [
+                                "gbp"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "signed": {
+                    "type": "object",
+                    "description": "Declaration usage.\nSigned value from the original master facility participation.\n",
+                    "properties": {
+                        "line_percentage": {
+                            "type": "number",
+                            "description": "signed line percentage from the master facility participation referred to by the _xid",
+                            "examples": [
+                                "50"
+                            ]
+                        },
+                        "amount": {
+                            "type": "integer",
+                            "description": "signed amount from the master facility participation referred to by the _xid\n",
+                            "examples": [
+                                "1000"
+                            ]
+                        },
+                        "currency_code": {
+                            "type": "string",
+                            "description": "** Reference data **\n\nThe alphabetic code that represents the currency in the ISO 4217 standard.\n\n---\n\nLDM Ref: Participation.Signed Currency Code",
+                            "examples": [
+                                "gbp"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "facility_roles": {
+                    "type": "array",
+                    "description": "a copy of the agreed/signed off role (after negotiation is complete) from the master facility participation\n\nUsed by the OS logic for the FAC16 story.",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "_id": {
+                                "type": "string",
+                                "examples": [
+                                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                                ],
+                                "maxLength": 36,
+                                "minLength": 36,
+                                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                            },
+                            "key": {
+                                "type": "string",
+                                "description": "**Reference data**\n\nThe type of facility role that an underwriter plays through their participation.\n\n---\n\nLDM Ref: Facility Role Type.Facility Role Type Code\n",
+                                "examples": [
+                                    "lead"
+                                ]
+                            },
+                            "status": {
+                                "type": "string",
+                                "description": "**Reference data**\n\nThe status of the negotiation.\n\n---\n\nLDM Ref: Negotiation Status.Negotiation Status Code",
+                                "examples": [
+                                    "accepted"
+                                ]
+                            },
+                            "category_type": {
+                                "type": "string",
+                                "description": "The category of the facility role.\n\n---\nLDM ref: Facility Role Category Type.Facility Role Category Type Code\n\n---\nReference data: FacilityRoleCategoryType\n"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "_id"
+                        ]
+                    }
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Monetary Validations:\n\n- Written Line Total = Greater or Equal to Limit\n- Calculated Column = Less or Equal to Written Line Divided by Limit\n- Calculated Column = Less or Equal to Written Line Divided by Limit multiplied by the Order\n\nto be used Facility Declaration calculation, FAC43\nlimit value is copied from the facility participation after it was signed and closed (from negotiation)"
+                }
+            },
+            "additionalProperties": false
+        },
+        "agreed_date": {
+            "type": "string",
+            "description": "This field marks the date when the participation agreed with the negotiation",
+            "format": "date"
+        },
+        "signed_down_order_percentage": {
+            "type": "number",
+            "description": "The order percentage used by the broker in their signing down calculations.\n \nFor example \"80%\".\n\n---\n\nLDM Ref: Binding Information.Signed Down Order Percentage"
+        },
+        "locking": {
+            "type": "object",
+            "properties": {
+                "user_xid": {
+                    "type": "string",
+                    "description": "_id field of the user in the users collection",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "$comment": "0f8fad5b-d9cb-469f-a165-70867728950e"
+                },
+                "first_name": {
+                    "type": "string",
+                    "description": "First name of the user"
+                },
+                "last_name": {
+                    "type": "string",
+                    "description": "Last name of the user"
+                }
+            },
+            "additionalProperties": false,
+            "description": "This object saves the information of the broker that locked the page related to the underwriter tab",
+            "required": [
+                "user_xid",
+                "first_name",
+                "last_name"
+            ]
+        },
+        "hidden": {
+            "type": "boolean",
+            "description": "Flag to define if this participation is hidden from UW.\n\nThis boolean attribute will be used in a very few cases, only showing for a short period of time. This is the scenario where we need it:\n\nWhen we have a contract in C&R mode and we want to remove a participation from the contract, we want to hide the participation from the UW screen, so we update this field to true.\n\nIf the C&R is confirmed, then all the participations with hidden as true should be deleted.\n\nIf the C&R is cancelled, we want to \"recover\" the participation, setting this field to false.",
+            "default": false
+        },
+        "is_from_cancel_replace": {
+            "type": "boolean",
+            "description": "Flag to define if this participation is new from a C&R situation.\n\nThis boolean attribute will be used in a very few cases, only showing for a short period of time. This is the scenario where we need it:\n\nWhen we have a contract in C&R mode and we want to add new participations, the participation is created and this field is set as true.\n\nIf the C&R is confirmed, then all the participations with this field as true should be set to false (or maybe remove the field).\n\nIf the C&R is cancelled, then all the participations with this field as true should be deleted."
+        },
+        "quoted": {
+            "type": "object",
+            "description": "Equivalent to \"written\" object in the negotiations collection. When a quote is promoted to firm_order, the quoted object should be inserted as a written object. This quoted_line should be the UW proposal in the negotiation (broker does not propose anything). If the broker is happy with the value, then it is filled in the proposed line in the firm order process.",
+            "properties": {
+                "line_percentage": {
+                    "type": "number",
+                    "description": "The percentage of a risk that an underwriter is willing to accept on behalf of the members of the syndicate or company for which they underwrite. This is commonly expressed as a percentage of the sum insured. If, on completion of the broking exercise, the written lines exceed 100% then they will be signed down by the broker (reduced proportionately so that they total 100%).\n\n---\n\nLDM Ref: Participation.Written Line Percentage"
+                },
+                "amount": {
+                    "type": "number",
+                    "description": "The amount of a risk that an underwriter is willing to accept on behalf of the members of the syndicate or company for which they underwrite.\n\n---\n\nLDM Ref: Participation.Written Amount"
+                },
+                "currency_code": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe alphabetic code that represents the currency in the ISO 4217 standard.\n\nCurrency in Reference Data\n\n---\n\nLDM Ref: Participation.Written Currency Code",
+                    "examples": [
+                        "gbp"
+                    ]
+                },
+                "datetime": {
+                    "type": "string",
+                    "description": "The date and time at which the participation is written.\n\n---\n\nLDM Ref: Participation.Written Datetime",
+                    "format": "date"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "**Reference Data**\n\nThe status of the negotiation.\n\nNegotiationStatus in Reference Data\n\n---\n\nLDM Ref: Negotiation Status.Negotiation Status Code",
+                    "examples": [
+                        "accepted"
+                    ]
+                }
+            },
+            "additionalProperties": false
+        },
+        "parent_participations": {
+            "type": "array",
+            "description": "Contains a list of participation xid’s that were used to create this participation record. The identified participations will be used for validation purposes.\nOnly endorsement participations will contain this array of _xid's.",
+            "additionalItems": false,
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "_id",
+        "_metadata"
+    ]
+}

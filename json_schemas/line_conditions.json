@@ -1,0 +1,133 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "line_conditions",
+    "description": "Conditions that must hold in order to recognise the commitment of a participant to provide cover for the risk.\n\n \nFor example lines to stand.\n\n---\n\nLDM Ref: Line Conditions",
+    "$comment": "Line conditions take one of two forms; a) bound to 1-many stamps or, b) global line conditions. As such, you would reasonably expect each document to have either a stamps field OR a global set to true.\n\nThe schema for this collection deviates from the Mongo Design Principles in that it does not have an access array. The justification for this is that access is defined either by the parent organisation (held in the organisation field) or by global being set to true. Therefore, an access array would present duplicate, highly volatile, data.",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Line condition, with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.\n\n---\n\nLDM Ref: Line Condition.Line Condition ID ",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "_metadata": {
+            "type": "object",
+            "properties": {
+                "creation_date": {
+                    "type": "string",
+                    "description": "The date at which the entity was created.",
+                    "examples": [
+                        "ISODate(\"2021-10-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "creation_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the entity, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "creation_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user creating the entity.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "modified_date": {
+                    "type": "string",
+                    "description": "The date at which the change was made.",
+                    "examples": [
+                        "ISODate(\"2021-12-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "modified_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the change, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "modified_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user making the change.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "creation_date",
+                "creation_channel",
+                "creation_user",
+                "modified_date",
+                "modified_channel",
+                "modified_user"
+            ]
+        },
+        "active": {
+            "type": "boolean",
+            "description": "Indicates that the line condition is active on the platform when True.\n\n---\n\nLDM Ref: Line Condition.Active Indicator"
+        },
+        "stamps": {
+            "type": "array",
+            "description": "The ID of the stamps that the line condition is associated with. This array of stamp references allows easier management of stamps that share the same line condition.\t\n\nThis refers to the Line Condition Link described in the LDM\n\n---\n\nLDM Ref: Line Condition Link",
+            "additionalItems": false,
+            "items": {
+                "type": "string",
+                "examples": [
+                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                ],
+                "maxLength": 36,
+                "minLength": 36,
+                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+            }
+        },
+        "organisation": {
+            "type": "string",
+            "description": "The ID of the carrier that the line condition is associated with.\n\n---\n\nLDM Ref: Line Condition.Party Role ID",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "description": {
+            "type": "string",
+            "description": "A description of the line condition.\n\n---\n\nLDM Ref: Line Condition.Line Condition Description",
+            "examples": [
+                "Lines to stand"
+            ]
+        },
+        "global": {
+            "type": "boolean",
+            "description": "Flag indicating that the line condition has been added by PPL admin and is applicable to all stamps within the platform.",
+            "default": false
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "_id",
+        "_metadata",
+        "active",
+        "stamps",
+        "organisation",
+        "description",
+        "global"
+    ]
+}

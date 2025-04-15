@@ -1,0 +1,92 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "semaphores",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Party with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.\n\n---",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "context": {
+            "type": "object",
+            "description": "The entity to which the semaphore entry relates.",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "ID of the related entity.\n\n---",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Type of related entity. For example Placement.\n\n---\n",
+                    "examples": [
+                        "placement"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid",
+                "type"
+            ]
+        },
+        "lock": {
+            "type": "object",
+            "description": "This document has information regarding the user that locks the entity.",
+            "properties": {
+                "user": {
+                    "type": "string",
+                    "description": "ID of the user that acquired the semaphore.\n\n---",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "lock_flag": {
+                    "type": "boolean",
+                    "description": "Boolean flag that retrieves if the semaphore is currently acquired. "
+                },
+                "lock_date": {
+                    "type": "string",
+                    "description": "Timestamp where the lock occurred.",
+                    "format": "date"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "user",
+                "lock_flag",
+                "lock_date"
+            ]
+        },
+        "request_key": {
+            "type": "string",
+            "description": "GUID of the OutSystems request key. This value will be used for logging purposes. ",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "_id",
+        "context",
+        "lock"
+    ]
+}

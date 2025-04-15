@@ -1,0 +1,449 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "slices",
+    "description": "This collection stores the slices and sub-slices within a document.\n \nDetails on the slices within a document.\n \nFor example a standard Open Market MRC has the following chapters:\n- Risk Details (details of the risk/contract involved, such as insured, type, coverage, conditions, etc.)\n- Information (free text additional information)\n- Security Details (includes Insurers’ Liability; Order Hereon; Basis of Written Lines; Basis of Signed Lines, Signing Provisions, insurers’ “stamp” details. These indicate each insurer’s share of the risk and their reference(s))\n- Subscription Agreement (this establishes the rules to be followed for processing and administration of post-placement amendments and transaction)\n- Fiscal and Regulatory (fiscal and regulatory issues specific to the insurers involved in the risk)\n- Broker Remuneration & Deductions (information relating to brokerage, fees and deductions from premium)\n",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Slice with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.\n\n---\n\nLDM Ref: Slice.Slice ID",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "contract": {
+            "type": "string",
+            "description": "The ID of the contract that is associated with the slice.",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "document": {
+            "type": "object",
+            "description": "Extended Reference to the document that is associated with the slice.\n\n---\n\nLDM Ref: Document Slice Mapping",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "description": "The ID of the document that is associated with the slice.\n\n---\n\nLDM Ref: Document Slice Mapping.Document ID",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ],
+                    "maxLength": 36,
+                    "minLength": 36,
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                },
+                "major_version": {
+                    "type": "integer",
+                    "description": "The version number of the document that is associated with the slice.\n\n---\n\nLDM Ref: Document Slice Mapping.Document Version Number"
+                },
+                "minor_version": {
+                    "type": "integer",
+                    "description": "The decimal part of the version number of the document that is associated with the slice.\n\n---\n\nLDM Ref: Document Slice Mapping.Document Version Number"
+                },
+                "additional_version": {
+                    "type": "string",
+                    "description": "Additional version number of the document that is associated with the slice.\n\n---\n\nLDM Ref: Document Slice Mapping.Document Version Number"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid",
+                "major_version"
+            ]
+        },
+        "type": {
+            "type": "string",
+            "description": "**Reference data**\n\nThe code that represents the slice type.\n\nSliceType in Reference Data\n\n---\n\nLDM Ref: Document.Slice Type Code\n"
+        },
+        "name": {
+            "type": "string",
+            "description": "The name of the slice.\n \nFor example a standard Open Market MRC has the following slices:\n- Risk Details (details of the risk/contract involved, such as insured, type, coverage, conditions, etc.)\n- Information (free text additional information)\n- Security Details (includes Insurers’ Liability; Order Hereon; Basis of Written Lines; Basis of Signed Lines, Signing Provisions, insurers’ “stamp” details. These indicate each insurer’s share of the risk and their reference(s))\n- Subscription Agreement (this establishes the rules to be followed for processing and administration of post-placement amendments and transaction)\n- Fiscal and Regulatory (fiscal and regulatory issues specific to the insurers involved in the risk)\n- Broker Remuneration & Deductions (information relating to brokerage, fees and deductions from premium)\n---\n\nLDM Ref: Slice.Slice Name"
+        },
+        "broker_team": {
+            "type": "object",
+            "properties": {
+                "_xid": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "_xid",
+                "name"
+            ]
+        },
+        "sequence_number": {
+            "type": "integer",
+            "description": "The sequence number that defines the order in which the slices/subslice should be displayed in the UI.\n\n---\n\nLDM Ref: Document.Slice Sequence Number"
+        },
+        "comments": {
+            "type": "array",
+            "description": "Details on the comments shared between broker and underwriter regarding a digitised document.",
+            "additionalItems": true,
+            "items": {
+                "type": "object",
+                "description": "Details on the comments/SignPost shared between broker and underwriter regarding a digitised document.",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "description": "A system-generated unique identifier for a Slice with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "text": {
+                        "type": "string",
+                        "description": "value of comment\n\n\n---\n\nLDM Ref: Document.Comment"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "The code of the comment type which can be displayed in the UI.\n\n*** Reference data **\n\nFor example Internal Note, Comment, Signpost.\n\n\n---\n\nLDM Ref: Document.Comment Type Code\nReference"
+                    },
+                    "user_type": {
+                        "type": "string",
+                        "description": "The code that represents whether the comment is made by a broker user or underwriter user.\n \nFor example 'B' for broker users and 'U' for underwriter users.\n\n\n---\n\nLDM Ref: Document.User Identifier Type Code\n",
+                        "maxLength": 1
+                    },
+                    "response": {
+                        "type": "object",
+                        "properties": {
+                            "user": {
+                                "type": "object",
+                                "properties": {
+                                    "_xid": {
+                                        "type": "string",
+                                        "description": "_id field of the user in the users collection.",
+                                        "examples": [
+                                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                                        ],
+                                        "maxLength": 36,
+                                        "minLength": 36,
+                                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                                    },
+                                    "first_name": {
+                                        "type": "string",
+                                        "examples": [
+                                            "Hilary"
+                                        ]
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "examples": [
+                                            "Green"
+                                        ]
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "required": [
+                                    "_xid"
+                                ]
+                            },
+                            "status": {
+                                "type": "string",
+                                "description": "The status of the response.\n  \nFor example Agree, Disagree, No response.\n\n---\n\nLDM Ref: Document.Response Type Code"
+                            },
+                            "date": {
+                                "type": "string",
+                                "description": "date on which comment is responded",
+                                "format": "date"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "_metadata": {
+                        "type": "object",
+                        "properties": {
+                            "creation_date": {
+                                "type": "string",
+                                "description": "The date at which the entity was created.",
+                                "examples": [
+                                    "ISODate(\"2021-10-11T11:50:00Z\")"
+                                ],
+                                "format": "date"
+                            },
+                            "creation_channel": {
+                                "type": "string",
+                                "description": "Channel used to make the entity, e.g. OutSystems.",
+                                "examples": [
+                                    "OutSystems"
+                                ]
+                            },
+                            "creation_user": {
+                                "type": "string",
+                                "description": "_id of the user creating the entity.",
+                                "examples": [
+                                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                                ],
+                                "maxLength": 36,
+                                "minLength": 36,
+                                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                            },
+                            "modified_date": {
+                                "type": "string",
+                                "description": "The date at which the change was made.",
+                                "examples": [
+                                    "ISODate(\"2021-12-11T11:50:00Z\")"
+                                ],
+                                "format": "date"
+                            },
+                            "modified_channel": {
+                                "type": "string",
+                                "description": "Channel used to make the change, e.g. OutSystems.",
+                                "examples": [
+                                    "OutSystems"
+                                ]
+                            },
+                            "modified_user": {
+                                "type": "string",
+                                "description": "_id of the user making the change.",
+                                "examples": [
+                                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                                ],
+                                "maxLength": 36,
+                                "minLength": 36,
+                                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "creation_date",
+                            "creation_channel",
+                            "creation_user",
+                            "modified_date",
+                            "modified_channel",
+                            "modified_user"
+                        ]
+                    }
+                },
+                "additionalProperties": true,
+                "required": [
+                    "_id"
+                ]
+            }
+        },
+        "value": {
+            "type": "string",
+            "description": "The content of the slice. Value of the slice/subslice for actual HTML content.\n\n\n---\n\nLDM Ref: Slice.Slice Content"
+        },
+        "parent": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Slice with a format and structure defined by the technology used. As a technical attribute, it has no business meaning. ID of the Slice if its sub slice\n\n---\n\nLDM Ref: Slice.Parent Slice ID",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "structured_data": {
+            "type": "array",
+            "description": "This keeps track of Structured fields and their position within slice/sub-slice\n\nDetails on where structured data items can be found in the digitised document structure.\n\n---\n\nLDM Ref: Structured Data Mapping\n\t",
+            "additionalItems": true,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "description": "A system-generated unique identifier for a Structured Data Mapping, with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.\n\n---\n\nLDM Ref: Structured Data Mapping.Structured Data Mapping ID"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "**Reference Data**\n\nThe code that represents the data item type.\n\n\n\n---\n\nLDM Ref: Structured Data Mapping.Data Item Type Code\n\n"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the structured field within Slice/Sub-slice\n\nNote: This may be obsolete as the structured data is identified by the data item type reference data code held in type "
+                    },
+                    "predicted_values": {
+                        "type": "array",
+                        "description": "Values of the structured data item that is predicted by the AI solution.",
+                        "additionalItems": true,
+                        "items": {
+                            "type": "object",
+                            "description": "The predicted start and end positions and their value, including data type and format of the structured data item that comes from the AI solution",
+                            "properties": {
+                                "start_position": {
+                                    "type": "number",
+                                    "description": "The predicted start position of the structured data item that comes from the AI solution\n\n---\n\nLDM Ref: Structured Data Mapping.Predicted AI Start Position\n"
+                                },
+                                "end_position": {
+                                    "type": "number",
+                                    "description": "The predicted end position of the structured data item that comes from the AI solution\n\n---\n\nLDM Ref: Structured Data Mapping.Predicted AI End Position\n"
+                                },
+                                "value": {
+                                    "type": "string",
+                                    "description": "Value of the structured data item that is predicted by the AI solution.\n\n---\n\nLDM Ref: Structured Data Mapping.Predicted Value"
+                                },
+                                "value_type": {
+                                    "type": "string",
+                                    "description": "This is not in the LDM, but came through Jira Ticket PNG-23490\n\nvalue_type is a meta data about the value indicating what type of value it is:  date, text, numeric etc."
+                                },
+                                "value_format": {
+                                    "type": "string",
+                                    "description": "This is not in the LDM, but came through Jira Ticket PNG-23490\n\nvalue_format is a meta data about the value indicating the format of the data, especially for date."
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "amended_values": {
+                        "type": "array",
+                        "description": "Values of the structured data item that is amended by the user.",
+                        "additionalItems": true,
+                        "items": {
+                            "type": "object",
+                            "description": "The amended start and end positions and their value,  including data type and format of the structured data item that comes from the AI solution",
+                            "properties": {
+                                "start_position": {
+                                    "type": "number",
+                                    "description": "The amended start position of the structured data item that comes from the AI solution, that is amended by the Broker.\n\n---\n\nLDM Ref: Structured Data Mapping.Amended Start Position"
+                                },
+                                "end_position": {
+                                    "type": "number",
+                                    "description": "The amended end position of the structured data item that comes from the AI solution, that is amended by the Broker.\n\n---\n\nLDM Ref: Structured Data Mapping.Amended AI End Position"
+                                },
+                                "value": {
+                                    "type": "string",
+                                    "description": "Value of the structured data item that is amended by the user.\n\n---\n\nLDM Ref: Structured Data Mapping.Amended Value"
+                                },
+                                "value_type": {
+                                    "type": "string",
+                                    "description": "This is not in the LDM, but came through Jira Ticket PNG-23490\n\nvalue_type is a meta data about the value indicating what type of value it is:  date, text, numeric etc."
+                                },
+                                "value_format": {
+                                    "type": "string",
+                                    "description": "This is not in the LDM, but came through Jira Ticket PNG-23490\n\nvalue_format is a meta data about the value indicating the format of the data, especially for date."
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "_metadata": {
+            "type": "object",
+            "properties": {
+                "creation_date": {
+                    "type": "string",
+                    "description": "The date at which the entity was created.",
+                    "examples": [
+                        "ISODate(\"2021-10-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "creation_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the entity, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "creation_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user creating the entity.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "modified_date": {
+                    "type": "string",
+                    "description": "The date at which the change was made.",
+                    "examples": [
+                        "ISODate(\"2021-12-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "modified_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the change, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "modified_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user making the change.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "creation_date",
+                "creation_channel",
+                "creation_user",
+                "modified_date",
+                "modified_channel",
+                "modified_user"
+            ]
+        },
+        "change_flag": {
+            "type": "boolean",
+            "description": "Flag to identify the change-set"
+        },
+        "manually_added_flag": {
+            "type": "boolean",
+            "description": "Indicates whether a slice has been added manually by the broker.\n\n---\n\nLDM Ref: Slice.Manually Added Indicator"
+        },
+        "key": {
+            "type": "string",
+            "description": "Key used for grouping slices. \n\nAs a slice can have multiple versions, with each instance containing a unique _id, slice can be grouped by this field and ordered accordingly. "
+        },
+        "access": {
+            "type": "array",
+            "description": "In the case of a document, array of team Ids that have access to the report (both broker and UW).\n\nJira Ticket: https://pplnextgen.atlassian.net/browse/PNG-24261\n",
+            "additionalItems": true,
+            "items": {
+                "type": "string",
+                "examples": [
+                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                ],
+                "maxLength": 36,
+                "minLength": 36,
+                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+            },
+            "uniqueItems": true
+        },
+        "ai_doc_id": {
+            "type": "string",
+            "description": "This attribute is to hold doc id returned from AI extraction process. \n\nThis attribute would be useful to link individual Slice Id to the external extraction id.\n\nThis could be useful for ML Ops as well.\n\n"
+        },
+        "header": {
+            "type": "string",
+            "description": "The content of the slice's header. Value of the slice header for actual HTML content."
+        },
+        "footer": {
+            "type": "string",
+            "description": "The content of the slice's footer. Value of the slice footer for actual HTML content."
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "_id",
+        "access"
+    ]
+}

@@ -1,0 +1,915 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "organisations",
+    "description": "An Organisation is a type of Party (as opposed to a person). A business concern or a group of individuals that are bound by a common purpose, with or without a legal status. Organisations may be legal entities in their own right.\n \nFor example, MS Amlin and Maersk are organisations with legal status.\n\nThis collection applies the Tree and Graph design pattern since it stores a hierarchical structure in the same collection. The structure is as follows: Organisation, Company (child of an Organisation) and Branch (child of an Company) and all child documents have a parent field pointing to the parent document. https://www.mongodb.com/blog/post/building-with-patterns-the-tree-pattern\n\nThis collection also applies the Extended Reference pattern since all child documents have an Extended document to the top level document of the hierarchy (Organisation). https://www.mongodb.com/blog/post/building-with-patterns-the-extended-reference-pattern\n\n---\n\nLDM Ref: Organisation",
+    "$comment": "The organisations collection makes use of the [Mongo Polymorphic pattern](https://www.mongodb.com/developer/how-to/polymorphic-pattern/) where the combination of the type and role fields define the type model being stored.\n\nThe JSON Schema illustrates the different model types through [one-of](https://json-schema.org/understanding-json-schema/reference/combining.html#oneof) schema composition.",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "A system-generated unique identifier for a Party with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.\n\n---\n\nLDM Ref: Organisation.Party ID",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "_metadata": {
+            "type": "object",
+            "properties": {
+                "creation_date": {
+                    "type": "string",
+                    "description": "The date at which the entity was created.",
+                    "examples": [
+                        "ISODate(\"2021-10-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "creation_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the entity, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "creation_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user creating the entity.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                },
+                "modified_date": {
+                    "type": "string",
+                    "description": "The date at which the change was made.",
+                    "examples": [
+                        "ISODate(\"2021-12-11T11:50:00Z\")"
+                    ],
+                    "format": "date"
+                },
+                "modified_channel": {
+                    "type": "string",
+                    "description": "Channel used to make the change, e.g. OutSystems.",
+                    "examples": [
+                        "OutSystems"
+                    ]
+                },
+                "modified_user": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+                    "minLength": 36,
+                    "maxLength": 36,
+                    "description": "_id of the user making the change.",
+                    "examples": [
+                        "0f8fad5b-d9cb-469f-a165-70867728950e"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "creation_date",
+                "creation_channel",
+                "creation_user",
+                "modified_date",
+                "modified_channel",
+                "modified_user"
+            ]
+        },
+        "first_published": {
+            "type": "string",
+            "description": "The date on which the organisation was onboarded.\n\n---\n\nLDM Ref: Organisation.Organisation Created Date",
+            "format": "date"
+        },
+        "parent": {
+            "type": "string",
+            "description": "Field that stores the reference to the parent node that sits in the Organisations collection. This field exists to implement the Tree and Graph design pattern (https://www.mongodb.com/blog/post/building-with-patterns-the-tree-pattern).\n\nThe hierarchy is the following: Organisation (top-level), Company (child of an Organisation), Branch (child of a Company).",
+            "examples": [
+                "0f8fad5b-d9cb-469f-a165-70867728950e"
+            ],
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "address": {
+            "type": "object",
+            "properties": {
+                "line_1": {
+                    "type": "string",
+                    "description": "The first line in the address of the party.\n\n---\n\nLDM Ref: Address Line 1",
+                    "examples": [
+                        "Floor 1"
+                    ]
+                },
+                "line_2": {
+                    "type": "string",
+                    "description": "The second line in the address of the party.\n\n---\n\nLDM Ref: Address Line 2",
+                    "examples": [
+                        "Building Name"
+                    ]
+                },
+                "city": {
+                    "type": "string",
+                    "description": "The city in the address of the party.\n\n---\n\nLDM Ref: City",
+                    "examples": [
+                        "London"
+                    ]
+                },
+                "region": {
+                    "type": "string",
+                    "description": "The region in the address of the party.\n\n---\n\nLDM Ref: Region",
+                    "examples": [
+                        "Greater London"
+                    ]
+                },
+                "country_code": {
+                    "type": "string",
+                    "description": "*Reference data**\n\nThe alpha-2 code that represents the country in the ISO 3166 standard.\n\n---\n\nLDM Ref: Country2 Character ISO Code",
+                    "pattern": "[A-Z]{2}",
+                    "minLength": 2,
+                    "maxLength": 2,
+                    "examples": [
+                        "GB"
+                    ],
+                    "$comment": "Reference data: ISO 3166"
+                },
+                "postcode": {
+                    "type": "string",
+                    "description": "The post code in the address of the party.\n\n---\n\nLDM Ref: Post Code",
+                    "examples": [
+                        "AB1 2CD"
+                    ]
+                }
+            },
+            "description": "The place where someone lives or an organisation is situated.\n\nFor example, British Airways as an insured has the address of Waterside, PO Box 365, Harmondsworth, UB7 0GB.\n\n---\n\nLDM Ref: Party Address",
+            "additionalProperties": false
+        },
+        "_xid": {
+            "type": "string",
+            "description": "AzureAD oid for the corresponding object. The AzureAD oid is only being generated after the creation of the first version of the organisation. Only after that, the _xid can be updated as a GUID. This means that _xid value is an empty string between the creation of the organisation in MongoDB and the generation of the AzureAD oid.",
+            "pattern": "^$|^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+        },
+        "name": {
+            "type": "string",
+            "description": "The given name of the party. For example \"Joe Bloggs\", \"ABC Corp\" etc.\n\n---\n\nLDM Ref: Party.Party Given Name"
+        },
+        "effective_from": {
+            "type": "string",
+            "description": "This field is populated and iterated when there is a business-relevant change. It allows users to identify the version of the data that was applied at a particular point in time.\n \nFor example if a participant on a contract goes bust and a new carrier joins the panel, the Effective To attribute on the former stamp’s record will be populated and a new record for the new stamp will be created with a populated Effective From attribute.\n\n---\n\nLDM Ref: Party.Effective From Datetime",
+            "format": "date"
+        },
+        "effective_to": {
+            "type": "string",
+            "description": "This field is populated and iterated when there is a business-relevant change. It allows users to identify the version of the data that was applied at a particular point in time.\n \nFor example if a participant on a contract goes bust and a new carrier joins the panel, the Effective To attribute on the former stamp’s record will be populated and a new record for the new stamp will be created with a populated Effective From attribute.\n\n---\n\nLDM Ref: Party.Effective To Datetime",
+            "format": "date"
+        },
+        "status": {
+            "type": "string",
+            "description": "Calculated status indicating whether an entity is Active, Inactive or ParentInactive.",
+            "enum": [
+                "active",
+                "inactive",
+                "parentInactive"
+            ]
+        }
+    },
+    "additionalProperties": true,
+    "oneOf": [
+        {
+            "type": "object",
+            "properties": {
+                "broker_codes": {
+                    "type": "array",
+                    "description": "A 4-digit code that represents a broker organisation. A broker can have multiple codes either as a result of historic M&A activity, or where each one is used to write specific classes of business.\n \nFor example Aon UK has broker codes 0430, 1219, 1622 etc.\n\n---\n\nLDM Ref: Broker Code",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "description": "A 4-digit code that represents a broker organisation. A broker can have multiple codes either as a result of historic M&A activity, or where each one is used to write specific classes of business.\n \nFor example Aon UK has broker codes 0430, 1219, 1622 etc.\n\n---\n\nLDM Ref: Broker Code.Broker Code"
+                            },
+                            "active": {
+                                "type": "boolean",
+                                "description": "Boolean field that is associated with the Broker Code. When True the Broker Code is active, when False the Broker Code is inactive."
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                },
+                "contacts": {
+                    "type": "array",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "_id": {
+                                "type": "string",
+                                "examples": [
+                                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                                ],
+                                "maxLength": 36,
+                                "minLength": 36,
+                                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                            },
+                            "first_name": {
+                                "type": "string",
+                                "description": "The first name of the person. Where there is more than one first name, this will also be captured.\n\n---\n\nLDM Ref: Person.First Name",
+                                "examples": [
+                                    "Joeseph"
+                                ]
+                            },
+                            "last_name": {
+                                "type": "string",
+                                "description": "The last name of the person.\n\n---\n\nLDM Ref: Person.Last Name",
+                                "examples": [
+                                    "Bloggs"
+                                ]
+                            },
+                            "job_title": {
+                                "type": "string",
+                                "description": "The job role of the person.\n\n---\n\nLDM Ref: Person.Job Role",
+                                "examples": [
+                                    "Broker admin"
+                                ]
+                            },
+                            "telephone_number": {
+                                "type": "string",
+                                "description": "The telephone number of the person.\n\n---\n\nLDM Ref: Person.Telephone Number",
+                                "examples": [
+                                    "01234 567890"
+                                ]
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "The email address of the person. This is for contact information purposes and may not necessarily be the used for platform login.\n\n---\n\nLDM Ref: Person.Email Address",
+                                "examples": [
+                                    "joebloggs@email.com"
+                                ],
+                                "format": "email"
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type that describes the party.\n  \nThe current Party Type values, but not limited to, are the following:\nOrganisation;\nCompany;\nBranch;\nIndividual;\nGroup Of Companies (new)\nGroup Of Individuals (new)\n\nPartyType in Reference Data\n\n---\n\nLDM Ref: Party Type Code",
+                    "enum": [
+                        "organisation"
+                    ]
+                },
+                "role": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type of role that a particular party can play.\n \nFor example Carrier, Broker.\n\nPartyRoleType in Reference Data\n\n---\n\nLDM Ref: Party Role Type",
+                    "enum": [
+                        "broker"
+                    ]
+                },
+                "integrations": {
+                    "type": "array",
+                    "description": "List of integrations implemented inside an organisation.",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "description": "Integration code. E.g. AL_Contract_Builder\n\n---\n\nMissing LDM Ref Data reference",
+                                "enum": [
+                                    "artificial"
+                                ]
+                            },
+                            "sync_status": {
+                                "type": "string",
+                                "description": "Operational field to inform if the Organisation is synchronized with Artificial.",
+                                "enum": [
+                                    "OK",
+                                    "RETRY",
+                                    "ERROR"
+                                ]
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "sync_status"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "type",
+                "role"
+            ]
+        },
+        {
+            "type": "object",
+            "properties": {
+                "contacts": {
+                    "type": "array",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "_id": {
+                                "type": "string",
+                                "examples": [
+                                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                                ],
+                                "maxLength": 36,
+                                "minLength": 36,
+                                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                            },
+                            "first_name": {
+                                "type": "string",
+                                "description": "The first name of the person. Where there is more than one first name, this will also be captured.\n\n---\n\nLDM Ref: Person.First Name",
+                                "examples": [
+                                    "Joeseph"
+                                ]
+                            },
+                            "last_name": {
+                                "type": "string",
+                                "description": "The last name of the person.\n\n---\n\nLDM Ref: Person.Last Name",
+                                "examples": [
+                                    "Bloggs"
+                                ]
+                            },
+                            "job_title": {
+                                "type": "string",
+                                "description": "The job role of the person.\n\n---\n\nLDM Ref: Person.Job Role",
+                                "examples": [
+                                    "Broker admin"
+                                ]
+                            },
+                            "telephone_number": {
+                                "type": "string",
+                                "description": "The telephone number of the person.\n\n---\n\nLDM Ref: Person.Telephone Number",
+                                "examples": [
+                                    "01234 567890"
+                                ]
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "The email address of the person. This is for contact information purposes and may not necessarily be the used for platform login.\n\n---\n\nLDM Ref: Person.Email Address",
+                                "examples": [
+                                    "joebloggs@email.com"
+                                ],
+                                "format": "email"
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                },
+                "off_platform": {
+                    "type": "boolean",
+                    "description": "Indicates that the carrier is not on the PPL platform when True.\n\n---\n\nLDM Ref: Carrier.Carrier Off-platform Indicator"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type that describes the party.\n  \nThe current Party Type values, but not limited to, are the following:\nOrganisation;\nCompany;\nBranch;\nIndividual;\nGroup Of Companies (new)\nGroup Of Individuals (new)\n\nPartyType in Reference Data\n\n---\n\nLDM Ref: Party Type Code",
+                    "enum": [
+                        "organisation"
+                    ]
+                },
+                "role": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type of role that a particular party can play.\n \nFor example Carrier, Broker.\n\nPartyRoleType in Reference Data\n\n---\n\nLDM Ref: Party Role Type",
+                    "enum": [
+                        "carrier"
+                    ]
+                },
+                "integrations": {
+                    "type": "array",
+                    "description": "List of integrations implemented inside an organisation.",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "description": "Integration code. E.g. AL_Contract_Builder\n\n---\n\nMissing LDM Ref Data reference",
+                                "enum": [
+                                    "artificial"
+                                ]
+                            },
+                            "sync_status": {
+                                "type": "string",
+                                "description": "Operational field to inform if the Organisation is synchronized with Artificial.",
+                                "enum": [
+                                    "OK",
+                                    "RETRY",
+                                    "ERROR"
+                                ]
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "sync_status"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "type",
+                "role"
+            ]
+        },
+        {
+            "type": "object",
+            "properties": {
+                "organisation": {
+                    "type": "object",
+                    "description": "Extended Reference to the top-level document (Organisation).",
+                    "properties": {
+                        "_xid": {
+                            "type": "string",
+                            "description": "ID of the Organisation the Company belongs to.",
+                            "examples": [
+                                "0f8fad5b-d9cb-469f-a165-70867728950e"
+                            ],
+                            "maxLength": 36,
+                            "minLength": 36,
+                            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the Organisation the Company is a member of.",
+                            "examples": [
+                                "Broker Org"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "logo": {
+                    "type": "string",
+                    "description": "URI of the logo for the company.\n\n---\n\nLDM Ref: Organisation.Organisation Logo"
+                },
+                "auto_connect_stamps": {
+                    "type": "boolean",
+                    "description": "Defines which type of linking should apply to in the organisation structure.\nAll, select or none. The value applied at Organisation level is the default for any new Company.\n\n---\n\nLDM Ref: Broker Carrier Link.Automatically Connect All Stamps Indicator",
+                    "examples": [
+                        "true"
+                    ]
+                },
+                "carrier_associations": {
+                    "type": "array",
+                    "description": "A mapping table between Broker and Carrier. This captures the business relationship between a broker company and a carrier company. From PPL's perspective, this identifies which carriers brokers should contact for particular types of cover. The terms of these arrangements will be detailed in a Terms of Business Agreement, which is held by brokers and carriers outside of PPL.\n\n---\n\nLDM Ref: Broker Carrier Link",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "string",
+                        "examples": [
+                            "0f8fad5b-d9cb-469f-a165-70867728950e"
+                        ],
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                    },
+                    "uniqueItems": true
+                },
+                "charging_entity": {
+                    "type": "boolean",
+                    "description": "Indicates that the Company is a charging entity when True.\n\n---\n\nLDM Ref: Organisation.Charging Entity Indicator",
+                    "examples": [
+                        "true"
+                    ]
+                },
+                "trade_associations": {
+                    "type": "array",
+                    "description": "A mapping table between Broker, Carrier and Trade Association Type.\n\n---\n\nLDM Ref: Trading Association",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "The code that represents the trade association type.\n\n---\n\nLDM Ref: Trade Association.Trade Association Type Code",
+                                "examples": [
+                                    "LMA"
+                                ]
+                            },
+                            "active": {
+                                "type": "boolean",
+                                "description": "Field that specifies if a Trade Association is active. When True the Trade Association is active, False is inactive.",
+                                "examples": [
+                                    "true"
+                                ]
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "name",
+                            "active"
+                        ]
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type that describes the party.\n  \nThe current Party Type values, but not limited to, are the following:\nOrganisation;\nCompany;\nBranch;\nIndividual;\nGroup Of Companies (new)\nGroup Of Individuals (new)\n\nPartyType in Reference Data\n\n---\n\nLDM Ref: Party Type Code",
+                    "enum": [
+                        "company"
+                    ]
+                },
+                "role": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type of role that a particular party can play.\n \nFor example Carrier, Broker.\n\nPartyRoleType in Reference Data\n\n---\n\nLDM Ref: Party Role Type",
+                    "enum": [
+                        "broker"
+                    ]
+                },
+                "digital_document_access": {
+                    "type": "boolean",
+                    "description": "Defines whether the Broker Company has access rights to process Contracts via the digital document journey. This capability is provided through an integrated third-party. \n\n---\n\nLDM Ref: Broker. Digital Document Access Indicator"
+                }
+            },
+            "additionalProperties": true,
+            "required": [
+                "type",
+                "role"
+            ]
+        },
+        {
+            "type": "object",
+            "properties": {
+                "organisation": {
+                    "type": "object",
+                    "description": "Extended Reference to the top-level document (Organisation).",
+                    "properties": {
+                        "_xid": {
+                            "type": "string",
+                            "description": "ID of the Organisation the Company belongs to.",
+                            "examples": [
+                                "0f8fad5b-d9cb-469f-a165-70867728950e"
+                            ],
+                            "maxLength": 36,
+                            "minLength": 36,
+                            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the Organisation the Company is a member of.",
+                            "examples": [
+                                "Broker Org"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "logo": {
+                    "type": "string",
+                    "description": "URI of the logo for the company.\n\n---\n\nLDM Ref: Organisation.Organisation Logo"
+                },
+                "charging_entity": {
+                    "type": "boolean",
+                    "description": "Indicates that the organisation is a charging entity when True.\n\n---\n\nLDM Ref: Organisation.Charging Entity Indicator",
+                    "examples": [
+                        "true"
+                    ]
+                },
+                "trade_associations": {
+                    "type": "array",
+                    "description": "A mapping table between Broker, Carrier and Trade Association Type.\n\n---\n\nLDM Ref: Trading Association",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "The code that represents the trade association type.\n\n---\n\nLDM Ref: Trade Association.Trade Association Type Code",
+                                "examples": [
+                                    "LMA"
+                                ]
+                            },
+                            "active": {
+                                "type": "boolean",
+                                "description": "Field that specifies if a Trade Association is active. When True the Trade Association is active, False is inactive.",
+                                "examples": [
+                                    "true"
+                                ]
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "name",
+                            "active"
+                        ]
+                    }
+                },
+                "duns": {
+                    "type": "string",
+                    "description": "The type that describes the identification code set.\n \nFor example Data Universal Numbering System (DUNS), Companies House etc.\n\n---\n\nLDM Ref: Identification Type",
+                    "pattern": "^\\d{9}$"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type that describes the party.\n  \nThe current Party Type values, but not limited to, are the following:\nOrganisation;\nCompany;\nBranch;\nIndividual;\nGroup Of Companies (new)\nGroup Of Individuals (new)\n\nPartyType in Reference Data\n\n---\n\nLDM Ref: Party Type Code",
+                    "enum": [
+                        "company"
+                    ]
+                },
+                "role": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type of role that a particular party can play.\n \nFor example Carrier, Broker.\n\nPartyRoleType in Reference Data\n\n---\n\nLDM Ref: Party Role Type",
+                    "enum": [
+                        "carrier"
+                    ],
+                    "examples": [
+                        "carrier"
+                    ]
+                }
+            },
+            "additionalProperties": true,
+            "required": [
+                "type",
+                "role"
+            ]
+        },
+        {
+            "type": "object",
+            "properties": {
+                "teams": {
+                    "type": "array",
+                    "description": "A team within a broker organisation that acts as an agent for insurance business. There will be defined cover placed by the broker.\n \nFor example, the UK property and casualty team within Aon.\n\n---\n\nLDM Ref: Broker Team",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "object",
+                        "description": "A team within a broker organisation that acts as an agent for insurance business. There will be defined cover placed by the broker.\n \nFor example, the UK property and casualty team within Aon.\n\n---\n\nLDM Ref: Broker Team",
+                        "properties": {
+                            "_id": {
+                                "type": "string",
+                                "description": "A system-generated unique identifier for a Broker Team, with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.\n\n---\n\nLDM Ref: Broker Team.Broker Team ID",
+                                "examples": [
+                                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                                ],
+                                "maxLength": 36,
+                                "minLength": 36,
+                                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                            },
+                            "_xid": {
+                                "type": "string",
+                                "description": "AzureAD oid for the corresponding object. The AzureAD oid is only being generated after the creation of the first version of the team. Only after that, the _xid can be updated as a GUID. This means that _xid value is an empty string between the creation of the team in MongoDB and the generation of the AzureAD oid.",
+                                "pattern": "^$|^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                            },
+                            "name": {
+                                "type": "string",
+                                "description": "The name of the broker team, as defined by the broker organisation.\n  \nFor example \"The UK property and casualty team\".\n\n---\n\nLDM Ref: Broker Team.Broker Team Name",
+                                "examples": [
+                                    "The UK property and casualty team"
+                                ]
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "The email address of the carrier team.\n\n---\n\nLDM Ref: Carrier Team.Carrier Team Email",
+                                "examples": [
+                                    "ukpropertyandcasualty@carrier.com"
+                                ],
+                                "format": "email"
+                            },
+                            "broker_codes": {
+                                "type": "array",
+                                "description": "Array of broker codes that the team has access too, based on the broker codes available at the organisation level.",
+                                "additionalItems": true,
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "effective_from": {
+                                "type": "string",
+                                "description": "This field is populated and iterated when there is a business-relevant change. It allows users to identify the version of the data that was applied at a particular point in time.\n \nFor example if a participant on a contract goes bust and a new carrier joins the panel, the Effective To attribute on the former stamp’s record will be populated and a new record for the new stamp will be created with a populated Effective From attribute.\n\n---\n\nLDM Ref: Broker Team.Effective From Datetime\t",
+                                "format": "date"
+                            },
+                            "effective_to": {
+                                "type": "string",
+                                "description": "This field is populated and iterated when there is a business-relevant change. It allows users to identify the version of the data that was applied at a particular point in time.\n \nFor example if a participant on a contract goes bust and a new carrier joins the panel, the Effective To attribute on the former stamp’s record will be populated and a new record for the new stamp will be created with a populated Effective From attribute.\n\n---\n\nLDM Ref: Broker Team.Effective To Datetime\t",
+                                "format": "date"
+                            },
+                            "time_limitation": {
+                                "type": "number",
+                                "description": "Maximum number of days up until a correction can be made by the specific Broker Team.\n\n---\n\nLDM Ref: Broker Team.Limit of Days of Corrections"
+                            },
+                            "status": {
+                                "type": "string",
+                                "description": "Calculated status indicating whether an entity is active, inactive or parent inactive.\n\nBased on effective_from, effective_to and the status of the Branch this Team belongs to.",
+                                "enum": [
+                                    "active",
+                                    "inactive",
+                                    "parentInactive"
+                                ]
+                            },
+                            "endorsements_to_block_corrections": {
+                                "type": "boolean",
+                                "description": "This field is used by the platform to block corrections after an endorsement is created. When true this field blocks the corrections when false it doesn't block corrections. Check OC141."
+                            },
+                            "digital_document_access": {
+                                "type": "boolean",
+                                "description": "Defines whether the Broker Team has access rights to process Contracts via the digital document journey. This capability is provided through an integrated third-party. \n\n---\n\nLDM Ref: Broker. Digital Document Access Indicator"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "_id",
+                            "_xid",
+                            "name",
+                            "status"
+                        ]
+                    }
+                },
+                "organisation": {
+                    "type": "object",
+                    "description": "Extended Reference to the top-level document (Organisation).",
+                    "properties": {
+                        "_xid": {
+                            "type": "string",
+                            "description": "ID of the Organisation the Branch belongs to.",
+                            "examples": [
+                                "0f8fad5b-d9cb-469f-a165-70867728950e"
+                            ],
+                            "maxLength": 36,
+                            "minLength": 36,
+                            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the Organisation the Branch is a member of.",
+                            "examples": [
+                                "Broker Org"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "_xid",
+                        "name"
+                    ]
+                },
+                "charging_entity": {
+                    "type": "boolean",
+                    "description": "Indicates that the organisation is a charging entity when True.\n\n---\n\nLDM Ref: Organisation.Charging Entity Indicator",
+                    "examples": [
+                        "true"
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type that describes the party.\n  \nThe current Party Type values, but not limited to, are the following:\nOrganisation;\nCompany;\nBranch;\nIndividual;\nGroup Of Companies (new)\nGroup Of Individuals (new)\n\nPartyType in Reference Data\n\n---\n\nLDM Ref: Party Type Code",
+                    "enum": [
+                        "branch"
+                    ]
+                },
+                "role": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type of role that a particular party can play.\n \nFor example Carrier, Broker.\n\nPartyRoleType in Reference Data\n\n---\n\nLDM Ref: Party Role Type",
+                    "enum": [
+                        "broker"
+                    ]
+                }
+            },
+            "required": [
+                "organisation",
+                "type",
+                "role"
+            ]
+        },
+        {
+            "type": "object",
+            "properties": {
+                "teams": {
+                    "type": "array",
+                    "description": "A team within a carrier organisation that underwrites insurance business. The carrier team will cover a set of lines.\n \nFor example, the UK property and casualty team within Axa XL.\n\n---\n\nLDM Ref: Carrier Team",
+                    "additionalItems": true,
+                    "items": {
+                        "type": "object",
+                        "description": "A team within a carrier organisation that underwrites insurance business. The carrier team will cover a set of lines.\n \nFor example, the UK property and casualty team within Axa XL.\n\n---\n\nLDM Ref: Carrier Team",
+                        "properties": {
+                            "_id": {
+                                "type": "string",
+                                "description": "A system-generated unique identifier for a Carrier Team, with a format and structure defined by the technology used. As a technical attribute, it has no business meaning.\n\n---\n\nLDM Ref: Carrier Team.Carrier Team ID",
+                                "examples": [
+                                    "0f8fad5b-d9cb-469f-a165-70867728950e"
+                                ],
+                                "maxLength": 36,
+                                "minLength": 36,
+                                "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                            },
+                            "_xid": {
+                                "type": "string",
+                                "description": "AzureAD oid for the corresponding object. The AzureAD oid is only being generated after the creation of the first version of the team. Only after that, the _xid can be updated as a GUID. This means that _xid value is an empty string between the creation of the team in MongoDB and the generation of the AzureAD oid.",
+                                "pattern": "^$|^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                            },
+                            "name": {
+                                "type": "string",
+                                "description": "The name of the carrier team, as defined by the carrier organisation.\n  \nFor example \"The UK property and casualty team\".\n\n---\n\nLDM Ref: Carrier Team.Carrier Team Name",
+                                "examples": [
+                                    "The UK property and casualty team"
+                                ]
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "The email address of the carrier team.\n\n---\n\nLDM Ref: Carrier Team.Carrier Team Email",
+                                "examples": [
+                                    "ukpropertyandcasualty@carrier.com"
+                                ],
+                                "format": "email"
+                            },
+                            "effective_from": {
+                                "type": "string",
+                                "description": "This field is populated and iterated when there is a business-relevant change. It allows users to identify the version of the data that was applied at a particular point in time.\n \nFor example if a participant on a contract goes bust and a new carrier joins the panel, the Effective To attribute on the former stamp’s record will be populated and a new record for the new stamp will be created with a populated Effective From attribute.\n\n---\n\nLDM Ref: Carrier Team.Effective From Datetime",
+                                "format": "date"
+                            },
+                            "effective_to": {
+                                "type": "string",
+                                "description": "This field is populated and iterated when there is a business-relevant change. It allows users to identify the version of the data that was applied at a particular point in time.\n \nFor example if a participant on a contract goes bust and a new carrier joins the panel, the Effective To attribute on the former stamp’s record will be populated and a new record for the new stamp will be created with a populated Effective From attribute.\n\n---\n\nLDM Ref: Carrier Team.Effective To Datetime",
+                                "format": "date"
+                            },
+                            "status": {
+                                "type": "string",
+                                "description": "Calculated status indicating whether an entity is active, inactive or parent inactive.\n\nBased on effective_from, effective_to and the status of the Branch this Team belongs to.",
+                                "enum": [
+                                    "active",
+                                    "inactive",
+                                    "parentInactive"
+                                ]
+                            },
+                            "endorsements_to_block_corrections": {
+                                "type": "boolean",
+                                "description": "This field is used by the platform to block corrections after an endorsement is created. When true this field blocks the corrections when false it doesn't block corrections. Check OC141."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "_id",
+                            "_xid",
+                            "name",
+                            "status"
+                        ]
+                    }
+                },
+                "organisation": {
+                    "type": "object",
+                    "description": "Extended Reference to the top-level document (Organisation).",
+                    "properties": {
+                        "_xid": {
+                            "type": "string",
+                            "description": "ID of the Organisation the Branch belongs to.",
+                            "examples": [
+                                "0f8fad5b-d9cb-469f-a165-70867728950e"
+                            ],
+                            "maxLength": 36,
+                            "minLength": 36,
+                            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the Organisation the Branch is a member of.",
+                            "examples": [
+                                "Broker Org"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "_xid",
+                        "name"
+                    ]
+                },
+                "charging_entity": {
+                    "type": "boolean",
+                    "description": "Indicates that the organisation is a charging entity when True.\n\n---\n\nLDM Ref: Organisation.Charging Entity Indicator",
+                    "examples": [
+                        "true"
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type that describes the party.\n  \nThe current Party Type values, but not limited to, are the following:\nOrganisation;\nCompany;\nBranch;\nIndividual;\nGroup Of Companies (new)\nGroup Of Individuals (new)~\n\nPartyType in Reference Data\n\n---\n\nLDM Ref: Party Type Code",
+                    "enum": [
+                        "branch"
+                    ]
+                },
+                "role": {
+                    "type": "string",
+                    "description": "**Reference data**\n\nThe type of role that a particular party can play.\n \nFor example Carrier, Broker.\n\nPartyRoleType in Reference Data\n\n---\n\nLDM Ref: Party Role Type",
+                    "enum": [
+                        "carrier"
+                    ]
+                }
+            },
+            "required": [
+                "organisation",
+                "type",
+                "role"
+            ]
+        }
+    ],
+    "required": [
+        "_id",
+        "_metadata",
+        "_xid",
+        "status"
+    ]
+}
