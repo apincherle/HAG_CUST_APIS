@@ -1,9 +1,10 @@
 package com.example.validation;
 
+import com.example.model.Placement;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
 import org.everit.json.schema.loader.SchemaLoader;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,16 +15,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JsonSchemaValidationTest {
 
     private Schema schema;
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() throws IOException {
-        // Get the absolute path to the json_schemas directory
         String schemaPath = Paths.get("json_schemas", "placements.json").toString();
         File schemaFile = new File(schemaPath);
         
@@ -31,47 +35,72 @@ public class JsonSchemaValidationTest {
             throw new IOException("Schema file not found at: " + schemaFile.getAbsolutePath());
         }
 
-        // Load schema using FileInputStream
         try (InputStream inputStream = new FileInputStream(schemaFile)) {
             JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
             schema = SchemaLoader.load(rawSchema);
         }
+
+        objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
     }
 
-    @Test
-    void validPlacementShouldPass() {
-        JSONObject validPlacement = new JSONObject()
-            .put("_id", "0f8fad5b-d9cb-469f-a165-70867728950e")
-            .put("_metadata", new JSONObject()
-                .put("creation_date", "2024-03-14")
-                .put("creation_channel", "OutSystems")
-                .put("creation_user", "0f8fad5b-d9cb-469f-a165-70867728950e")
-                .put("modified_date", "2024-03-14")
-                .put("modified_channel", "OutSystems")
-                .put("modified_user", "0f8fad5b-d9cb-469f-a165-70867728950e"))
-            .put("user", new JSONObject()
-                .put("_xid", "0f8fad5b-d9cb-469f-a165-70867728950e")
-                .put("first_name", "John")
-                .put("last_name", "Doe")
-                .put("organisation_name", "Test Org")
-                .put("company_name", "Test Company")
-                .put("company_xid", "0f8fad5b-d9cb-469f-a165-70867728950e")
-                .put("organisation_xid", "0f8fad5b-d9cb-469f-a165-70867728950e"))
-            .put("placement_read_access", new JSONArray())
-            .put("branch", new JSONObject()
-                .put("_xid", "0f8fad5b-d9cb-469f-a165-70867728950e")
-                .put("name", "London Branch"))
-            .put("client_name", "Test Client Ltd")
-            .put("description", "Test placement description")
-            .put("effective_year", 2024)
-            .put("broker_team", new JSONObject()
-                .put("_xid", "0f8fad5b-d9cb-469f-a165-70867728950e")
-                .put("name", "Test Broker Team"))
-            .put("inception_date", "2024-01-01")
-            .put("type", "PLACEMENT");
+    private Placement createBasePlacement(String dateFormat) {
+        Placement placement = new Placement();
+        placement.set_id("0f8fad5b-d9cb-469f-a165-70867728950e");
+
+        // Set metadata
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("creation_date", dateFormat);
+        metadata.put("creation_channel", "OutSystems");
+        metadata.put("creation_user", "0f8fad5b-d9cb-469f-a165-70867728950e");
+        metadata.put("modified_date", dateFormat);
+        metadata.put("modified_channel", "OutSystems");
+        metadata.put("modified_user", "0f8fad5b-d9cb-469f-a165-70867728950e");
+        placement.set_metadata(metadata);
+
+        // Set user
+        Placement.User user = new Placement.User();
+        user.set_xid("0f8fad5b-d9cb-469f-a165-70867728950e");
+        user.setFirst_name("John");
+        user.setLast_name("Doe");
+        user.setOrganisation_name("Test Org");
+        user.setCompany_name("Test Company");
+        user.setCompany_xid("0f8fad5b-d9cb-469f-a165-70867728950e");
+        user.setOrganisation_xid("0f8fad5b-d9cb-469f-a165-70867728950e");
+        placement.setUser(user);
+
+        // Set placement_read_access
+        placement.setPlacement_read_access(new ArrayList<>());
+
+        // Set branch
+        Placement.Branch branch = new Placement.Branch();
+        branch.set_xid("0f8fad5b-d9cb-469f-a165-70867728950e");
+        branch.setName("London Branch");
+        placement.setBranch(branch);
+
+        // Set other fields
+        placement.setClient_name("Test Client Ltd");
+        placement.setDescription("Test placement description");
+        placement.setEffective_year(2024);
+
+        // Set broker team
+        Placement.BrokerTeam brokerTeam = new Placement.BrokerTeam();
+        brokerTeam.set_xid("0f8fad5b-d9cb-469f-a165-70867728950e");
+        brokerTeam.setName("Test Broker Team");
+        placement.setBroker_team(brokerTeam);
+
+        placement.setInception_date(dateFormat);
+        placement.setType("PLACEMENT");
+
+        return placement;
+    }
+
+    private void validatePlacement(Placement placement) throws Exception {
+        String jsonString = objectMapper.writeValueAsString(placement);
+        JSONObject jsonObject = new JSONObject(jsonString);
 
         try {
-            schema.validate(validPlacement);
+            schema.validate(jsonObject);
         } catch (ValidationException e) {
             System.out.println("Validation errors:");
             e.getAllMessages().forEach(System.out::println);
@@ -80,46 +109,25 @@ public class JsonSchemaValidationTest {
     }
 
     @Test
-    void invalidPlacementShouldFail() {
-        JSONObject invalidPlacement = new JSONObject()
-            .put("_id", "invalid-id")  // Invalid UUID format
-            .put("_metadata", new JSONObject());
-
-        assertThrows(ValidationException.class, () -> schema.validate(invalidPlacement));
+    void validPlacementShouldPass() throws Exception {
+        Placement placement = createBasePlacement("2024-03-14");
+        validatePlacement(placement);
     }
 
     @Test
-    void validDateFormatShouldPass() {
-        JSONObject validPlacement = new JSONObject()
-            .put("_id", "0f8fad5b-d9cb-469f-a165-70867728950e")
-            .put("_metadata", new JSONObject()
-                .put("creation_date", "2021-10-11T11:50:00Z")
-                .put("creation_channel", "OutSystems")
-                .put("creation_user", "0f8fad5b-d9cb-469f-a165-70867728950e")
-                .put("modified_date", "2021-10-11T11:50:00Z")
-                .put("modified_channel", "OutSystems")
-                .put("modified_user", "0f8fad5b-d9cb-469f-a165-70867728950e"))
-            .put("user", new JSONObject()
-                .put("_xid", "0f8fad5b-d9cb-469f-a165-70867728950e")
-                .put("first_name", "John")
-                .put("last_name", "Doe")
-                .put("organisation_name", "Test Org")
-                .put("company_name", "Test Company")
-                .put("company_xid", "0f8fad5b-d9cb-469f-a165-70867728950e")
-                .put("organisation_xid", "0f8fad5b-d9cb-469f-a165-70867728950e"))
-            .put("placement_read_access", new JSONArray())
-            .put("branch", new JSONObject()
-                .put("_xid", "0f8fad5b-d9cb-469f-a165-70867728950e")
-                .put("name", "London Branch"))
-            .put("client_name", "Test Client Ltd")
-            .put("description", "Test placement description")
-            .put("effective_year", 2024)
-            .put("broker_team", new JSONObject()
-                .put("_xid", "0f8fad5b-d9cb-469f-a165-70867728950e")
-                .put("name", "Test Broker Team"))
-            .put("inception_date", "2021-10-11T11:50:00Z")
-            .put("type", "PLACEMENT");
+    void invalidPlacementShouldFail() throws Exception {
+        Placement invalidPlacement = new Placement();
+        invalidPlacement.set_id("invalid-id"); // Invalid UUID format
 
-        assertDoesNotThrow(() -> schema.validate(validPlacement));
+        String jsonString = objectMapper.writeValueAsString(invalidPlacement);
+        JSONObject jsonObject = new JSONObject(jsonString);
+
+        assertThrows(ValidationException.class, () -> schema.validate(jsonObject));
+    }
+
+    @Test
+    void validDateFormatShouldPass() throws Exception {
+        Placement placement = createBasePlacement("2021-10-11T11:50:00Z");
+        validatePlacement(placement);
     }
 } 

@@ -1,5 +1,6 @@
 package com.example.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,8 +11,12 @@ import java.util.Map;
 @Document(collection = "placements")
 public class Placement {
     @Id
+    @JsonProperty("_id")
     private String _id;
+    
+    @JsonProperty("_metadata")
     private Map<String, Object> _metadata;
+    
     private User user;
     private List<String> placement_read_access;
     private Branch branch;
@@ -24,6 +29,7 @@ public class Placement {
 
     @Data
     public static class User {
+        @JsonProperty("_xid")
         private String _xid;
         private String first_name;
         private String last_name;
@@ -35,12 +41,14 @@ public class Placement {
 
     @Data
     public static class Branch {
+        @JsonProperty("_xid")
         private String _xid;
         private String name;
     }
 
     @Data
     public static class BrokerTeam {
+        @JsonProperty("_xid")
         private String _xid;
         private String name;
     }
