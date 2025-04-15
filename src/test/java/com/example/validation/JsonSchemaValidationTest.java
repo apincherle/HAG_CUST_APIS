@@ -1,6 +1,9 @@
 package com.example.validation;
 
 import com.example.model.Placement;
+import com.example.model.User;
+import com.example.model.Branch;
+import com.example.model.BrokerTeam;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
@@ -59,7 +62,7 @@ public class JsonSchemaValidationTest {
         placement.set_metadata(metadata);
 
         // Set user
-        Placement.User user = new Placement.User();
+        User user = new User();
         user.set_xid("0f8fad5b-d9cb-469f-a165-70867728950e");
         user.setFirst_name("John");
         user.setLast_name("Doe");
@@ -73,7 +76,7 @@ public class JsonSchemaValidationTest {
         placement.setPlacement_read_access(new ArrayList<>());
 
         // Set branch
-        Placement.Branch branch = new Placement.Branch();
+        Branch branch = new Branch();
         branch.set_xid("0f8fad5b-d9cb-469f-a165-70867728950e");
         branch.setName("London Branch");
         placement.setBranch(branch);
@@ -84,7 +87,7 @@ public class JsonSchemaValidationTest {
         placement.setEffective_year(2024);
 
         // Set broker team
-        Placement.BrokerTeam brokerTeam = new Placement.BrokerTeam();
+        BrokerTeam brokerTeam = new BrokerTeam();
         brokerTeam.set_xid("0f8fad5b-d9cb-469f-a165-70867728950e");
         brokerTeam.setName("Test Broker Team");
         placement.setBroker_team(brokerTeam);

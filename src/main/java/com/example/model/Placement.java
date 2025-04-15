@@ -26,30 +26,4 @@ public class Placement {
     private BrokerTeam broker_team;
     private String inception_date;
     private String type;
-
-    @Data
-    public static class User {
-        @JsonProperty("_xid")
-        private String _xid;
-        private String first_name;
-        private String last_name;
-        private String organisation_name;
-        private String company_name;
-        private String company_xid;
-        private String organisation_xid;
-    }
-
-    @Data
-    public static class Branch {
-        @JsonProperty("_xid")
-        private String _xid;
-        private String name;
-    }
-
-    @Data
-    public static class BrokerTeam {
-        @JsonProperty("_xid")
-        private String _xid;
-        private String name;
-    }
 } 
