@@ -3,6 +3,7 @@ package com.example.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.util.List;
+import java.util.ArrayList;
 
 @Data
 public class Placement {
@@ -37,4 +38,19 @@ public class Placement {
     
     @JsonProperty("underwriter_pool")
     private List<UnderwriterPool> underwriterPool;
+    
+    @JsonProperty("documents")
+    private List<Document> documents;
+    
+    @JsonProperty("programmes")
+    private List<Programme> programmes;
+    
+    private String status;
+
+    public Placement() {
+        this.placementReadAccess = new ArrayList<>();
+        this.underwriterPool = new ArrayList<>();
+        this.documents = new ArrayList<>();
+        this.programmes = new ArrayList<>();
+    }
 } 

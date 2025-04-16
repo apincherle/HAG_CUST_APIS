@@ -74,7 +74,7 @@ class JsonSchemaValidationTest {
         // Set placement read access (required)
         placement.setPlacementReadAccess(Arrays.asList(VALID_UUID));
         
-        // Set inception date (required) - using simple date format
+        // Set inception date (required)
         placement.setInceptionDate("2024-03-14");
         
         // Set type (required)
@@ -103,6 +103,9 @@ class JsonSchemaValidationTest {
 
         // Set underwriter pool (required)
         placement.setUnderwriterPool(Arrays.asList(createDefaultUnderwriter()));
+        
+        // Add status (required)
+        placement.setStatus("draft");
         
         return placement;
     }
@@ -245,10 +248,10 @@ class JsonSchemaValidationTest {
     void fullPlacementWithAllObjectsShouldPass() throws Exception {
         // Create metadata
         Metadata metadata = new Metadata();
-        metadata.setCreationDate("2024-03-14T10:00:00Z");
+        metadata.setCreationDate("ISODate(\"2024-03-14T10:00:00Z\")");
         metadata.setCreationChannel("OutSystems");
         metadata.setCreationUser(VALID_UUID);
-        metadata.setModifiedDate("2024-03-14T10:00:00Z");
+        metadata.setModifiedDate("ISODate(\"2024-03-14T10:00:00Z\")");
         metadata.setModifiedChannel("OutSystems");
         metadata.setModifiedUser(VALID_UUID);
 
@@ -287,8 +290,9 @@ class JsonSchemaValidationTest {
         placement.setClientName("Test Client");
         placement.setDescription("Test Description");
         placement.setEffectiveYear(2024);
-        placement.setInceptionDate("2024-03-14T00:00:00Z");
+        placement.setInceptionDate("2024-03-14");
         placement.setType("Non-Facility");
+        placement.setStatus("draft");
 
         validatePlacement(placement);
     }

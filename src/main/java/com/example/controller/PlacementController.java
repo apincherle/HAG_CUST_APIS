@@ -3,7 +3,7 @@ package com.example.controller;
 import com.example.model.Placement;
 import com.example.service.PlacementService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+//import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/placements")
@@ -29,11 +28,7 @@ public class PlacementController {
     })
     @GetMapping
     public ResponseEntity<List<Placement>> getAllPlacements() {
-        List<Placement> placements = placementService.findAll();
-        if (placements.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(placements);
+        return ResponseEntity.ok(placementService.findAll());
     }
 
     @Operation(summary = "Get a placement by ID")
@@ -42,12 +37,8 @@ public class PlacementController {
         @ApiResponse(responseCode = "404", description = "Placement not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Placement> getPlacementById(
-            @Parameter(description = "ID of the placement to retrieve") 
-            @PathVariable String id) {
-        Optional<Placement> placement = placementService.findById(id);
-        return placement.map(ResponseEntity::ok)
-                       .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Placement> getPlacementById(@PathVariable String id) {
+        return ResponseEntity.ok(placementService.findById(id));
     }
 
     @Operation(summary = "Create a new placement")
@@ -57,5 +48,11 @@ public class PlacementController {
     @PostMapping
     public ResponseEntity<Placement> createPlacement(@RequestBody Placement placement) {
         return ResponseEntity.ok(placementService.save(placement));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePlacement(@PathVariable String id) {
+        placementService.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 } 

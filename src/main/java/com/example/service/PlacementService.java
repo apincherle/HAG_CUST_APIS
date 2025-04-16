@@ -52,7 +52,10 @@ public class PlacementService {
     public void init() {
         // Load the schema on service initialization
         try (InputStream inputStream = getClass().getResourceAsStream("/placements.json")) {
-            JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
+            JSONObject rawSchema = null;
+            if (inputStream != null) {
+                rawSchema = new JSONObject(new JSONTokener(inputStream));
+            }
             schema = SchemaLoader.load(rawSchema);
         } catch (Exception e) {
             throw new RuntimeException("Failed to load JSON schema", e);
@@ -69,7 +72,7 @@ public class PlacementService {
     }
 
     @Transactional
-    public Placement savePlacement(Placement placement) {
+    public Placement save(Placement placement) {
         // 1. Save Metadata (required)
         if (placement.getMetadata() != null) {
             metadataRepository.save(placement.getMetadata());
@@ -149,27 +152,27 @@ public class PlacementService {
 
     private UnderwriterPool.Organisation saveOrganisation(UnderwriterPool.Organisation organisation) {
         // Save organization logic here
-        return organisation; // Replace with actual save operation
+        return organisation;
     }
 
     private UnderwriterPool.Company saveCompany(UnderwriterPool.Company company) {
         // Save company logic here
-        return company; // Replace with actual save operation
+        return company;
     }
 
     @Transactional(readOnly = true)
-    public Placement getPlacement(String id) {
+    public Placement findById(String id) {
         return placementRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Placement not found with id: " + id));
     }
 
     @Transactional(readOnly = true)
-    public List<Placement> getAllPlacements() {
+    public List<Placement> findAll() {
         return placementRepository.findAll();
     }
 
     @Transactional
-    public void deletePlacement(String id) {
+    public void deleteById(String id) {
         placementRepository.deleteById(id);
     }
 } 
