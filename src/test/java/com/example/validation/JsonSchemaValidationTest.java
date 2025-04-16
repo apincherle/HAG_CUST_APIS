@@ -23,7 +23,10 @@ class JsonSchemaValidationTest {
     @BeforeEach
     void setUp() {
         try (InputStream inputStream = getClass().getResourceAsStream("/placements.json")) {
-            JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
+            JSONObject rawSchema = null;
+            if (inputStream != null) {
+                rawSchema = new JSONObject(new JSONTokener(inputStream));
+            }
             schema = SchemaLoader.load(rawSchema);
             objectMapper = new ObjectMapper();
         } catch (Exception e) {
