@@ -31,6 +31,11 @@ public class Section {
     @JsonProperty("facility_usage")
     private List<String> facilityUsage;
     
+    private List<Risk> risks;
+    private List<Insured> insureds;
+    private List<Limit> limits;
+    private List<Premium> premiums;
+    
     @Data
     public static class BindingInformation {
         @JsonProperty("line_percentage")
