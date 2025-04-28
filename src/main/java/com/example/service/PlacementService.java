@@ -271,10 +271,10 @@ public class PlacementService {
         if (req.getInception_to() != null && !req.getInception_to().isEmpty()) {
             query.addCriteria(Criteria.where("inceptionDate").lte(req.getInception_to()));
         }
-        // user_only: if true, filter by current user
-        if (req.getUser_only() == null || req.getUser_only()) {
-            query.addCriteria(Criteria.where("user._xid").is(currentUser));
-        }
+//        // user_only: if true, filter by current user
+//        if (req.getUser_only() == null || req.getUser_only()) {
+//            query.addCriteria(Criteria.where("user._xid").is(currentUser));
+//        }
 
         // Ordering
         if (req.getOrder_by() != null && !req.getOrder_by().isEmpty()) {
