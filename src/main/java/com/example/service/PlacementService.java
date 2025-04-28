@@ -8,6 +8,10 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 //import java.util.Optional;
+
+import com.example.dto.PlacementQueryRequest;
 
 @Service
 public class PlacementService {
@@ -62,6 +68,9 @@ public class PlacementService {
     
     @Autowired
     private ContractRepository contractRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     private Schema schema;
 
@@ -235,5 +244,53 @@ public class PlacementService {
             throw new IllegalArgumentException("Placement with id " + id + " does not exist.");
         }
         placementRepository.deleteById(id);
+    }
+
+    public List<Placement> getPlacementsByQuery(PlacementQueryRequest req, String currentUser) {
+        Query query = new Query();
+
+        if (req.getClient_name() != null && !req.getClient_name().isEmpty()) {
+            query.addCriteria(Criteria.where("clientName").in(req.getClient_name()));
+        }
+        if (req.getPlacement_name() != null && !req.getPlacement_name().isEmpty()) {
+            query.addCriteria(Criteria.where("description").in(req.getPlacement_name()));
+        }
+        if (req.getEffective_year() != null && !req.getEffective_year().isEmpty()) {
+            List<Integer> years = req.getEffective_year().stream().map(Integer::parseInt).toList();
+            query.addCriteria(Criteria.where("effectiveYear").in(years));
+        }
+        if (req.getOwner_name() != null && !req.getOwner_name().isEmpty()) {
+            query.addCriteria(Criteria.where("user.firstName").in(req.getOwner_name()));
+        }
+        if (req.getStatus() != null && !req.getStatus().isEmpty()) {
+            query.addCriteria(Criteria.where("status").in(req.getStatus()));
+        }
+        if (req.getInception_from() != null && !req.getInception_from().isEmpty()) {
+            query.addCriteria(Criteria.where("inceptionDate").gte(req.getInception_from()));
+        }
+        if (req.getInception_to() != null && !req.getInception_to().isEmpty()) {
+            query.addCriteria(Criteria.where("inceptionDate").lte(req.getInception_to()));
+        }
+        // user_only: if true, filter by current user
+        if (req.getUser_only() == null || req.getUser_only()) {
+            query.addCriteria(Criteria.where("user._xid").is(currentUser));
+        }
+
+        // Ordering
+        if (req.getOrder_by() != null && !req.getOrder_by().isEmpty()) {
+            String field = switch (req.getOrder_by()) {
+                case "clientName" -> "clientName";
+                case "placementName" -> "description";
+                case "effectiveYear" -> "effectiveYear";
+                case "ownerName" -> "user.firstName";
+                case "contractInceptiondate" -> "inceptionDate";
+                case "Status" -> "status";
+                default -> "clientName";
+            };
+            Sort.Direction dir = "desc".equalsIgnoreCase(req.getOrder_dir()) ? Sort.Direction.DESC : Sort.Direction.ASC;
+            query.with(Sort.by(dir, field));
+        }
+
+        return mongoTemplate.find(query, Placement.class);
     }
 } 

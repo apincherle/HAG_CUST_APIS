@@ -15,11 +15,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import com.example.dto.PlacementQueryRequest;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -125,5 +128,27 @@ class PlacementControllerTest {
         mockMvc.perform(delete("/api/placements/test-id"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Placement with id test-id does not exist."));
+    }
+
+    @Test
+    void testGetPlacementsByQuery() throws Exception {
+        PlacementQueryRequest queryRequest = new PlacementQueryRequest();
+        queryRequest.setClient_name(List.of("Test Client"));
+        queryRequest.setStatus(List.of("draft"));
+        queryRequest.setUser_only(true);
+        queryRequest.setOrder_by("clientName");
+        queryRequest.setOrder_dir("asc");
+
+        List<Placement> placements = Collections.singletonList(placement);
+
+        Mockito.when(placementService.getPlacementsByQuery(any(PlacementQueryRequest.class), eq("user-123")))
+                .thenReturn(placements);
+
+        mockMvc.perform(post("/api/placements/query")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("X-User-Id", "user-123")
+                .content(objectMapper.writeValueAsString(queryRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]._id").value("test-id"));
     }
 } 

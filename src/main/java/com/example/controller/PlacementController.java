@@ -14,6 +14,8 @@ import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
 
+import com.example.dto.PlacementQueryRequest;
+
 @RestController
 @RequestMapping("/api/placements")
 @Tag(name = "Placements", description = "Placement management APIs")
@@ -73,5 +75,15 @@ public class PlacementController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         }
+    }
+
+    @PostMapping("/query")
+    @Operation(summary = "Query placements with multiple filters and ordering")
+    public ResponseEntity<List<Placement>> getPlacementsByQuery(
+            @RequestBody PlacementQueryRequest request,
+            @RequestHeader("X-User-Id") String userId // or get from security context
+    ) {
+        List<Placement> results = placementService.getPlacementsByQuery(request, userId);
+        return ResponseEntity.ok(results);
     }
 } 
