@@ -14,6 +14,7 @@ import jakarta.annotation.PostConstruct;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 //import java.util.Optional;
 
 @Service
@@ -45,6 +46,21 @@ public class PlacementService {
     
     @Autowired
     private MetadataRepository metadataRepository;
+
+    @Autowired
+    private RiskRepository riskRepository;
+    
+    @Autowired
+    private InsuredRepository insuredRepository;
+    
+    @Autowired
+    private LimitRepository limitRepository;
+    
+    @Autowired
+    private PremiumRepository premiumRepository;
+    
+    @Autowired
+    private ContractRepository contractRepository;
 
     private Schema schema;
 
@@ -137,6 +153,34 @@ public class PlacementService {
                 if (programme.getSections() != null && !programme.getSections().isEmpty()) {
                     List<Section> savedSections = new ArrayList<>();
                     for (Section section : programme.getSections()) {
+                        // Save risks
+                        if (section.getRisks() != null) {
+                            section.setRisks(section.getRisks().stream()
+                                .map(riskRepository::save)
+                                .collect(Collectors.toList()));
+                        }
+                        
+                        // Save insureds
+                        if (section.getInsureds() != null) {
+                            section.setInsureds(section.getInsureds().stream()
+                                .map(insuredRepository::save)
+                                .collect(Collectors.toList()));
+                        }
+                        
+                        // Save limits
+                        if (section.getLimits() != null) {
+                            section.setLimits(section.getLimits().stream()
+                                .map(limitRepository::save)
+                                .collect(Collectors.toList()));
+                        }
+                        
+                        // Save premiums
+                        if (section.getPremiums() != null) {
+                            section.setPremiums(section.getPremiums().stream()
+                                .map(premiumRepository::save)
+                                .collect(Collectors.toList()));
+                        }
+                        
                         savedSections.add(sectionRepository.save(section));
                     }
                     programme.setSections(savedSections);
