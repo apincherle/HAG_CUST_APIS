@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 //import java.util.Optional;
 
 import com.example.dto.PlacementQueryRequest;
+import com.example.dto.ReassignPlacementRequest;
 
 @Service
 public class PlacementService {
@@ -292,5 +293,24 @@ public class PlacementService {
         }
 
         return mongoTemplate.find(query, Placement.class);
+    }
+
+    public void reassignPlacement(String placementId, ReassignPlacementRequest request) {
+        // Lookup broker team
+        BrokerTeam team = brokerTeamRepository.findById(request.getBroker_team().getTeam_id())
+                .orElseThrow(() -> new IllegalArgumentException("Broker team not found"));
+
+        // Lookup broker user by email (assuming you have a method for this)
+        User user = userRepository.findByEmail(request.getBroker_user().getUser_email())
+                .orElseThrow(() -> new IllegalArgumentException("Broker user not found"));
+
+        // You can now update the placement as needed, e.g.:
+        Placement placement = placementRepository.findById(placementId)
+                .orElseThrow(() -> new IllegalArgumentException("Placement not found"));
+
+        placement.setBrokerTeam(team);
+        placement.setUser(user);
+
+        placementRepository.save(placement);
     }
 } 

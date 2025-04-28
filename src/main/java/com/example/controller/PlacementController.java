@@ -15,6 +15,7 @@ import org.springframework.dao.DuplicateKeyException;
 import java.util.List;
 
 import com.example.dto.PlacementQueryRequest;
+import com.example.dto.ReassignPlacementRequest;
 
 @RestController
 @RequestMapping("/api/placements")
@@ -85,5 +86,26 @@ public class PlacementController {
     ) {
         List<Placement> results = placementService.getPlacementsByQuery(request, userId);
         return ResponseEntity.ok(results);
+    }
+
+    @Operation(
+        summary = "Reassign a placement to a new broker team and user",
+        description = "Reassigns the placement to the specified broker team and broker user. Throws an error if either does not exist."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Placement reassigned successfully"),
+        @ApiResponse(responseCode = "404", description = "Placement, broker team, or broker user not found")
+    })
+    @PostMapping("/{id}/reassign")
+    public ResponseEntity<?> reassignPlacement(
+            @PathVariable String id,
+            @org.springframework.web.bind.annotation.RequestBody ReassignPlacementRequest request
+    ) {
+        try {
+            placementService.reassignPlacement(id, request);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 } 
