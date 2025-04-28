@@ -15,13 +15,13 @@ public class OpenAPIConfig {
     @Bean
     public OpenAPI myOpenAPI() {
         Contact contact = new Contact();
-        contact.setEmail("contact@example.com");
+        contact.setEmail("Andrew@rc.com");
         contact.setName("API Support");
 
         Info info = new Info()
-                .title("Hello World API")
+                .title("PLacement API")
                 .version("1.0")
-                .description("This is a simple Hello World API")
+                .description("This is a Placement API")
                 .contact(contact);
 
         return new OpenAPI().info(info);
