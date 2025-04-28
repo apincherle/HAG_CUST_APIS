@@ -7,6 +7,7 @@ import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,6 +90,10 @@ public class PlacementService {
 
     @Transactional
     public Placement save(Placement placement) {
+        // Check if placement with the same ID already exists
+        if (placement.getId() != null && placementRepository.existsById(placement.getId())) {
+            throw new DuplicateKeyException("Placement with id " + placement.getId() + " already exists.");
+        }
         // 1. Save Metadata (required)
         if (placement.getMetadata() != null) {
             metadataRepository.save(placement.getMetadata());
@@ -194,6 +199,15 @@ public class PlacementService {
         return placementRepository.save(placement);
     }
 
+    @Transactional
+    public Placement update(String id, Placement updatedPlacement) {
+        if (!placementRepository.existsById(id)) {
+            throw new IllegalArgumentException("Placement with id " + id + " does not exist.");
+        }
+        updatedPlacement.setId(id);
+        return placementRepository.save(updatedPlacement);
+    }
+
     private UnderwriterPool.Organisation saveOrganisation(UnderwriterPool.Organisation organisation) {
         // Save organization logic here
         return organisation;
@@ -217,6 +231,9 @@ public class PlacementService {
 
     @Transactional
     public void deleteById(String id) {
+        if (!placementRepository.existsById(id)) {
+            throw new IllegalArgumentException("Placement with id " + id + " does not exist.");
+        }
         placementRepository.deleteById(id);
     }
 } 

@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
 
@@ -43,16 +44,34 @@ public class PlacementController {
 
     @Operation(summary = "Create a new placement")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Successfully created the placement")
+        @ApiResponse(responseCode = "200", description = "Successfully created the placement"),
+        @ApiResponse(responseCode = "409", description = "Placement with the same ID already exists")
     })
     @PostMapping
-    public ResponseEntity<Placement> createPlacement(@RequestBody Placement placement) {
-        return ResponseEntity.ok(placementService.save(placement));
+    public ResponseEntity<?> createPlacement(@RequestBody Placement placement) {
+        try {
+            return ResponseEntity.ok(placementService.save(placement));
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updatePlacement(@PathVariable String id, @RequestBody Placement placement) {
+        try {
+            return ResponseEntity.ok(placementService.update(id, placement));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlacement(@PathVariable String id) {
-        placementService.deleteById(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> deletePlacement(@PathVariable String id) {
+        try {
+            placementService.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 } 
