@@ -301,15 +301,15 @@ public class PlacementService {
                 .orElseThrow(() -> new IllegalArgumentException("Broker team not found"));
 
         // Lookup broker user by email (assuming you have a method for this)
-        User user = userRepository.findByEmail(request.getBroker_user().getUser_email())
-                .orElseThrow(() -> new IllegalArgumentException("Broker user not found"));
+        //User user = userRepository.findByEmail(request.getBroker_user().getUser_email())
+        //.orElseThrow(() -> new IllegalArgumentException("Broker user not found"));
 
         // You can now update the placement as needed, e.g.:
         Placement placement = placementRepository.findById(placementId)
                 .orElseThrow(() -> new IllegalArgumentException("Placement not found"));
 
         placement.setBrokerTeam(team);
-        placement.setUser(user);
+        //placement.setUser(user);
 
         placementRepository.save(placement);
     }
