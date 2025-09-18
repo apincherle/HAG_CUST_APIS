@@ -2,55 +2,65 @@ package com.example.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.List;
 import java.util.ArrayList;
 
 @Data
+@org.springframework.data.mongodb.core.mapping.Document(collection = "placements")
 public class Placement {
-    @JsonProperty("_id")
+    @Id
     private String id;
     
-    @JsonProperty("_metadata")
+    @Field("_metadata")
     private Metadata metadata;
     
     private User user;
     
-    @JsonProperty("placement_read_access")
+    @Field("placement_read_access")
     private List<String> placementReadAccess;
     
     private Branch branch;
     
-    @JsonProperty("client_name")
+    @Field("client_name")
     private String clientName;
     
     private String description;
     
-    @JsonProperty("effective_year")
+    @Field("effective_year")
     private Integer effectiveYear;
     
-    @JsonProperty("broker_team")
+    @Field("broker_team")
     private BrokerTeam brokerTeam;
     
-    @JsonProperty("inception_date")
+    @Field("inception_date")
     private String inceptionDate;
     
     private String type;
     
-    @JsonProperty("underwriter_pool")
+    @Field("underwriter_pool")
     private List<UnderwriterPool> underwriterPool;
     
-    @JsonProperty("documents")
+    @Field("documents")
     private List<Document> documents;
     
-    @JsonProperty("programmes")
+    @Field("programmes")
     private List<Programme> programmes;
     
     private String status;
+    
+    @Field("submission_requests")
+    private List<SubmissionRequest> submissionRequests;
+    
+    @Field("submission_state")
+    private Document.SubmissionState submissionState;
 
     public Placement() {
         this.placementReadAccess = new ArrayList<>();
         this.underwriterPool = new ArrayList<>();
         this.documents = new ArrayList<>();
         this.programmes = new ArrayList<>();
+        this.submissionRequests = new ArrayList<>();
     }
 } 

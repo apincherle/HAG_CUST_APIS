@@ -16,6 +16,7 @@ import java.util.List;
 
 import com.example.dto.PlacementQueryRequest;
 import com.example.dto.ReassignPlacementRequest;
+import com.example.dto.PlacementMarketResponse;
 
 @RestController
 @RequestMapping("/api/placements")
@@ -107,5 +108,16 @@ public class PlacementController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         }
+    }
+
+    @Operation(summary = "Get placements for market API")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved placements for market"),
+        @ApiResponse(responseCode = "404", description = "No placements found")
+    })
+    @GetMapping("/market")
+    public ResponseEntity<PlacementMarketResponse> getPlacementMarketApi() {
+        PlacementMarketResponse response = placementService.getPlacementsForMarket();
+        return ResponseEntity.ok(response);
     }
 } 

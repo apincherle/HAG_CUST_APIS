@@ -6,9 +6,14 @@ import lombok.Data;
 @Data
 public class Risk {
     @JsonProperty("_id")
-    private String _id;
-    private String risk_code;
-    private String currency_code;
+    private String id;
+    
+    @JsonProperty("risk_code")
+    private String riskCode;
+    
+    @JsonProperty("currency_code")
+    private String currencyCode;
+    
     private Double amount;
     private Double rate;
 } 

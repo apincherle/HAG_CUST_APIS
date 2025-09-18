@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import com.example.dto.PlacementQueryRequest;
 import com.example.dto.ReassignPlacementRequest;
+import com.example.dto.*;
 
 @Service
 public class PlacementService {
@@ -164,41 +165,49 @@ public class PlacementService {
         if (placement.getProgrammes() != null && !placement.getProgrammes().isEmpty()) {
             List<Programme> savedProgrammes = new ArrayList<>();
             for (Programme programme : placement.getProgrammes()) {
-                // Save sections within programmes if they exist
-                if (programme.getSections() != null && !programme.getSections().isEmpty()) {
-                    List<Section> savedSections = new ArrayList<>();
-                    for (Section section : programme.getSections()) {
-                        // Save risks
-                        if (section.getRisks() != null) {
-                            section.setRisks(section.getRisks().stream()
-                                .map(riskRepository::save)
-                                .collect(Collectors.toList()));
+                // Save contracts within programmes if they exist
+                if (programme.getContracts() != null && !programme.getContracts().isEmpty()) {
+                    List<Contract> savedContracts = new ArrayList<>();
+                    for (Contract contract : programme.getContracts()) {
+                        // Save sections within contracts if they exist
+                        if (contract.getSections() != null && !contract.getSections().isEmpty()) {
+                            List<Section> savedSections = new ArrayList<>();
+                            for (Section section : contract.getSections()) {
+                                // Save risks
+                                if (section.getRisks() != null) {
+                                    section.setRisks(section.getRisks().stream()
+                                        .map(riskRepository::save)
+                                        .collect(Collectors.toList()));
+                                }
+                                
+                                // Save insureds
+                                if (section.getInsureds() != null) {
+                                    section.setInsureds(section.getInsureds().stream()
+                                        .map(insuredRepository::save)
+                                        .collect(Collectors.toList()));
+                                }
+                                
+                                // Save limits
+                                if (section.getLimits() != null) {
+                                    section.setLimits(section.getLimits().stream()
+                                        .map(limitRepository::save)
+                                        .collect(Collectors.toList()));
+                                }
+                                
+                                // Save premiums
+                                if (section.getPremiums() != null) {
+                                    section.setPremiums(section.getPremiums().stream()
+                                        .map(premiumRepository::save)
+                                        .collect(Collectors.toList()));
+                                }
+                                
+                                savedSections.add(sectionRepository.save(section));
+                            }
+                            contract.setSections(savedSections);
                         }
-                        
-                        // Save insureds
-                        if (section.getInsureds() != null) {
-                            section.setInsureds(section.getInsureds().stream()
-                                .map(insuredRepository::save)
-                                .collect(Collectors.toList()));
-                        }
-                        
-                        // Save limits
-                        if (section.getLimits() != null) {
-                            section.setLimits(section.getLimits().stream()
-                                .map(limitRepository::save)
-                                .collect(Collectors.toList()));
-                        }
-                        
-                        // Save premiums
-                        if (section.getPremiums() != null) {
-                            section.setPremiums(section.getPremiums().stream()
-                                .map(premiumRepository::save)
-                                .collect(Collectors.toList()));
-                        }
-                        
-                        savedSections.add(sectionRepository.save(section));
+                        savedContracts.add(contractRepository.save(contract));
                     }
-                    programme.setSections(savedSections);
+                    programme.setContracts(savedContracts);
                 }
                 savedProgrammes.add(programmeRepository.save(programme));
             }
@@ -312,5 +321,94 @@ public class PlacementService {
         //placement.setUser(user);
 
         placementRepository.save(placement);
+    }
+
+    @Transactional(readOnly = true)
+    public PlacementMarketResponse getPlacementsForMarket() {
+        List<Placement> placements = placementRepository.findAll();
+        
+        List<PlacementMarketDto> marketPlacements = placements.stream()
+            .map(this::convertToMarketDto)
+            .collect(Collectors.toList());
+        
+        PlacementMarketResponse response = new PlacementMarketResponse();
+        response.setPlacements(marketPlacements);
+        response.setPageNumber(0);
+        response.setPageSize(marketPlacements.size());
+        response.setCount((long) marketPlacements.size());
+        response.setTotalResults((long) marketPlacements.size());
+        
+        return response;
+    }
+
+    private PlacementMarketDto convertToMarketDto(Placement placement) {
+        PlacementMarketDto dto = new PlacementMarketDto();
+        
+        // Basic placement info
+        dto.setPlacementId(placement.getId());
+        dto.setClientName(placement.getClientName());
+        dto.setDescription(placement.getDescription());
+        dto.setEffectiveYear(placement.getEffectiveYear());
+        dto.setEarliestInceptionDate(placement.getInceptionDate());
+        dto.setStatus(placement.getStatus());
+        dto.setType(placement.getType());
+        
+        // Metadata
+        if (placement.getMetadata() != null) {
+            PlacementMetadataDto metadataDto = new PlacementMetadataDto();
+            metadataDto.setCreatedDate(placement.getMetadata().getCreationDate());
+            metadataDto.setCreatedChannel(placement.getMetadata().getCreationChannel());
+            metadataDto.setModifiedDate(placement.getMetadata().getModifiedDate());
+            metadataDto.setModifiedChannel(placement.getMetadata().getModifiedChannel());
+            
+            // Created by user info
+            if (placement.getUser() != null) {
+                UserInfoDto createdBy = new UserInfoDto();
+                createdBy.setFirstName(placement.getUser().getFirstName());
+                createdBy.setLastName(placement.getUser().getLastName());
+                // Note: user_email is not available in the current User model
+                metadataDto.setCreatedBy(createdBy);
+                metadataDto.setModifiedBy(createdBy); // Using same user for both
+            }
+            
+            dto.setMetadata(metadataDto);
+        }
+        
+        // Broker team info
+        if (placement.getBrokerTeam() != null) {
+            BrokerTeamDto brokerTeamDto = new BrokerTeamDto();
+            brokerTeamDto.setTeamId(placement.getBrokerTeam().getXid());
+            brokerTeamDto.setTeamName(placement.getBrokerTeam().getName());
+            // Note: company_name and branch_name would need to be looked up from related entities
+            dto.setBrokerTeam(brokerTeamDto);
+        }
+        
+        // Broker user info
+        if (placement.getUser() != null) {
+            BrokerUserDto brokerUserDto = new BrokerUserDto();
+            brokerUserDto.setFirstName(placement.getUser().getFirstName());
+            brokerUserDto.setLastName(placement.getUser().getLastName());
+            // Note: user_email is not available in the current User model
+            dto.setBrokerUser(brokerUserDto);
+        }
+        
+        // Programmes
+        if (placement.getProgrammes() != null && !placement.getProgrammes().isEmpty()) {
+            List<ProgrammeDto> programmeDtos = placement.getProgrammes().stream()
+                .map(this::convertProgrammeToDto)
+                .collect(Collectors.toList());
+            dto.setProgrammes(programmeDtos);
+        }
+        
+        return dto;
+    }
+
+    private ProgrammeDto convertProgrammeToDto(Programme programme) {
+        ProgrammeDto dto = new ProgrammeDto();
+        dto.setProgrammeId(programme.getId());
+        dto.setDescription(programme.getDescription());
+        dto.setEarliestInceptionDate(programme.getInceptionDate());
+        dto.setStatus(programme.getStatusCode());
+        return dto;
     }
 } 

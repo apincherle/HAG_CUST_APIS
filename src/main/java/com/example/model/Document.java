@@ -30,6 +30,7 @@ public class Document {
     @Data
     public static class SubmissionStateDetails {
         private Boolean selected;
+        private Boolean locked;
         
         @JsonProperty("active_locks")
         private Integer activeLocks;

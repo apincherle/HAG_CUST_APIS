@@ -6,12 +6,9 @@ import java.util.List;
 import java.util.ArrayList;
 
 @Data
-public class Limit {
+public class Excess {
     @JsonProperty("_id")
     private String id;
-    
-    @JsonProperty("type_ref")
-    private String typeRef;
     
     private String type;
     
@@ -19,6 +16,7 @@ public class Limit {
     private String currencyCode;
     
     private Double amount;
+    private Double percentage;
     
     @JsonProperty("basis_refs")
     private List<String> basisRefs;
@@ -28,11 +26,7 @@ public class Limit {
     
     private String specification;
     
-    @JsonProperty("attachment_point")
-    private List<AttachmentPoint> attachmentPoint;
-
-    public Limit() {
+    public Excess() {
         this.basisRefs = new ArrayList<>();
-        this.attachmentPoint = new ArrayList<>();
     }
-} 
+}
