@@ -35,6 +35,11 @@ curl -X POST http://localhost:8001/api/items \
   }'
 ```
 
+### SWAGGER
+```bash
+http://localhost:8001/swagger-ui/index.html
+```
+
 ### Get All Items (GET)
 ```bash
 curl http://localhost:8001/api/items
