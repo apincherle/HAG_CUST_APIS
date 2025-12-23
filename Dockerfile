@@ -1,9 +1,22 @@
-FROM eclipse-temurin:17-jdk-focal
+FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
-COPY target/PPL-placements-1.0-SNAPSHOT.jar app.jar
+# Copy Maven wrapper and pom.xml
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw .
 
-EXPOSE 8080
+# Download dependencies
+RUN ./mvnw dependency:go-offline -B
 
-ENTRYPOINT ["java", "-jar", "app.jar"] 
+# Copy source code
+COPY src ./src
+
+# Build the application
+RUN ./mvnw clean package -DskipTests
+
+# Run the application
+EXPOSE 8001
+ENTRYPOINT ["java", "-jar", "target/hags-customer-api-1.0-SNAPSHOT.jar"]
+
