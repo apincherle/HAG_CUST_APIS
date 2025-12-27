@@ -1,6 +1,26 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: hags-postgres
+    environment:
+      - POSTGRES_DB=hags_customer
+      - POSTGRES_USER=hags_user
+      - POSTGRES_PASSWORD=hags_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hags_user -d hags_customer"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   app:
     build:
       context: .
@@ -10,11 +30,12 @@ services:
       - "8001:8001"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
-      - DB_PATH=/app/data/dev.db
-    volumes:
-      # Mount SQLite database file to persist data
-      - ./data:/app/data
-    working_dir: /app
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hags_customer
+      - SPRING_DATASOURCE_USERNAME=hags_user
+      - SPRING_DATASOURCE_PASSWORD=hags_password
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - app-network
     restart: unless-stopped
@@ -24,6 +45,6 @@ networks:
     driver: bridge
 
 volumes:
-  sqlite-data:
+  postgres-data:
     driver: local
 

@@ -93,12 +93,11 @@ public class CustomerService {
         String normalizedEmail = (email != null) ? email.trim().toLowerCase() : null;
         
         Page<Customer> page;
-        // Use native queries to avoid UUID conversion issues
+        // Use native queries for pagination and search
         if (q == null && normalizedEmail == null && phone == null && status == null) {
             page = customerRepository.findAllNative(pageable);
         } else {
-            // Pre-process search term to add wildcards for SQLite compatibility
-            String searchTerm = (q != null) ? q : null;
+            String searchTerm = (q != null) ? q.trim() : null;
             page = customerRepository.searchCustomersNative(searchTerm, normalizedEmail, phone, status, pageable);
         }
         

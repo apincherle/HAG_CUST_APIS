@@ -40,6 +40,12 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
+        System.err.println("DEBUG GlobalExceptionHandler: Caught ResponseStatusException");
+        System.err.println("DEBUG GlobalExceptionHandler: Status Code: " + ex.getStatusCode());
+        System.err.println("DEBUG GlobalExceptionHandler: Reason: " + ex.getReason());
+        System.err.println("DEBUG GlobalExceptionHandler: Stack trace:");
+        ex.printStackTrace();
+        
         String code = ex.getStatusCode().toString();
         if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
             code = "NOT_FOUND";
@@ -54,6 +60,7 @@ public class GlobalExceptionHandler {
                 .message(ex.getReason() != null ? ex.getReason() : ex.getStatusCode().toString())
                 .build();
         
+        System.err.println("DEBUG GlobalExceptionHandler: Returning error response: " + error);
         return ResponseEntity.status(ex.getStatusCode()).body(error);
     }
     

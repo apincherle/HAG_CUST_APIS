@@ -24,12 +24,13 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
 
     @Override
     public Optional<Customer> findByCustomerIdNative(String customerIdString) {
+        // PostgreSQL supports native UUID type, so we can cast the string parameter
         Query query = entityManager.createNativeQuery(
             "SELECT customer_id, email, phone, full_name, " +
             "billing_line1, billing_line2, billing_city, billing_region, billing_postcode, billing_country, " +
             "shipping_line1, shipping_line2, shipping_city, shipping_region, shipping_postcode, shipping_country, " +
             "marketing_opt_in, status, created_at, updated_at, deleted_at " +
-            "FROM customers WHERE customer_id = ?", 
+            "FROM customers WHERE customer_id = CAST(? AS UUID)", 
             Object[].class
         );
         query.setParameter(1, customerIdString);
@@ -74,7 +75,14 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
 
     private Customer mapResultToCustomer(Object[] result) {
         Customer customer = new Customer();
-        customer.setCustomerId(UUID.fromString((String) result[0]));
+        
+        // PostgreSQL returns UUID as java.util.UUID directly, but handle both cases
+        if (result[0] instanceof UUID) {
+            customer.setCustomerId((UUID) result[0]);
+        } else {
+            customer.setCustomerId(UUID.fromString(result[0].toString()));
+        }
+        
         customer.setEmail((String) result[1]);
         customer.setPhone((String) result[2]);
         customer.setFullName((String) result[3]);

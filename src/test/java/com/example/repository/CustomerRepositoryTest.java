@@ -17,7 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("dev")
 @TestPropertySource(properties = {
-    "spring.datasource.url=jdbc:sqlite:./data/dev.db",
+    "spring.datasource.url=jdbc:postgresql://localhost:5432/hags_customer",
+    "spring.datasource.username=hags_user",
+    "spring.datasource.password=hags_password",
     "spring.jpa.hibernate.ddl-auto=validate"
 })
 public class CustomerRepositoryTest {

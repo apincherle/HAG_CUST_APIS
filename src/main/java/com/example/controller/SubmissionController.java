@@ -24,12 +24,29 @@ public class SubmissionController {
     
     @PostMapping
     @Operation(summary = "Create submission", operationId = "createSubmission")
-    public ResponseEntity<SubmissionCreateResponseLite> createSubmission(
+    public ResponseEntity<?> createSubmission(
             @Valid @RequestBody SubmissionCreateRequestLite request) {
-        SubmissionCreateResponseLite response = submissionService.createSubmission(request);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Location", "/v1/submissions/" + response.getSubmission().getSubmissionId())
-                .body(response);
+        System.out.println("DEBUG SubmissionController: Received createSubmission request");
+        System.out.println("DEBUG SubmissionController: Customer ID: " + request.getCustomerId());
+        System.out.println("DEBUG SubmissionController: Items count: " + (request.getItems() != null ? request.getItems().size() : 0));
+        
+        try {
+            SubmissionCreateResponseLite response = submissionService.createSubmission(request);
+            System.out.println("DEBUG SubmissionController: Submission created successfully: " + response.getSubmission().getSubmissionId());
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .header("Location", "/v1/submissions/" + response.getSubmission().getSubmissionId())
+                    .body(response);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            System.err.println("DEBUG SubmissionController: Caught ResponseStatusException: " + e.getStatusCode() + " - " + e.getReason());
+            e.printStackTrace();
+            // Re-throw to let GlobalExceptionHandler handle it
+            throw e;
+        } catch (Exception e) {
+            System.err.println("DEBUG SubmissionController: Caught unexpected exception: " + e.getClass().getName() + " - " + e.getMessage());
+            e.printStackTrace();
+            // Re-throw to let GlobalExceptionHandler handle it
+            throw e;
+        }
     }
     
     @GetMapping("/{submission_id}")

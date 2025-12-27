@@ -18,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class SubmissionItem {
     @Id
-    @Column(name = "item_id", columnDefinition = "VARCHAR(36)")
+    @Column(name = "item_id", columnDefinition = "UUID")
     private UUID itemId;
     
     @ManyToOne(fetch = FetchType.LAZY)

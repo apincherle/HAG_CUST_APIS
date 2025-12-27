@@ -20,12 +20,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Submission {
-    @Id
-    @Column(name = "submission_id", columnDefinition = "VARCHAR(36)")
-    private UUID submissionId;
-    
-    @Column(name = "customer_id", nullable = false, columnDefinition = "VARCHAR(36)")
-    private UUID customerId;
+        @Id
+        @Column(name = "submission_id", columnDefinition = "UUID")
+        private UUID submissionId;
+
+        @Column(name = "customer_id", nullable = false, columnDefinition = "UUID")
+        private UUID customerId;
     
     @Column(name = "submission_number", unique = true, length = 50)
     private String submissionNumber;
@@ -34,7 +34,7 @@ public class Submission {
     @Column(name = "service_level", nullable = false, length = 20)
     private ServiceLevel serviceLevel = ServiceLevel.BRONZE;
     
-    @Column(name = "shipping_address_id", columnDefinition = "VARCHAR(36)", nullable = true)
+    @Column(name = "shipping_address_id", columnDefinition = "UUID", nullable = true)
     private UUID shippingAddressId;
     
     @Column(name = "notes_customer", length = 2000, nullable = true)

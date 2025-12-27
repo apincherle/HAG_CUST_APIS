@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class SubmissionIntakeCode {
     @Id
-    @Column(name = "intake_code_id", columnDefinition = "VARCHAR(36)")
+    @Column(name = "intake_code_id", columnDefinition = "UUID")
     private UUID intakeCodeId;
     
     @OneToOne(fetch = FetchType.LAZY)

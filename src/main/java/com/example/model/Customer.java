@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Customer {
     @Id
-    @Column(name = "customer_id", columnDefinition = "VARCHAR(36)")
+    @Column(name = "customer_id", columnDefinition = "UUID")
     private UUID customerId;
     
     @Column(name = "email", nullable = false, unique = true, length = 255)
