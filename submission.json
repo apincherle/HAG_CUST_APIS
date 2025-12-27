@@ -1,0 +1,91 @@
+components:
+  schemas:
+    SubmissionCreateRequestLite:
+      type: object
+      additionalProperties: false
+      properties:
+        customer_id: { type: string, format: uuid }
+        service_level: { type: string, enum: [STANDARD, EXPRESS, PREMIUM] }
+        shipping_address_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Optional reference if you store addresses separately.
+        notes_customer: { type: string, maxLength: 2000, nullable: true }
+        items:
+          type: array
+          minItems: 1
+          maxItems: 500
+          items: { $ref: '#/components/schemas/SubmissionItemCreateLite' }
+      required: [customer_id, service_level, items]
+
+    SubmissionItemCreateLite:
+      type: object
+      additionalProperties: false
+      properties:
+        game: { type: string, enum: [POKEMON, MTG, SPORTS, OTHER] }
+        free_text_line:
+          type: string
+          maxLength: 300
+          description: "Single customer line (e.g., 'Charizard 4/102 Base Set Holo')."
+        customer_notes:
+          type: string
+          maxLength: 1000
+          nullable: true
+        requested_photo_slots:
+          type: integer
+          minimum: 0
+          maximum: 4
+          default: 2
+          description: "How many upload URLs to return immediately (front/back default)."
+      required: [game, free_text_line]
+
+    SubmissionCreateResponseLite:
+      type: object
+      additionalProperties: false
+      properties:
+        submission: { $ref: '#/components/schemas/Submission' }
+        intake_code: { $ref: '#/components/schemas/SubmissionIntakeCode' }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/SubmissionItemLite' }
+      required: [submission, intake_code, items]
+
+    SubmissionItemLite:
+      type: object
+      additionalProperties: false
+      properties:
+        item_id: { type: string, format: uuid }
+        submission_id: { type: string, format: uuid }
+        line_number: { type: integer }
+        game: { type: string, enum: [POKEMON, MTG, SPORTS, OTHER] }
+        free_text_line: { type: string }
+        customer_notes: { type: string, nullable: true }
+        enrichment_status:
+          type: string
+          enum: [PENDING, MATCHED, AMBIGUOUS, NOT_FOUND]
+        enrichment_confidence:
+          type: number
+          format: double
+          nullable: true
+        matched_catalog_id:
+          type: string
+          nullable: true
+          description: "The ID returned by your TCG API (e.g., tcgplayer_id/cardmarket_id/internal_id)."
+        created_at: { type: string, format: date-time }
+      required: [item_id, submission_id, line_number, game, free_text_line, enrichment_status, created_at]
+
+    SubmissionIntakeCode:
+      type: object
+      additionalProperties: false
+      properties:
+        value:
+          type: string
+          description: "Encode in barcode (usually submission_number)."
+        barcode_format:
+          type: string
+          enum: [CODE_128]
+        qr_value:
+          type: string
+          description: "Encode in QR (typically a URL)."
+      required: [value, barcode_format, qr_value]

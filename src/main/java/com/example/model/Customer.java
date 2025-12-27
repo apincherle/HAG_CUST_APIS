@@ -10,9 +10,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "customers", indexes = {
-    @Index(name = "idx_email", columnList = "email"),
-    @Index(name = "idx_status", columnList = "status"),
-    @Index(name = "idx_created_at", columnList = "created_at")
+    @Index(name = "idx_customers_email", columnList = "email"),
+    @Index(name = "idx_customers_status", columnList = "status"),
+    @Index(name = "idx_customers_created_at", columnList = "created_at")
 })
 @Data
 @NoArgsConstructor

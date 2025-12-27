@@ -27,15 +27,21 @@ public class CustomerService {
     
     @Transactional
     public CustomerResponse createCustomer(CustomerCreateRequest request, String idempotencyKey) {
+        // Normalize email to lowercase
+        String normalizedEmail = (request.getEmail() != null) ? request.getEmail().trim().toLowerCase() : null;
+        if (normalizedEmail == null || normalizedEmail.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
+        }
+        
         // Check for duplicate email
-        if (customerRepository.existsByEmail(request.getEmail())) {
+        if (customerRepository.existsByEmail(normalizedEmail)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, 
                 "Customer with email already exists");
         }
         
         Customer customer = new Customer();
         customer.setCustomerId(UUID.randomUUID());
-        customer.setEmail(request.getEmail());
+        customer.setEmail(normalizedEmail);
         customer.setPhone(request.getPhone());
         customer.setFullName(request.getFullName());
         customer.setBillingAddress(request.getBillingAddress());
@@ -47,7 +53,6 @@ public class CustomerService {
         return CustomerResponse.fromEntity(customer);
     }
     
-    @Transactional(readOnly = true)
     public CustomerListResponse listCustomers(
             String q, String email, String phone, Customer.CustomerStatus status,
             Integer limit, String cursor, String sort, String order) {
@@ -68,17 +73,34 @@ public class CustomerService {
             }
         }
         
-        // Map sort field names
+        // Map sort field names for JPA (camelCase) and database (snake_case)
         String jpaSortField = sortField;
-        if ("created_at".equals(sortField)) {
+        String dbSortField = sortField;
+        if ("created_at".equals(sortField) || "createdAt".equals(sortField)) {
             jpaSortField = "createdAt";
-        } else if ("full_name".equals(sortField)) {
+            dbSortField = "created_at";
+        } else if ("full_name".equals(sortField) || "fullName".equals(sortField)) {
             jpaSortField = "fullName";
+            dbSortField = "full_name";
+        } else if ("updated_at".equals(sortField) || "updatedAt".equals(sortField)) {
+            jpaSortField = "updatedAt";
+            dbSortField = "updated_at";
         }
         
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(direction, jpaSortField));
         
-        Page<Customer> page = customerRepository.searchCustomers(q, email, phone, status, pageable);
+        // Normalize email filter to lowercase
+        String normalizedEmail = (email != null) ? email.trim().toLowerCase() : null;
+        
+        Page<Customer> page;
+        // Use native queries to avoid UUID conversion issues
+        if (q == null && normalizedEmail == null && phone == null && status == null) {
+            page = customerRepository.findAllNative(pageable);
+        } else {
+            // Pre-process search term to add wildcards for SQLite compatibility
+            String searchTerm = (q != null) ? q : null;
+            page = customerRepository.searchCustomersNative(searchTerm, normalizedEmail, phone, status, pageable);
+        }
         
         List<CustomerResponse> items = page.getContent().stream()
                 .map(CustomerResponse::fromEntity)
@@ -96,17 +118,39 @@ public class CustomerService {
                 .build();
     }
     
-    @Transactional(readOnly = true)
     public CustomerResponse getCustomerByEmail(String email) {
-        Customer customer = customerRepository.findByEmailAndStatus(email, Customer.CustomerStatus.ACTIVE)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
+        if (email == null || email.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
+        }
+        
+        // Spring automatically decodes URL encoding (%40 -> @)
+        // Normalize to lowercase - emails are stored in lowercase
+        String normalizedEmail = email.trim().toLowerCase();
+        
+        // Use native query to avoid UUID conversion issues
+        Customer customer = customerRepository.findByEmailNative(normalizedEmail)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                        "Customer not found with email: " + email));
+        
+        // Return 404 for deleted customers
+        if (customer.getStatus() == Customer.CustomerStatus.DELETED) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        }
+        
         return CustomerResponse.fromEntity(customer);
     }
     
-    @Transactional(readOnly = true)
     public CustomerResponse getCustomerById(UUID customerId) {
-        Customer customer = customerRepository.findByCustomerIdAndStatus(customerId, Customer.CustomerStatus.ACTIVE)
+        // Use native query with manual mapping to avoid UUID conversion issues
+        String customerIdString = customerId.toString();
+        Customer customer = customerRepository.findByCustomerIdNative(customerIdString)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
+        
+        // Return 404 for deleted customers (soft delete behavior)
+        if (customer.getStatus() == Customer.CustomerStatus.DELETED) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        }
+        
         return CustomerResponse.fromEntity(customer);
     }
     
@@ -120,12 +164,15 @@ public class CustomerService {
         }
         
         // Check email uniqueness if being updated
-        if (request.getEmail() != null && !request.getEmail().equals(customer.getEmail())) {
-            if (customerRepository.existsByEmailAndCustomerIdNot(request.getEmail(), customerId)) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, 
-                    "Email already exists");
+        if (request.getEmail() != null) {
+            String normalizedEmail = request.getEmail().trim().toLowerCase();
+            if (!normalizedEmail.equals(customer.getEmail())) {
+                if (customerRepository.existsByEmailAndCustomerIdNot(normalizedEmail, customerId)) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, 
+                        "Email already exists");
+                }
+                customer.setEmail(normalizedEmail);
             }
-            customer.setEmail(request.getEmail());
         }
         
         if (request.getPhone() != null) {

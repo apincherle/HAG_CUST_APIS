@@ -34,6 +34,32 @@ public class CustomerController {
                 .body(customer);
     }
     
+    @GetMapping("/lookup")
+    @Operation(summary = "Lookup customer by email", operationId = "lookupCustomerByEmail")
+    public ResponseEntity<CustomerResponse> lookupCustomerByEmail(
+            @Parameter(description = "Email address", required = true) @RequestParam(required = true) String email) {
+        CustomerResponse customer = customerService.getCustomerByEmail(email);
+        return ResponseEntity.ok(customer);
+    }
+    
+    @GetMapping(value = "/{customer_id}", produces = "application/json")
+    @Operation(summary = "Get customer by id", operationId = "getCustomer")
+    public ResponseEntity<CustomerResponse> getCustomer(
+            @Parameter(description = "Customer GUID", required = true, example = "95240174-43c0-4f75-a716-a2f701e7c9fd")
+            @PathVariable("customer_id") String customerIdStr) {
+        System.out.println("DEBUG: getCustomer called with customer_id: " + customerIdStr);
+        try {
+            UUID customerId = UUID.fromString(customerIdStr);
+            CustomerResponse customer = customerService.getCustomerById(customerId);
+            return ResponseEntity.ok(customer);
+        } catch (IllegalArgumentException e) {
+            System.err.println("ERROR: Invalid UUID format: " + customerIdStr + " - " + e.getMessage());
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.BAD_REQUEST, 
+                "Invalid customer ID format: " + customerIdStr);
+        }
+    }
+    
     @GetMapping
     @Operation(summary = "List/search customers", operationId = "listCustomers")
     public ResponseEntity<CustomerListResponse> listCustomers(
@@ -49,45 +75,50 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
     
-    @GetMapping("/lookup")
-    @Operation(summary = "Lookup customer by email", operationId = "lookupCustomerByEmail")
-    public ResponseEntity<CustomerResponse> lookupCustomerByEmail(
-            @Parameter(description = "Email address", required = true) @RequestParam String email) {
-        CustomerResponse customer = customerService.getCustomerByEmail(email);
-        return ResponseEntity.ok(customer);
-    }
-    
-    @GetMapping("/{customer_id}")
-    @Operation(summary = "Get customer by id", operationId = "getCustomer")
-    public ResponseEntity<CustomerResponse> getCustomer(
-            @Parameter(description = "Customer GUID", required = true) @PathVariable("customer_id") UUID customerId) {
-        CustomerResponse customer = customerService.getCustomerById(customerId);
-        return ResponseEntity.ok(customer);
-    }
-    
     @PatchMapping("/{customer_id}")
     @Operation(summary = "Update customer (partial)", operationId = "updateCustomer")
     public ResponseEntity<CustomerResponse> updateCustomer(
-            @Parameter(description = "Customer GUID", required = true) @PathVariable("customer_id") UUID customerId,
+            @Parameter(description = "Customer GUID", required = true) @PathVariable("customer_id") String customerIdStr,
             @Valid @RequestBody CustomerUpdateRequest request) {
-        CustomerResponse customer = customerService.updateCustomer(customerId, request);
-        return ResponseEntity.ok(customer);
+        try {
+            UUID customerId = UUID.fromString(customerIdStr);
+            CustomerResponse customer = customerService.updateCustomer(customerId, request);
+            return ResponseEntity.ok(customer);
+        } catch (IllegalArgumentException e) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.BAD_REQUEST, 
+                "Invalid customer ID format: " + customerIdStr);
+        }
     }
     
     @DeleteMapping("/{customer_id}")
     @Operation(summary = "Delete customer (soft delete)", operationId = "deleteCustomer")
     public ResponseEntity<Void> deleteCustomer(
-            @Parameter(description = "Customer GUID", required = true) @PathVariable("customer_id") UUID customerId) {
-        customerService.deleteCustomer(customerId);
-        return ResponseEntity.noContent().build();
+            @Parameter(description = "Customer GUID", required = true) @PathVariable("customer_id") String customerIdStr) {
+        try {
+            UUID customerId = UUID.fromString(customerIdStr);
+            customerService.deleteCustomer(customerId);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.BAD_REQUEST, 
+                "Invalid customer ID format: " + customerIdStr);
+        }
     }
     
     @PostMapping("/{customer_id}/restore")
     @Operation(summary = "Restore soft-deleted customer", operationId = "restoreCustomer")
     public ResponseEntity<CustomerResponse> restoreCustomer(
-            @Parameter(description = "Customer GUID", required = true) @PathVariable("customer_id") UUID customerId) {
-        CustomerResponse customer = customerService.restoreCustomer(customerId);
-        return ResponseEntity.ok(customer);
+            @Parameter(description = "Customer GUID", required = true) @PathVariable("customer_id") String customerIdStr) {
+        try {
+            UUID customerId = UUID.fromString(customerIdStr);
+            CustomerResponse customer = customerService.restoreCustomer(customerId);
+            return ResponseEntity.ok(customer);
+        } catch (IllegalArgumentException e) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.BAD_REQUEST, 
+                "Invalid customer ID format: " + customerIdStr);
+        }
     }
 }
 

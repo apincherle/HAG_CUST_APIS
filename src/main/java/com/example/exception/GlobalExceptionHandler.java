@@ -17,10 +17,15 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        System.err.println("DEBUG: Validation exception caught: " + ex.getMessage());
+        System.err.println("DEBUG: Target: " + ex.getTarget());
+        System.err.println("DEBUG: Binding result: " + ex.getBindingResult());
+        
         Map<String, Object> details = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
+            System.err.println("DEBUG: Validation error - Field: " + fieldName + ", Message: " + errorMessage);
             details.put(fieldName, errorMessage);
         });
         
@@ -54,9 +59,24 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        // Log the actual exception for debugging
+        ex.printStackTrace();
+        System.err.println("ERROR: " + ex.getClass().getName() + ": " + ex.getMessage());
+        if (ex.getCause() != null) {
+            System.err.println("CAUSE: " + ex.getCause().getClass().getName() + ": " + ex.getCause().getMessage());
+        }
+        
+        Map<String, Object> details = new HashMap<>();
+        details.put("exception", ex.getClass().getName());
+        details.put("message", ex.getMessage());
+        if (ex.getCause() != null) {
+            details.put("cause", ex.getCause().getClass().getName() + ": " + ex.getCause().getMessage());
+        }
+        
         ErrorResponse error = ErrorResponse.builder()
                 .code("INTERNAL_ERROR")
-                .message("An unexpected error occurred")
+                .message("An unexpected error occurred: " + ex.getMessage())
+                .details(details)
                 .build();
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
