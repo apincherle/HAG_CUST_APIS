@@ -66,5 +66,27 @@ public class SubmissionController {
         List<SubmissionLite> submissions = submissionService.getSubmissionsByCustomerId(customerId);
         return ResponseEntity.ok(submissions);
     }
+    
+    @GetMapping("/{submission_id}/items")
+    @Operation(summary = "Get all items for a submission", operationId = "getItemsBySubmissionId")
+    public ResponseEntity<List<SubmissionItemLite>> getItemsBySubmissionId(
+            @Parameter(description = "Submission GUID", required = true)
+            @PathVariable("submission_id") UUID submissionId) {
+        List<SubmissionItemLite> items = submissionService.getItemsBySubmissionId(submissionId);
+        return ResponseEntity.ok(items);
+    }
+    
+    @GetMapping("/items")
+    @Operation(summary = "Get items filtered by submission status", 
+               description = "Get all items from submissions with the specified status. Status can be selected from dropdown.",
+               operationId = "getItemsBySubmissionStatus")
+    public ResponseEntity<List<SubmissionItemLite>> getItemsBySubmissionStatus(
+            @Parameter(description = "Submission status (e.g., 'submitted-not yet received', 'grading started', etc.)", 
+                      required = true,
+                      example = "submitted-not yet received")
+            @RequestParam("status") com.example.model.Submission.SubmissionStatus status) {
+        List<SubmissionItemLite> items = submissionService.getItemsBySubmissionStatus(status);
+        return ResponseEntity.ok(items);
+    }
 }
 

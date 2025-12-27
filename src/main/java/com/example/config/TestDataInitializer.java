@@ -4,6 +4,8 @@ import com.example.model.Address;
 import com.example.model.Customer;
 import com.example.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,19 +19,47 @@ import java.util.UUID;
 
 /**
  * Service to initialize test data from CSV file.
- * Can be called manually via REST endpoint.
+ * Automatically runs on application startup and can also be called manually via REST endpoint.
  */
 @Component
-public class TestDataInitializer {
+@org.springframework.context.annotation.Profile("dev")
+public class TestDataInitializer implements ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
     private CustomerRepository customerRepository;
 
+    private boolean initialized = false;
+
+    /**
+     * Automatically initialize test data on application startup
+     * Uses ContextRefreshedEvent to ensure all beans are ready
+     */
+    @Override
+    @Transactional
+    public void onApplicationEvent(@org.springframework.lang.NonNull ContextRefreshedEvent event) {
+        // Only run once, even if context is refreshed multiple times
+        if (initialized) {
+            return;
+        }
+        initialized = true;
+        
+        System.out.println("TestDataInitializer: Checking and initializing test data on startup...");
+        int created = initializeTestData();
+        if (created > 0) {
+            System.out.println("TestDataInitializer: Created " + created + " customer(s) on startup");
+        } else {
+            System.out.println("TestDataInitializer: All test customers already exist");
+        }
+    }
+
+    /**
+     * Manual initialization method (can be called via REST endpoint)
+     */
     @Transactional
     public int initializeTestData() {
         int created = 0;
         try {
-            // Load CSV file from resources
+            // Load CSV file from resources - try multiple locations
             InputStream inputStream = getClass().getClassLoader()
                     .getResourceAsStream("com/example/repository/customers.csv");
             
@@ -38,12 +68,14 @@ public class TestDataInitializer {
             }
             
             if (inputStream == null) {
-                inputStream = getClass().getClassLoader()
-                        .getResourceAsStream("customers.csv");
+                inputStream = getClass().getClassLoader().getResourceAsStream("customers.csv");
             }
             
             if (inputStream == null) {
-                System.out.println("WARNING: customers.csv not found");
+                System.err.println("WARNING: customers.csv not found in any expected location");
+                System.err.println("  Tried: com/example/repository/customers.csv");
+                System.err.println("  Tried: /com/example/repository/customers.csv");
+                System.err.println("  Tried: customers.csv");
                 return 0;
             }
 

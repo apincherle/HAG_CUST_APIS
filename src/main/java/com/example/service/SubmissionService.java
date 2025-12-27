@@ -6,6 +6,7 @@ import com.example.model.Submission;
 import com.example.model.SubmissionItem;
 import com.example.model.SubmissionIntakeCode;
 import com.example.repository.CustomerRepository;
+import com.example.repository.SubmissionItemRepository;
 import com.example.repository.SubmissionRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -31,6 +32,9 @@ public class SubmissionService {
     
     @Autowired
     private SubmissionRepository submissionRepository;
+    
+    @Autowired
+    private SubmissionItemRepository submissionItemRepository;
     
     @Autowired
     private CustomerRepository customerRepository;
@@ -95,7 +99,7 @@ public class SubmissionService {
         submission.setServiceLevel(request.getServiceLevel() != null ? request.getServiceLevel() : Submission.ServiceLevel.BRONZE);
         // shippingAddressId removed - will use customer's shipping address when needed
         submission.setNotesCustomer(request.getNotesCustomer());
-        submission.setStatus(Submission.SubmissionStatus.DRAFT);
+        submission.setStatus(Submission.SubmissionStatus.SUBMITTED_NOT_YET_RECEIVED);
         
         // Generate submission number
         String submissionNumber = "SUB-" + System.currentTimeMillis();
@@ -143,17 +147,33 @@ public class SubmissionService {
     }
     
     public SubmissionLite getSubmissionById(UUID submissionId) {
-        Submission submission = submissionRepository.findBySubmissionIdAndStatusNot(
-                submissionId, Submission.SubmissionStatus.CANCELLED)
+        Submission submission = submissionRepository.findById(submissionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Submission not found"));
         return SubmissionLite.fromEntity(submission);
     }
     
     public List<SubmissionLite> getSubmissionsByCustomerId(UUID customerId) {
-        List<Submission> submissions = submissionRepository.findByCustomerIdAndStatusNot(
-                customerId, Submission.SubmissionStatus.CANCELLED);
+        List<Submission> submissions = submissionRepository.findByCustomerId(customerId);
         return submissions.stream()
                 .map(SubmissionLite::fromEntity)
+                .collect(Collectors.toList());
+    }
+    
+    public List<SubmissionItemLite> getItemsBySubmissionId(UUID submissionId) {
+        // Verify submission exists
+        submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Submission not found"));
+        
+        List<SubmissionItem> items = submissionItemRepository.findBySubmission_SubmissionId(submissionId);
+        return items.stream()
+                .map(SubmissionItemLite::fromEntity)
+                .collect(Collectors.toList());
+    }
+    
+    public List<SubmissionItemLite> getItemsBySubmissionStatus(Submission.SubmissionStatus status) {
+        List<SubmissionItem> items = submissionItemRepository.findBySubmissionStatus(status);
+        return items.stream()
+                .map(SubmissionItemLite::fromEntity)
                 .collect(Collectors.toList());
     }
 }

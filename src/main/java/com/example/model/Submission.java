@@ -1,5 +1,7 @@
 package com.example.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,9 +42,9 @@ public class Submission {
     @Column(name = "notes_customer", length = 2000, nullable = true)
     private String notesCustomer;
     
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 50)
-    private SubmissionStatus status = SubmissionStatus.DRAFT;
+    @Convert(converter = SubmissionStatusConverter.class)
+    private SubmissionStatus status = SubmissionStatus.SUBMITTED_NOT_YET_RECEIVED;
     
     @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubmissionItem> items = new ArrayList<>();
@@ -75,6 +77,41 @@ public class Submission {
     }
     
     public enum SubmissionStatus {
-        DRAFT, SUBMITTED, PROCESSING, COMPLETED, CANCELLED
+        SUBMITTED_NOT_YET_RECEIVED("submitted-not yet received"),
+        SUBMITTED_RECEIVED("submitted - received"),
+        GRADING_STARTED("grading started"),
+        GRADED("graded"),
+        QA_CHECK("qa check"),
+        FINALISED("finalised"),
+        POSTED("posted");
+        
+        private final String displayValue;
+        
+        SubmissionStatus(String displayValue) {
+            this.displayValue = displayValue;
+        }
+        
+        @JsonValue
+        public String getDisplayValue() {
+            return displayValue;
+        }
+        
+        @JsonCreator
+        public static SubmissionStatus fromDisplayValue(String displayValue) {
+            if (displayValue == null || displayValue.isEmpty()) {
+                return SUBMITTED_NOT_YET_RECEIVED; // Default
+            }
+            for (SubmissionStatus status : values()) {
+                if (status.displayValue.equalsIgnoreCase(displayValue)) {
+                    return status;
+                }
+            }
+            // Try to match by enum name for backward compatibility
+            try {
+                return valueOf(displayValue.toUpperCase().replace(" ", "_").replace("-", "_"));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Unknown submission status: " + displayValue);
+            }
+        }
     }
 }

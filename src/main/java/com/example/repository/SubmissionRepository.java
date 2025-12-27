@@ -15,9 +15,7 @@ import java.util.UUID;
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission, UUID> {
     
-    List<Submission> findByCustomerIdAndStatusNot(UUID customerId, Submission.SubmissionStatus status);
-    
-    Optional<Submission> findBySubmissionIdAndStatusNot(UUID submissionId, Submission.SubmissionStatus status);
+    List<Submission> findByCustomerId(UUID customerId);
     
     Optional<Submission> findBySubmissionNumber(String submissionNumber);
     
@@ -25,8 +23,7 @@ public interface SubmissionRepository extends JpaRepository<Submission, UUID> {
            "(:customerId IS NULL OR s.customerId = :customerId) AND " +
            "(:status IS NULL OR s.status = :status) AND " +
            "(:q IS NULL OR LOWER(s.submissionNumber) LIKE LOWER(CONCAT('%', :q, '%')) OR " +
-           "LOWER(s.notesCustomer) LIKE LOWER(CONCAT('%', :q, '%'))) AND " +
-           "(s.status != 'CANCELLED')")
+           "LOWER(s.notesCustomer) LIKE LOWER(CONCAT('%', :q, '%')))")
     Page<Submission> searchSubmissions(
             @Param("customerId") UUID customerId,
             @Param("status") Submission.SubmissionStatus status,
@@ -34,6 +31,6 @@ public interface SubmissionRepository extends JpaRepository<Submission, UUID> {
             Pageable pageable
     );
     
-    long countByCustomerIdAndStatusNot(UUID customerId, Submission.SubmissionStatus status);
+    long countByCustomerId(UUID customerId);
 }
 

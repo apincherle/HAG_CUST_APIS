@@ -88,8 +88,8 @@ public class SubmissionServiceTest {
             "Service level should be BRONZE");
         assertEquals("first sub", response.getSubmission().getNotesCustomer(), 
             "Notes should match");
-        assertEquals(Submission.SubmissionStatus.DRAFT, response.getSubmission().getStatus(), 
-            "Status should be DRAFT");
+        assertEquals(Submission.SubmissionStatus.SUBMITTED_NOT_YET_RECEIVED, response.getSubmission().getStatus(), 
+            "Status should be SUBMITTED_NOT_YET_RECEIVED");
         
         // Verify items
         assertNotNull(response.getItems(), "Items should not be null");
