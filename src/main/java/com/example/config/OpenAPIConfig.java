@@ -16,9 +16,9 @@ public class OpenAPIConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("HAGS Customer API")
+                        .title("HAGS API")
                         .version("1.0.0")
-                        .description("Customer management API for HAGS")
+                        .description("HAGS Customer Management and QR Certificate API")
                         .contact(new Contact()
                                 .name("HAGS API Support")))
                 .servers(List.of(
