@@ -1,0 +1,44 @@
+{
+  "submissionId": "95240174-43c0-4f75-a716-a2f701e7c9fd",
+  "customerId": "95240174-43c0-4f75-a716-a2f701e7c9fd",
+  "itemId": "123e4567-e89b-12d3-a456-426614174000",
+  "cardName": "Charizard",
+  "setName": "Base Set",
+  "year": 1999,
+  "cardNumber": "4",
+  "variant": "Standard",
+  "grade": 9.5,
+  "graderVersion": "v2.1",
+  "gradedAt": "2026-01-02T15:08:00.929Z",
+  "notesPublic": "Excellent condition with minimal edge wear",
+  "notesInternal": "Minor surface scratches on back, corners are sharp",
+  "checksumSha256": "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456",
+  "status": "VERIFIED",
+  "images": [
+    {
+      "kind": "front",
+      "url": "https://example.com/images/certificates/charizard-front.jpg",
+      "width": 1200,
+      "height": 1680
+    },
+    {
+      "kind": "back",
+      "url": "https://example.com/images/certificates/charizard-back.jpg",
+      "width": 1200,
+      "height": 1680
+    },
+    {
+      "kind": "surface_L",
+      "url": "https://example.com/images/certificates/charizard-surface-left.jpg",
+      "width": 800,
+      "height": 600
+    },
+    {
+      "kind": "surface_R",
+      "url": "https://example.com/images/certificates/charizard-surface-right.jpg",
+      "width": 800,
+      "height": 600
+    }
+  ]
+}
+
