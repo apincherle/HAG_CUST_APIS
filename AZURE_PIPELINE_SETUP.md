@@ -11,7 +11,7 @@
    - Configure it to use your ACR
 
 3. **Azure DevOps Service Connections**
-   - Create a service connection for Azure subscription (named "Azure subscription 1" or update the pipeline)
+   - Azure subscription service connection: `hags-sc` (already configured)
    - Create a service connection for Azure Container Registry (named "hags-acr" or update the pipeline)
 
 4. **Azure DevOps Pipeline Variables**
@@ -30,9 +30,9 @@
 
 ### Variables to Update
 
-1. **containerRegistry** (line 22): Update with your ACR service connection name
-2. **azureSubscription** (lines 119, 129, 162): Update with your Azure service connection name
-3. **containerAppName** (line 19): Update if your Container App has a different name
+1. **containerRegistry** (line 23): Update with your ACR service connection name
+2. **azureSubscription**: Already set to `hags-sc` (lines 118, 128, 164)
+3. **containerAppName** (line 20): Update if your Container App has a different name
 
 ### SQL Database Configuration
 

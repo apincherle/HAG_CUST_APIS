@@ -115,7 +115,7 @@ stages:
           - task: AzureCLI@2
             displayName: 'Login to Azure'
             inputs:
-              azureSubscription: 'Azure subscription 1'  # Update with your service connection name
+              azureSubscription: 'hags-sc'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
@@ -125,7 +125,7 @@ stages:
           - task: AzureCLI@2
             displayName: 'Deploy to Container App'
             inputs:
-              azureSubscription: 'Azure subscription 1'  # Update with your service connection name
+              azureSubscription: 'hags-sc'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
@@ -161,7 +161,7 @@ stages:
           - task: AzureCLI@2
             displayName: 'Verify Deployment'
             inputs:
-              azureSubscription: 'Azure subscription 1'  # Update with your service connection name
+              azureSubscription: 'hags-sc'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
