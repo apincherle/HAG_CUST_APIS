@@ -9,6 +9,10 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
+  demands: []
+
+# Ensure stages run sequentially (one after another)
+# No parallelism needed - each stage depends on the previous one
 
 variables:
   # Variable group (optional - create 'hags-variables' group in Azure DevOps with SQL_USERNAME, SQL_PASSWORD, QR_CERT_SECRET)
@@ -33,6 +37,7 @@ variables:
 stages:
   - stage: Build
     displayName: 'Build and Test'
+    # No parallelism - single job runs sequentially
     jobs:
       - job: BuildJob
         displayName: 'Build and Test Application'
@@ -87,7 +92,8 @@ stages:
 
   - stage: BuildDocker
     displayName: 'Build Docker Image'
-    dependsOn: Build
+    dependsOn: Build  # Runs after Build stage completes
+    # No parallelism - single job runs sequentially
     jobs:
       - job: DockerBuildJob
         displayName: 'Build and Push Docker Image'
@@ -116,7 +122,8 @@ stages:
 
   - stage: Deploy
     displayName: 'Deploy to Azure Container App'
-    dependsOn: BuildDocker
+    dependsOn: BuildDocker  # Runs after BuildDocker stage completes
+    # No parallelism - single job runs sequentially
     jobs:
       - job: DeployContainerApp
         displayName: 'Deploy to Container App'
