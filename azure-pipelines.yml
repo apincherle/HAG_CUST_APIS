@@ -1,22 +1,174 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+# Azure Pipeline for HAGS Customer API
+# Builds, tests, and deploys to Azure Container Apps
 
 trigger:
-- master
+  branches:
+    include:
+      - master
+      - main
 
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.11'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
+variables:
+  - group: hags-variables  # Azure DevOps variable group (create this with your secrets)
+  - name: subscriptionId
+    value: '4d6e1e46-b56b-4cf8-b6bf-de5f41d462d3'
+  - name: resourceGroup
+    value: 'hags-rs'
+  - name: containerAppName
+    value: 'hags-customer-api'
+  - name: containerRegistry
+    value: 'hags-acr'  # Azure Container Registry service connection name
+  - name: acrName
+    value: 'hagsregistry'  # Your ACR name (without .azurecr.io)
+  - name: imageName
+    value: 'hags-customer-api'
+  - name: sqlServer
+    value: 'hags-s1.database.windows.net'
+  - name: sqlDatabase
+    value: 'free-sql-db-2072015'
+  - name: javaVersion
+    value: '17'
+
+stages:
+  - stage: Build
+    displayName: 'Build and Test'
+    jobs:
+      - job: BuildJob
+        displayName: 'Build and Test Application'
+        steps:
+          - task: JavaToolInstaller@0
+            displayName: 'Install Java 17'
+            inputs:
+              versionSpec: '17'
+              jdkArchitectureOption: 'x64'
+              jdkSourceOption: 'PreInstalled'
+
+          - task: Maven@3
+            displayName: 'Maven Build'
+            inputs:
+              mavenPomFile: 'pom.xml'
+              mavenOptions: '-Xmx3072m'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '$(javaVersion)'
+              jdkArchitectureOption: 'x64'
+              goals: 'clean compile'
+              options: '-DskipTests'
+
+          - task: Maven@3
+            displayName: 'Maven Test'
+            inputs:
+              mavenPomFile: 'pom.xml'
+              mavenOptions: '-Xmx3072m'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '$(javaVersion)'
+              jdkArchitectureOption: 'x64'
+              goals: 'test'
+              publishJUnitResults: true
+              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+              testRunTitle: 'Maven Test Results'
+
+          - task: Maven@3
+            displayName: 'Maven Package'
+            inputs:
+              mavenPomFile: 'pom.xml'
+              mavenOptions: '-Xmx3072m'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '$(javaVersion)'
+              jdkArchitectureOption: 'x64'
+              goals: 'package'
+              options: '-DskipTests'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish JAR Artifact'
+            inputs:
+              pathToPublish: 'target/hags-customer-api-1.0-SNAPSHOT.jar'
+              artifactName: 'jar-artifact'
+
+  - stage: BuildDocker
+    displayName: 'Build Docker Image'
+    dependsOn: Build
+    jobs:
+      - job: DockerBuildJob
+        displayName: 'Build and Push Docker Image'
+        steps:
+          - task: Docker@2
+            displayName: 'Build and Push Docker Image'
+            inputs:
+              containerRegistry: '$(containerRegistry)'  # Azure Container Registry service connection
+              repository: '$(imageName)'
+              command: 'buildAndPush'
+              Dockerfile: '**/Dockerfile'
+              tags: |
+                $(Build.BuildId)
+                latest
+
+  - stage: Deploy
+    displayName: 'Deploy to Azure Container App'
+    dependsOn: BuildDocker
+    jobs:
+      - deployment: DeployContainerApp
+        displayName: 'Deploy to Container App'
+        environment: 'production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureCLI@2
+                  displayName: 'Login to Azure'
+                  inputs:
+                    azureSubscription: 'Azure subscription 1'  # Update with your service connection name
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      az account show
+                      az account set --subscription $(subscriptionId)
+
+                - task: AzureCLI@2
+                  displayName: 'Deploy to Container App'
+                  inputs:
+                    azureSubscription: 'Azure subscription 1'  # Update with your service connection name
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      # Construct SQL connection string
+                      SQL_CONNECTION_STRING="jdbc:sqlserver://$(sqlServer):1433;database=$(sqlDatabase);encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;"
+                      
+                      # Construct full ACR image path
+                      IMAGE_FULL_PATH="$(acrName).azurecr.io/$(imageName):$(Build.BuildId)"
+                      
+                      echo "Deploying image: $IMAGE_FULL_PATH"
+                      
+                      # Update Container App with new image
+                      az containerapp update \
+                        --name $(containerAppName) \
+                        --resource-group $(resourceGroup) \
+                        --image $IMAGE_FULL_PATH \
+                        --set-env-vars \
+                          "SPRING_PROFILES_ACTIVE=prod" \
+                          "SPRING_DATASOURCE_URL=$SQL_CONNECTION_STRING" \
+                          "SPRING_DATASOURCE_USERNAME=$(SQL_USERNAME)" \
+                          "SPRING_DATASOURCE_PASSWORD=$(SQL_PASSWORD)" \
+                          "AZURE_SQL_SERVER=$(sqlServer)" \
+                          "AZURE_SQL_DATABASE=$(sqlDatabase)" \
+                          "AZURE_SQL_PORT=1433" \
+                          "QR_CERTIFICATE_BASE_URL=https://www.hags-grading.co.uk" \
+                          "QR_CERT_SECRET=$(QR_CERT_SECRET)" \
+                          "QR_STORAGE_PATH=/app/static/qrs" \
+                          "QR_SERIAL_PREFIX=HAGS"
+                      
+                      echo "Deployment completed successfully"
+
+                - task: AzureCLI@2
+                  displayName: 'Verify Deployment'
+                  inputs:
+                    azureSubscription: 'Azure subscription 1'  # Update with your service connection name
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      az containerapp show \
+                        --name $(containerAppName) \
+                        --resource-group $(resourceGroup) \
+                        --query "{name:name,status:properties.runningStatus,url:properties.configuration.ingress.fqdn}" \
+                        --output table
