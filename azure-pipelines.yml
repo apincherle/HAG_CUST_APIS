@@ -109,68 +109,64 @@ stages:
     displayName: 'Deploy to Azure Container App'
     dependsOn: BuildDocker
     jobs:
-      - deployment: DeployContainerApp
+      - job: DeployContainerApp
         displayName: 'Deploy to Container App'
-        environment: 'production'
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - task: AzureCLI@2
-                  displayName: 'Login to Azure'
-                  inputs:
-                    azureSubscription: 'Azure subscription 1'  # Update with your service connection name
-                    scriptType: 'bash'
-                    scriptLocation: 'inlineScript'
-                    inlineScript: |
-                      az account show
-                      az account set --subscription $(subscriptionId)
+        steps:
+          - task: AzureCLI@2
+            displayName: 'Login to Azure'
+            inputs:
+              azureSubscription: 'Azure subscription 1'  # Update with your service connection name
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az account show
+                az account set --subscription $(subscriptionId)
 
-                - task: AzureCLI@2
-                  displayName: 'Deploy to Container App'
-                  inputs:
-                    azureSubscription: 'Azure subscription 1'  # Update with your service connection name
-                    scriptType: 'bash'
-                    scriptLocation: 'inlineScript'
-                    inlineScript: |
-                      # Construct SQL connection string
-                      SQL_CONNECTION_STRING="jdbc:sqlserver://$(sqlServer):1433;database=$(sqlDatabase);encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;"
-                      
-                      # Construct full ACR image path
-                      IMAGE_FULL_PATH="$(acrName).azurecr.io/$(imageName):$(Build.BuildId)"
-                      
-                      echo "Deploying image: $IMAGE_FULL_PATH"
-                      
-                      # Update Container App with new image
-                      az containerapp update \
-                        --name $(containerAppName) \
-                        --resource-group $(resourceGroup) \
-                        --image $IMAGE_FULL_PATH \
-                        --set-env-vars \
-                          "SPRING_PROFILES_ACTIVE=prod" \
-                          "SPRING_DATASOURCE_URL=$SQL_CONNECTION_STRING" \
-                          "SPRING_DATASOURCE_USERNAME=$(SQL_USERNAME)" \
-                          "SPRING_DATASOURCE_PASSWORD=$(SQL_PASSWORD)" \
-                          "AZURE_SQL_SERVER=$(sqlServer)" \
-                          "AZURE_SQL_DATABASE=$(sqlDatabase)" \
-                          "AZURE_SQL_PORT=1433" \
-                          "QR_CERTIFICATE_BASE_URL=https://www.hags-grading.co.uk" \
-                          "QR_CERT_SECRET=$(QR_CERT_SECRET)" \
-                          "QR_STORAGE_PATH=/app/static/qrs" \
-                          "QR_SERIAL_PREFIX=HAGS"
-                      # Note: SQL_USERNAME, SQL_PASSWORD, and QR_CERT_SECRET should be set as pipeline variables or in a variable group
-                      
-                      echo "Deployment completed successfully"
+          - task: AzureCLI@2
+            displayName: 'Deploy to Container App'
+            inputs:
+              azureSubscription: 'Azure subscription 1'  # Update with your service connection name
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                # Construct SQL connection string
+                SQL_CONNECTION_STRING="jdbc:sqlserver://$(sqlServer):1433;database=$(sqlDatabase);encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;"
+                
+                # Construct full ACR image path
+                IMAGE_FULL_PATH="$(acrName).azurecr.io/$(imageName):$(Build.BuildId)"
+                
+                echo "Deploying image: $IMAGE_FULL_PATH"
+                
+                # Update Container App with new image
+                az containerapp update \
+                  --name $(containerAppName) \
+                  --resource-group $(resourceGroup) \
+                  --image $IMAGE_FULL_PATH \
+                  --set-env-vars \
+                    "SPRING_PROFILES_ACTIVE=prod" \
+                    "SPRING_DATASOURCE_URL=$SQL_CONNECTION_STRING" \
+                    "SPRING_DATASOURCE_USERNAME=$(SQL_USERNAME)" \
+                    "SPRING_DATASOURCE_PASSWORD=$(SQL_PASSWORD)" \
+                    "AZURE_SQL_SERVER=$(sqlServer)" \
+                    "AZURE_SQL_DATABASE=$(sqlDatabase)" \
+                    "AZURE_SQL_PORT=1433" \
+                    "QR_CERTIFICATE_BASE_URL=https://www.hags-grading.co.uk" \
+                    "QR_CERT_SECRET=$(QR_CERT_SECRET)" \
+                    "QR_STORAGE_PATH=/app/static/qrs" \
+                    "QR_SERIAL_PREFIX=HAGS"
+                # Note: SQL_USERNAME, SQL_PASSWORD, and QR_CERT_SECRET should be set as pipeline variables or in a variable group
+                
+                echo "Deployment completed successfully"
 
-                - task: AzureCLI@2
-                  displayName: 'Verify Deployment'
-                  inputs:
-                    azureSubscription: 'Azure subscription 1'  # Update with your service connection name
-                    scriptType: 'bash'
-                    scriptLocation: 'inlineScript'
-                    inlineScript: |
-                      az containerapp show \
-                        --name $(containerAppName) \
-                        --resource-group $(resourceGroup) \
-                        --query "{name:name,status:properties.runningStatus,url:properties.configuration.ingress.fqdn}" \
-                        --output table
+          - task: AzureCLI@2
+            displayName: 'Verify Deployment'
+            inputs:
+              azureSubscription: 'Azure subscription 1'  # Update with your service connection name
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az containerapp show \
+                  --name $(containerAppName) \
+                  --resource-group $(resourceGroup) \
+                  --query "{name:name,status:properties.runningStatus,url:properties.configuration.ingress.fqdn}" \
+                  --output table
