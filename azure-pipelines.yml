@@ -19,8 +19,6 @@ variables:
     value: 'hags-rs'
   - name: containerAppName
     value: 'hags-customer-api'
-  - name: containerRegistry
-    value: 'hags-acr'  # Azure Container Registry service connection name
   - name: acrName
     value: 'hagsregistry'  # Your ACR name (without .azurecr.io)
   - name: imageName
@@ -94,16 +92,27 @@ stages:
       - job: DockerBuildJob
         displayName: 'Build and Push Docker Image'
         steps:
-          - task: Docker@2
-            displayName: 'Build and Push Docker Image'
+          - task: AzureCLI@2
+            displayName: 'Build and Push to ACR'
             inputs:
-              containerRegistry: '$(containerRegistry)'  # Azure Container Registry service connection
-              repository: '$(imageName)'
-              command: 'buildAndPush'
-              Dockerfile: '**/Dockerfile'
-              tags: |
-                $(Build.BuildId)
-                latest
+              azureSubscription: 'hags-sc'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                # Login to Azure
+                az account show
+                
+                # Build and push image to ACR using az acr build (no Docker registry service connection needed)
+                echo "Building and pushing image to ACR..."
+                az acr build \
+                  --registry $(acrName) \
+                  --resource-group $(resourceGroup) \
+                  --image $(imageName):$(Build.BuildId) \
+                  --image $(imageName):latest \
+                  --file Dockerfile \
+                  .
+                
+                echo "Successfully built and pushed images to $(acrName).azurecr.io"
 
   - stage: Deploy
     displayName: 'Deploy to Azure Container App'
