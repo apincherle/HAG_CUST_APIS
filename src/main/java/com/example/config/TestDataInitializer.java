@@ -2,7 +2,16 @@ package com.example.config;
 
 import com.example.model.Address;
 import com.example.model.Customer;
+import com.example.model.Submission;
+import com.example.model.SubmissionItem;
+import com.example.model.SubmissionIntakeCode;
+import com.example.qrcert.entity.CardCertificate;
+import com.example.qrcert.entity.CardImage;
 import com.example.repository.CustomerRepository;
+import com.example.repository.SubmissionRepository;
+import com.example.repository.SubmissionItemRepository;
+import com.example.qrcert.repository.CardCertificateRepository;
+import com.example.qrcert.repository.CardImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -15,6 +24,7 @@ import java.io.InputStreamReader;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -27,6 +37,18 @@ public class TestDataInitializer implements ApplicationListener<ContextRefreshed
 
     @Autowired
     private CustomerRepository customerRepository;
+    
+    @Autowired
+    private SubmissionRepository submissionRepository;
+    
+    @Autowired
+    private SubmissionItemRepository submissionItemRepository;
+    
+    @Autowired
+    private CardCertificateRepository cardCertificateRepository;
+    
+    @Autowired
+    private CardImageRepository cardImageRepository;
 
     private boolean initialized = false;
 
@@ -44,12 +66,15 @@ public class TestDataInitializer implements ApplicationListener<ContextRefreshed
         initialized = true;
         
         System.out.println("TestDataInitializer: Checking and initializing test data on startup...");
-        int created = initializeTestData();
-        if (created > 0) {
-            System.out.println("TestDataInitializer: Created " + created + " customer(s) on startup");
+        int customersCreated = initializeTestData();
+        if (customersCreated > 0) {
+            System.out.println("TestDataInitializer: Created " + customersCreated + " customer(s) on startup");
         } else {
             System.out.println("TestDataInitializer: All test customers already exist");
         }
+        
+        // Initialize submissions, items, and certificates
+        initializeSubmissionsAndCertificates();
     }
 
     /**
@@ -180,6 +205,274 @@ public class TestDataInitializer implements ApplicationListener<ContextRefreshed
             throw new RuntimeException("Failed to initialize test data", e);
         }
         return created;
+    }
+    
+    /**
+     * Initialize test submissions, submission items, and certificates
+     */
+    @Transactional
+    public void initializeSubmissionsAndCertificates() {
+        // Get active customers
+        List<Customer> customers = customerRepository.findAll().stream()
+            .filter(c -> c.getStatus() == Customer.CustomerStatus.ACTIVE && c.getDeletedAt() == null)
+            .limit(5) // Use first 5 active customers
+            .toList();
+        
+        if (customers.isEmpty()) {
+            System.out.println("TestDataInitializer: No active customers found, skipping submission/certificate initialization");
+            return;
+        }
+        
+        int submissionsCreated = 0;
+        int itemsCreated = 0;
+        int certificatesCreated = 0;
+        
+        // Create submissions for each customer
+        for (int i = 0; i < customers.size(); i++) {
+            Customer customer = customers.get(i);
+            
+            // Check if submissions already exist for this customer
+            boolean hasExistingSubmissions = submissionRepository.countByCustomerId(customer.getCustomerId()) > 0;
+            
+            if (hasExistingSubmissions) {
+                // If submissions exist, check if we need to create certificates for existing TEST DATA items only
+                // Only process submissions that match our test data pattern (submission number starts with "SUB-")
+                List<Submission> existingSubmissions = submissionRepository.findByCustomerId(customer.getCustomerId());
+                for (Submission submission : existingSubmissions) {
+                    // Only create certificates for test data submissions (identified by submission number pattern)
+                    boolean isTestDataSubmission = submission.getSubmissionNumber() != null && 
+                                                   submission.getSubmissionNumber().startsWith("SUB-");
+                    
+                    if (!isTestDataSubmission) {
+                        // Skip real production submissions - do not create certificates for them
+                        continue;
+                    }
+                    
+                    if (submission.getStatus() == Submission.SubmissionStatus.GRADED ||
+                        submission.getStatus() == Submission.SubmissionStatus.FINALISED ||
+                        submission.getStatus() == Submission.SubmissionStatus.POSTED) {
+                        
+                        // Check items for this submission
+                        List<SubmissionItem> items = submissionItemRepository.findBySubmission_SubmissionId(submission.getSubmissionId());
+                        for (int k = 0; k < items.size(); k++) {
+                            SubmissionItem item = items.get(k);
+                            String itemIdStr = item.getItemId().toString();
+                            
+                            // Check if certificate already exists for this item
+                            boolean certificateExists = cardCertificateRepository.findAll().stream()
+                                .anyMatch(cert -> cert.getItemId().equals(itemIdStr));
+                            
+                            // Create certificate for every other item that doesn't have one (only for test data)
+                            if (!certificateExists && k % 2 == 0) {
+                                createCertificateForItem(customer, submission, item, certificatesCreated);
+                                certificatesCreated++;
+                            }
+                        }
+                    }
+                }
+                continue; // Skip creating new submissions if they already exist
+            }
+            
+            // Create 1-3 submissions per customer
+            int numSubmissions = (i % 3) + 1;
+            
+            // Use different statuses to ensure we have some graded submissions
+            Submission.SubmissionStatus[] statuses = {
+                Submission.SubmissionStatus.SUBMITTED_RECEIVED,
+                Submission.SubmissionStatus.GRADING_STARTED,
+                Submission.SubmissionStatus.GRADED,
+                Submission.SubmissionStatus.FINALISED,
+                Submission.SubmissionStatus.POSTED
+            };
+            
+            for (int j = 0; j < numSubmissions; j++) {
+                Submission submission = new Submission();
+                submission.setCustomerId(customer.getCustomerId());
+                submission.setSubmissionNumber("SUB-" + customer.getCustomerId().toString().substring(0, 8).toUpperCase() + "-" + String.format("%03d", j + 1));
+                submission.setServiceLevel(Submission.ServiceLevel.values()[j % Submission.ServiceLevel.values().length]);
+                submission.setStatus(statuses[j % statuses.length]);
+                submission.setNotesCustomer("Test submission " + (j + 1) + " for customer " + customer.getFullName());
+                submission.setCreatedAt(LocalDateTime.now().minusDays(30 - (j * 5)));
+                submission.setUpdatedAt(LocalDateTime.now().minusDays(30 - (j * 5)));
+                
+                // Create intake code
+                SubmissionIntakeCode intakeCode = new SubmissionIntakeCode();
+                intakeCode.setSubmission(submission);
+                intakeCode.setValue("INTAKE-" + submission.getSubmissionNumber());
+                intakeCode.setBarcodeFormat(SubmissionIntakeCode.BarcodeFormat.CODE_128);
+                intakeCode.setQrValue("https://hags-grading.co.uk/submission/" + submission.getSubmissionNumber());
+                submission.setIntakeCode(intakeCode);
+                
+                submission = submissionRepository.save(submission);
+                submissionsCreated++;
+                
+                // Create 2-4 items per submission
+                int numItems = 2 + (j % 3);
+                
+                for (int k = 0; k < numItems; k++) {
+                    SubmissionItem item = new SubmissionItem();
+                    item.setSubmission(submission);
+                    item.setLineNumber(k + 1);
+                    item.setGame(SubmissionItem.GameType.values()[k % SubmissionItem.GameType.values().length]);
+                    
+                    // Create realistic card descriptions
+                    String[] cardNames = {
+                        "Charizard", "Pikachu", "Blastoise", "Venusaur", "Mewtwo",
+                        "Black Lotus", "Ancestral Recall", "Time Walk", "Mox Pearl", "Mox Sapphire",
+                        "Michael Jordan", "LeBron James", "Tom Brady", "Wayne Gretzky", "Babe Ruth"
+                    };
+                    String[] setNames = {
+                        "Base Set", "Jungle", "Fossil", "Team Rocket",
+                        "Alpha", "Beta", "Unlimited", "Revised",
+                        "Topps", "Upper Deck", "Panini", "Fleer"
+                    };
+                    
+                    String cardName = cardNames[(k + j) % cardNames.length];
+                    String setName = setNames[(k + j) % setNames.length];
+                    int year = 1990 + ((k + j) % 30);
+                    
+                    item.setFreeTextLine(cardName + " - " + setName + " (" + year + ") #" + (k + 1));
+                    item.setCustomerNotes("Please grade carefully");
+                    item.setRequestedPhotoSlots(2);
+                    item.setFrontPhotoId("photo-front-" + item.getItemId());
+                    item.setBackPhotoId("photo-back-" + item.getItemId());
+                    item.setEnrichmentStatus(SubmissionItem.EnrichmentStatus.values()[k % SubmissionItem.EnrichmentStatus.values().length]);
+                    item.setEnrichmentConfidence(0.85 + (k * 0.05));
+                    item.setMatchedCatalogId("CAT-" + cardName.toUpperCase().replace(" ", "-") + "-" + year);
+                    
+                    item = submissionItemRepository.save(item);
+                    itemsCreated++;
+                    
+                    // Create certificate for some items (about 50% of items) if submission is graded
+                    // Also create for FINALISED and POSTED statuses
+                    boolean shouldCreateCertificate = (k % 2 == 0) && 
+                        (submission.getStatus() == Submission.SubmissionStatus.GRADED ||
+                         submission.getStatus() == Submission.SubmissionStatus.FINALISED ||
+                         submission.getStatus() == Submission.SubmissionStatus.POSTED);
+                    
+                    if (shouldCreateCertificate) {
+                        // Check if certificate already exists for this item
+                        String itemIdStr = item.getItemId().toString();
+                        boolean certificateExists = cardCertificateRepository.findAll().stream()
+                            .anyMatch(cert -> cert.getItemId().equals(itemIdStr));
+                        
+                        if (!certificateExists) {
+                            createCertificateForItem(customer, submission, item, cardName, setName, year, k, certificatesCreated);
+                            certificatesCreated++;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (submissionsCreated > 0 || itemsCreated > 0 || certificatesCreated > 0) {
+            System.out.println("TestDataInitializer: Created " + submissionsCreated + " submission(s), " + 
+                             itemsCreated + " item(s), and " + certificatesCreated + " certificate(s)");
+        } else {
+            System.out.println("TestDataInitializer: All test submissions/items/certificates already exist");
+        }
+    }
+    
+    /**
+     * Creates a certificate for a submission item
+     */
+    private void createCertificateForItem(Customer customer, Submission submission, SubmissionItem item, 
+                                         String cardName, String setName, int year, int itemIndex, int certificateCount) {
+        String itemIdStr = item.getItemId().toString();
+        String publicId = generatePublicId();
+        // Ensure public ID is unique
+        while (cardCertificateRepository.existsByPublicId(publicId)) {
+            publicId = generatePublicId();
+        }
+        
+        CardCertificate certificate = CardCertificate.builder()
+            .publicId(publicId)
+            .serialNumber("HAGS-" + year + "-" + String.format("%06d", certificateCount + 1))
+            .submissionId(submission.getSubmissionId().toString())
+            .customerId(customer.getCustomerId().toString())
+            .itemId(itemIdStr)
+            .status("VERIFIED")
+            .cardName(cardName)
+            .setName(setName)
+            .year(year)
+            .cardNumber(String.valueOf(itemIndex + 1))
+            .variant("Standard")
+            .grade(8.5 + (itemIndex * 0.5))
+            .graderVersion("v2.1")
+            .gradedAt(LocalDateTime.now().minusDays(10 - itemIndex))
+            .notesPublic("Excellent condition")
+            .notesInternal("Minor edge wear")
+            .checksumSha256("a1b2c3d4e5f6" + String.format("%052d", certificateCount))
+            .build();
+    
+        // Add images
+        CardImage frontImage = CardImage.builder()
+            .certificate(certificate)
+            .kind("front")
+            .url("https://example.com/images/" + certificate.getPublicId() + "/front.jpg")
+            .width(1200)
+            .height(1680)
+            .build();
+        
+        CardImage backImage = CardImage.builder()
+            .certificate(certificate)
+            .kind("back")
+            .url("https://example.com/images/" + certificate.getPublicId() + "/back.jpg")
+            .width(1200)
+            .height(1680)
+            .build();
+        
+        certificate.getImages().add(frontImage);
+        certificate.getImages().add(backImage);
+        
+        cardCertificateRepository.save(certificate);
+    }
+    
+    /**
+     * Creates a certificate for an existing item (overload for existing items)
+     */
+    private void createCertificateForItem(Customer customer, Submission submission, SubmissionItem item, int certificateCount) {
+        // Extract card info from free text line
+        String freeText = item.getFreeTextLine();
+        String cardName = "Card";
+        String setName = "Set";
+        int year = 2000;
+        
+        // Try to parse card info from free text line (format: "CardName - SetName (Year) #Number")
+        if (freeText != null && !freeText.isEmpty()) {
+            String[] parts = freeText.split(" - ");
+            if (parts.length > 0) {
+                cardName = parts[0].trim();
+            }
+            if (parts.length > 1) {
+                String[] setParts = parts[1].split(" \\(");
+                if (setParts.length > 0) {
+                    setName = setParts[0].trim();
+                }
+                if (setParts.length > 1) {
+                    String yearStr = setParts[1].split("\\)")[0].trim();
+                    try {
+                        year = Integer.parseInt(yearStr);
+                    } catch (NumberFormatException e) {
+                        year = 2000;
+                    }
+                }
+            }
+        }
+        
+        createCertificateForItem(customer, submission, item, cardName, setName, year, 0, certificateCount);
+    }
+    
+    /**
+     * Generates a random public ID for certificates (16 hex characters)
+     */
+    private String generatePublicId() {
+        StringBuilder sb = new StringBuilder();
+        java.util.Random random = new java.util.Random();
+        for (int i = 0; i < 16; i++) {
+            sb.append(Integer.toHexString(random.nextInt(16)));
+        }
+        return sb.toString().toUpperCase();
     }
 }
 

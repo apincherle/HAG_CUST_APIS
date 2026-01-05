@@ -1,0 +1,32 @@
+{
+  "submissionId": "d9580a27-1bff-46c3-a238-e89b8fa41f83",
+  "customerId": "95240174-43c0-4f75-a716-a2f701e7c9fd",
+  "itemId": "c8bb2068-f4f2-4c05-b970-61b7ba92d1a2",
+  "cardName": "Charizard",
+  "setName": "Base Set",
+  "year": 1990,
+  "cardNumber": "1",
+  "variant": "Standard",
+  "grade": 9.5,
+  "graderVersion": "v2.1",
+  "gradedAt": "2026-01-02T15:10:00.000Z",
+  "notesPublic": "Excellent condition with minimal edge wear",
+  "notesInternal": "Minor surface scratches on back, corners are sharp",
+  "checksumSha256": "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456",
+  "status": "VERIFIED",
+  "images": [
+    {
+      "kind": "front",
+      "url": "https://example.com/images/certificates/charizard-front.jpg",
+      "width": 1200,
+      "height": 1680
+    },
+    {
+      "kind": "back",
+      "url": "https://example.com/images/certificates/charizard-back.jpg",
+      "width": 1200,
+      "height": 1680
+    }
+  ]
+}
+
