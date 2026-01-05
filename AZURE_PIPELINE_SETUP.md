@@ -14,11 +14,17 @@
    - Create a service connection for Azure subscription (named "Azure subscription 1" or update the pipeline)
    - Create a service connection for Azure Container Registry (named "hags-acr" or update the pipeline)
 
-4. **Azure DevOps Variable Group**
-   - Create a variable group named `hags-variables` with the following secrets:
+4. **Azure DevOps Pipeline Variables**
+   - Go to your pipeline → Edit → Variables
+   - Add the following variables (mark as secret for passwords):
      - `SQL_USERNAME` - Azure SQL database username
-     - `SQL_PASSWORD` - Azure SQL database password
-     - `QR_CERT_SECRET` - Secret key for QR certificate signing
+     - `SQL_PASSWORD` - Azure SQL database password (mark as secret)
+     - `QR_CERT_SECRET` - Secret key for QR certificate signing (mark as secret)
+   
+   **OR** create a variable group:
+   - Create a variable group named `hags-variables` in Azure DevOps
+   - Add the same variables above
+   - Uncomment line 15 in `azure-pipelines.yml`: `# - group: hags-variables`
 
 ## Pipeline Configuration
 

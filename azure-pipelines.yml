@@ -11,7 +11,8 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  - group: hags-variables  # Azure DevOps variable group (create this with your secrets)
+  # Variable group (optional - create 'hags-variables' group in Azure DevOps with SQL_USERNAME, SQL_PASSWORD, QR_CERT_SECRET)
+  # - group: hags-variables
   - name: subscriptionId
     value: '4d6e1e46-b56b-4cf8-b6bf-de5f41d462d3'
   - name: resourceGroup
@@ -157,6 +158,7 @@ stages:
                           "QR_CERT_SECRET=$(QR_CERT_SECRET)" \
                           "QR_STORAGE_PATH=/app/static/qrs" \
                           "QR_SERIAL_PREFIX=HAGS"
+                      # Note: SQL_USERNAME, SQL_PASSWORD, and QR_CERT_SECRET should be set as pipeline variables or in a variable group
                       
                       echo "Deployment completed successfully"
 
