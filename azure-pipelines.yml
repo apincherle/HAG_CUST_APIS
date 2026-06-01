@@ -15,13 +15,11 @@ trigger:
   branches:
     include:
       - master
-      - main
 
 pr:
   branches:
     include:
       - master
-      - main
 
 variables:
   javaVersion: '17'
