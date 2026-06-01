@@ -40,6 +40,7 @@ public class QrCertificateController {
             // Convert request to service request
             CertificateService.CertificateCreateRequest createRequest = 
                 CertificateService.CertificateCreateRequest.builder()
+                    .inspectionId(request.getInspectionId())
                     .submissionId(request.getSubmissionId())
                     .customerId(request.getCustomerId())
                     .itemId(request.getItemId())
@@ -62,10 +63,18 @@ public class QrCertificateController {
                 certificateService.createCertificate(createRequest);
 
             // Build response
+            String certificateNumber = result.getSerialNumber();
+            String gradedDate = result.getCertificate().getGradedAt() != null
+                    ? result.getCertificate().getGradedAt().toLocalDate().toString()
+                    : null;
+
             CertificateResponse response = CertificateResponse.builder()
                 .id(result.getCertificate().getId())
                 .publicId(result.getPublicId())
-                .serialNumber(result.getSerialNumber())
+                .serialNumber(certificateNumber)
+                .certificateNumber(certificateNumber)
+                .gradedDate(gradedDate)
+                .inspectionId(result.getCertificate().getInspectionId())
                 .submissionId(result.getCertificate().getSubmissionId())
                 .customerId(result.getCertificate().getCustomerId())
                 .itemId(result.getCertificate().getItemId())
@@ -134,12 +143,21 @@ public class QrCertificateController {
         try {
             CardCertificate certificate = certificateService.findByPublicId(publicId);
             
-            String certificateUrl = qrCodeService.generateCertificateUrl(publicId, true);
+            String certificateUrl = qrCodeService.generateVerificationUrl(
+                    certificate.getSerialNumber(), true);
             
+            String certificateNumber = certificate.getSerialNumber();
+            String gradedDate = certificate.getGradedAt() != null
+                    ? certificate.getGradedAt().toLocalDate().toString()
+                    : null;
+
             CertificateResponse response = CertificateResponse.builder()
                 .id(certificate.getId())
                 .publicId(certificate.getPublicId())
-                .serialNumber(certificate.getSerialNumber())
+                .serialNumber(certificateNumber)
+                .certificateNumber(certificateNumber)
+                .gradedDate(gradedDate)
+                .inspectionId(certificate.getInspectionId())
                 .submissionId(certificate.getSubmissionId())
                 .customerId(certificate.getCustomerId())
                 .itemId(certificate.getItemId())
@@ -167,8 +185,11 @@ public class QrCertificateController {
     // Request/Response DTOs
     @Data
     public static class CertificateGenerateRequest {
+        /** Required for new slabs: Ximilar inspection_id from grading. */
+        private String inspectionId;
         private String submissionId;
         private String customerId;
+        /** Submission item id (cardId). */
         private String itemId;
         private String cardName;
         private String setName;
@@ -191,6 +212,11 @@ public class QrCertificateController {
         private Long id;
         private String publicId;
         private String serialNumber;
+        /** Public certificate number on slab (same as serialNumber). */
+        private String certificateNumber;
+        /** ISO date (yyyy-MM-dd) when graded. */
+        private String gradedDate;
+        private String inspectionId;
         private String submissionId;
         private String customerId;
         private String itemId;

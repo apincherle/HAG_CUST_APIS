@@ -1,0 +1,66 @@
+# HAGS Customer API — Azure environment details
+# Use with azure-pipelines.yml and doc/azure_devops_pipeline_setup.md
+# Do not store passwords or signing secrets in this file.
+
+subscription:
+  id: 28f3f51f-dea2-4c31-8944-7ff34b40dc96
+  # displayName: set in Azure Portal → Subscriptions
+
+containerRegistry:
+  name: hagsreg
+  loginServer: hagsreg.azurecr.io
+  # Azure Portal: Container registries → hagsreg → Access keys / Login server
+
+pipeline:
+  imageRepository: hags-customer-api
+  # Full image after CI push:
+  #   hagsreg.azurecr.io/hags-customer-api:<buildId>
+  # Tags pushed: $(Build.BuildId), branch name, latest
+
+  # Azure DevOps service connection names (create in Project settings → Service connections)
+  azureServiceConnection: HAGS-Azure-Prod
+  containerRegistryServiceConnection: HAGS-ACR-hagsreg
+
+deploy:
+  webAppName: hags-customer-api
+  containerPort: 8001
+  # App setting for Linux Web App:
+  #   WEBSITES_PORT=8001
+  webhookUrl: https://hags-customer-api.azurewebsites.net/api/webhooks/shopify
+
+# Fill in when resources exist in the subscription:
+resources:
+  resourceGroup: null
+  location: uksouth
+  webApp:
+    name: hags-customer-api
+    os: Linux
+    plan: null
+  sql:
+    server: null
+    database: null
+
+applicationSettings:
+  springProfile: prod
+  # Set in Web App → Configuration (secrets via Key Vault references recommended)
+  required:
+    - SPRING_PROFILES_ACTIVE
+    - AZURE_SQL_SERVER
+    - AZURE_SQL_DATABASE
+    - AZURE_SQL_USERNAME
+    - AZURE_SQL_PASSWORD
+    - AZURE_SQL_PORT
+    - SHOPIFY_WEBHOOK_SECRET
+    - SHOPIFY_SHOP_DOMAIN
+    - SHOPIFY_WEBHOOK_ENABLED
+    - QR_CERT_SECRET
+
+shopify:
+  shopDomain: h-a-g-s.myshopify.com
+
+cli:
+  login: az login
+  setSubscription: az account set --subscription 28f3f51f-dea2-4c31-8944-7ff34b40dc96
+  acrLogin: az acr login --name hagsreg
+  listImages: az acr repository list --name hagsreg --output table
+  showImageTags: az acr repository show-tags --name hagsreg --repository hags-customer-api --output table

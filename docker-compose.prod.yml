@@ -1,10 +1,12 @@
 version: '3.8'
 
+# Production-like run using an image from ACR (set after pipeline push):
+#   set ACR_LOGIN_SERVER=yourregistry.azurecr.io
+#   set IMAGE_TAG=12345
+#   docker compose -f docker-compose.prod.yml up
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${ACR_LOGIN_SERVER:-hagsreg.azurecr.io}/hags-customer-api:${IMAGE_TAG:-latest}
     container_name: hags-customer-api-prod
     ports:
       - "8001:8001"

@@ -1,0 +1,31 @@
+{
+  "id": 55000112233,
+  "admin_graphql_api_id": "gid://shopify/Order/55000112233",
+  "name": "#HAGS-1001",
+  "email": "collector@hags-grading.co.uk",
+  "created_at": "2026-06-01T10:00:00Z",
+  "updated_at": "2026-06-01T10:00:00Z",
+  "currency": "GBP",
+  "financial_status": "pending",
+  "fulfillment_status": null,
+  "total_price": "49.99",
+  "subtotal_price": "49.99",
+  "total_tax": "0.00",
+  "customer": {
+    "id": 8800123456789,
+    "email": "collector@hags-grading.co.uk",
+    "first_name": "Alex",
+    "last_name": "Collector"
+  },
+  "line_items": [
+    {
+      "id": 77000112233,
+      "product_id": 88000112233,
+      "variant_id": 99000112233,
+      "title": "HAGS Card Grading — Bronze Submission",
+      "sku": "HAGS-SUB-BRONZE",
+      "quantity": 1,
+      "price": "49.99"
+    }
+  ]
+}

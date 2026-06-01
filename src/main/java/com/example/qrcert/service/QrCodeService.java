@@ -33,19 +33,44 @@ public class QrCodeService {
     private final QrCertificateProperties properties;
 
     /**
-     * Generates a certificate URL with optional signature
+     * Public verification URL encoded in slab QR codes ({@code /cert/{serialNumber}}).
+     */
+    public String generateVerificationUrl(String serialNumber, boolean signed) {
+        String baseUrl = normalizedBaseUrl();
+        String path = properties.getVerificationPath();
+        if (path == null || path.isBlank()) {
+            path = "/cert";
+        }
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        if (!path.endsWith("/")) {
+            path = path;
+        }
+        String certPath = path.endsWith("/") ? path + serialNumber : path + "/" + serialNumber;
+        if (!signed) {
+            return baseUrl + certPath;
+        }
+        String signature = signPublicId(serialNumber);
+        return baseUrl + certPath + "?sig=" + signature;
+    }
+
+    /**
+     * Legacy URL using opaque public_id ({@code /c/{publicId}}).
      */
     public String generateCertificateUrl(String publicId, boolean signed) {
-        String baseUrl = properties.getBaseUrl().endsWith("/") 
-            ? properties.getBaseUrl().substring(0, properties.getBaseUrl().length() - 1)
-            : properties.getBaseUrl();
-        
+        String baseUrl = normalizedBaseUrl();
         if (!signed) {
             return baseUrl + "/c/" + publicId;
         }
-        
         String signature = signPublicId(publicId);
         return baseUrl + "/c/" + publicId + "?sig=" + signature;
+    }
+
+    private String normalizedBaseUrl() {
+        return properties.getBaseUrl().endsWith("/")
+                ? properties.getBaseUrl().substring(0, properties.getBaseUrl().length() - 1)
+                : properties.getBaseUrl();
     }
 
     /**

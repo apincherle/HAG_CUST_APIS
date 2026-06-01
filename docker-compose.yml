@@ -33,6 +33,11 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hags_customer
       - SPRING_DATASOURCE_USERNAME=hags_user
       - SPRING_DATASOURCE_PASSWORD=hags_password
+      # Shopify webhook (local dev — replace before any real store)
+      - SHOPIFY_WEBHOOK_ENABLED=true
+      - SHOPIFY_WEBHOOK_SECRET=dev-webhook-secret-change-me
+      - SHOPIFY_WEBHOOK_VERIFY_HMAC=true
+      - SHOPIFY_SHOP_DOMAIN=h-a-g-s.myshopify.com
     depends_on:
       postgres:
         condition: service_healthy

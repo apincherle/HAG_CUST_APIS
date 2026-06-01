@@ -42,6 +42,10 @@ public class CardCertificate {
     @Column(name = "item_id", nullable = false, length = 36)
     private String itemId;
 
+    /** Ximilar inspection_id from POST /v1/cards/inspect (HAGS_ximilar_ai). */
+    @Column(name = "inspection_id", length = 36)
+    private String inspectionId;
+
     @Column(name = "status", nullable = false, length = 20)
     @Builder.Default
     private String status = "VERIFIED";

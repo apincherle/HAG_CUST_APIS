@@ -13,11 +13,18 @@ import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CertificateService {
+
+    private static final Pattern INSPECTION_ID_PATTERN = Pattern.compile(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    );
 
     private final CardCertificateRepository certificateRepository;
     private final QrCodeService qrCodeService;
@@ -58,6 +65,12 @@ public class CertificateService {
      */
     @Transactional
     public CertificateCreationResult createCertificate(CertificateCreateRequest request) {
+        if (request.getInspectionId() != null
+                && !request.getInspectionId().isBlank()
+                && !INSPECTION_ID_PATTERN.matcher(request.getInspectionId().trim()).matches()) {
+            throw new IllegalArgumentException("inspectionId must be a UUID");
+        }
+
         // Generate IDs
         String publicId = generatePublicId();
         // Ensure uniqueness
@@ -79,6 +92,7 @@ public class CertificateService {
             .submissionId(request.getSubmissionId())
             .customerId(request.getCustomerId())
             .itemId(request.getItemId())
+            .inspectionId(request.getInspectionId() != null ? request.getInspectionId().trim() : null)
             .status(request.getStatus() != null ? request.getStatus() : "VERIFIED")
             .cardName(request.getCardName())
             .setName(request.getSetName())
@@ -110,8 +124,8 @@ public class CertificateService {
         // Save certificate
         certificate = certificateRepository.save(certificate);
 
-        // Generate QR code URL and image
-        String certificateUrl = qrCodeService.generateCertificateUrl(publicId, true);
+        // QR encodes public verify URL (/cert/{serialNumber}); mapping stored in DB
+        String certificateUrl = qrCodeService.generateVerificationUrl(serialNumber, true);
         Path qrImagePath;
         try {
             qrImagePath = qrCodeService.generateQrCodeImage(certificateUrl, publicId);
@@ -139,12 +153,43 @@ public class CertificateService {
             .orElseThrow(() -> new RuntimeException("Certificate not found: " + publicId));
     }
 
+    /**
+     * Resolve public certificate id (serial on slab) or legacy public_id.
+     */
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Optional<CardCertificate> findByCertificateId(String certificateId) {
+        if (certificateId == null || certificateId.isBlank()) {
+            return Optional.empty();
+        }
+        String trimmed = certificateId.trim();
+        Optional<CardCertificate> bySerial =
+                certificateRepository.findBySerialNumberIgnoreCase(trimmed);
+        if (bySerial.isPresent()) {
+            return bySerial;
+        }
+        return certificateRepository.findByPublicId(trimmed.toUpperCase(Locale.ROOT));
+    }
+
+    /**
+     * Lookup by submission item id ({@code cardId}).
+     */
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Optional<CardCertificate> findByCardId(String cardId) {
+        if (cardId == null || cardId.isBlank()) {
+            return Optional.empty();
+        }
+        return certificateRepository.findByItemId(cardId.trim());
+    }
+
     // Inner classes for request/response
     @lombok.Data
     @lombok.Builder
     public static class CertificateCreateRequest {
+        /** Ximilar inspection_id from HAGS_ximilar_ai (stored at QR generation). */
+        private String inspectionId;
         private String submissionId;
         private String customerId;
+        /** Submission item id — public "cardId" for alternate lookup. */
         private String itemId;
         private String cardName;
         private String setName;

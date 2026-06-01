@@ -2,9 +2,12 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 .git
 .gitignore
-README.md
-*.md
 .idea
 .vscode
 *.iml
+doc/
+agent-tools/
+**/*.md
+azure-pipelines.yml
+docker-compose*.yml
 

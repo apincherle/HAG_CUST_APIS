@@ -12,7 +12,8 @@ import java.util.UUID;
 @Table(name = "customers", indexes = {
     @Index(name = "idx_customers_email", columnList = "email"),
     @Index(name = "idx_customers_status", columnList = "status"),
-    @Index(name = "idx_customers_created_at", columnList = "created_at")
+    @Index(name = "idx_customers_created_at", columnList = "created_at"),
+    @Index(name = "idx_customers_shopify_customer_id", columnList = "shopify_customer_id", unique = true)
 })
 @Data
 @NoArgsConstructor
@@ -22,6 +23,12 @@ public class Customer {
     @Column(name = "customer_id", columnDefinition = "UUID")
     private UUID customerId;
     
+    @Column(name = "shopify_customer_id", unique = true)
+    private Long shopifyCustomerId;
+
+    @Column(name = "shopify_updated_at")
+    private LocalDateTime shopifyUpdatedAt;
+
     @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;
     

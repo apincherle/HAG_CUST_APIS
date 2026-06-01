@@ -14,5 +14,7 @@ public class QrCertificateProperties {
     private String secret = "change-me-please";
     private String qrStoragePath = "./static/qrs";
     private String serialPrefix = "HAGS";
+    /** Path segment for public verify site, e.g. /cert → {baseUrl}/cert/{serialNumber} */
+    private String verificationPath = "/cert";
 }
 

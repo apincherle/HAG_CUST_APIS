@@ -40,5 +40,7 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID>, Custo
     boolean existsByEmailAndCustomerIdNot(String email, UUID excludeId);
     
     boolean existsByEmail(String email);
+
+    Optional<Customer> findByShopifyCustomerId(Long shopifyCustomerId);
 }
 
