@@ -54,14 +54,14 @@ If any are missing, deploy fails fast with:
 
 ### Runtime mapping (Key Vault → pipeline → Container App)
 
-**Key Vault secret names** use dashes (lowercase), e.g. `azure-sql-server`.
+**Key Vault secret names** are lowercase with dashes, e.g. `azure-sql-server` (see screenshot in portal).
 
-**Azure DevOps `AzureKeyVault@2`** loads them as job env vars with **underscores** and **uppercase**, e.g. `AZURE_SQL_SERVER` (not `AZURE-SQL-SERVER`).
+**Azure DevOps `AzureKeyVault@2`** exposes the **same names** as pipeline environment variables (lowercase, dashes). Underscores are not used in Key Vault or in the pipeline job env.
 
-The deploy script passes those same names to the Container App, which Spring reads as `AZURE_SQL_*`, `SHOPIFY_*`, `QR_CERT_SECRET`.
+The deploy script reads `printenv azure-sql-server` etc., then sets **Container App** env vars that Spring expects (`AZURE_SQL_SERVER`, `SHOPIFY_WEBHOOK_SECRET`, …).
 
-| Key Vault secret | Env var (pipeline + Container App) |
-|------------------|-------------------------------------|
+| Key Vault secret (also pipeline env name) | Container App / Spring env var |
+|----------------------------------------|--------------------------------|
 | `azure-sql-server` | `AZURE_SQL_SERVER` |
 | `azure-sql-database` | `AZURE_SQL_DATABASE` |
 | `azure-sql-username` | `AZURE_SQL_USERNAME` |

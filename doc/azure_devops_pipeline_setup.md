@@ -14,7 +14,7 @@ flowchart LR
 
 | Stage | When | Actions |
 |-------|------|---------|
-| **BuildAndTest** | Every PR and branch push | JDK **17**, `mvn clean verify`, PostgreSQL **15** service container (same credentials as `docker-compose.yml`) |
+| **Build** | Every push to `master` | JDK **17**, `mvn clean verify`, PostgreSQL **15** service container, **JaCoCo** report published to DevOps **Code coverage** tab |
 | **Docker** | After tests pass | Multi-stage `Dockerfile` → push to **ACR** tags: `BuildId`, branch name, `latest` |
 | **Deploy** | `master` or `main` only | **Azure Container Apps** updates the app image to `$(acrLoginServer)/hags-customer-api:$(Build.BuildId)` |
 
@@ -100,9 +100,15 @@ docker run -p 8001:8001 -e SPRING_PROFILES_ACTIVE=dev ...
 
 ```bash
 mvn clean verify
+# Report: target/site/jacoco/index.html and target/site/jacoco/jacoco.xml
 # Shopify webhooks (H2, no Postgres):
 mvn test -Dtest=ShopifyWebhookIntegrationTest
 ```
+
+## Code coverage (JaCoCo)
+
+- **Maven:** `jacoco-maven-plugin` in `pom.xml` — `prepare-agent` during tests, `report` after `test` → `target/site/jacoco/jacoco.xml`
+- **Pipeline:** `PublishCodeCoverageResults@2` after `Maven@3` publishes to the run **Code coverage** tab (same idea as .NET `PublishCodeCoverageResults` + Cobertura)
 
 ## Troubleshooting
 
@@ -112,3 +118,5 @@ mvn test -Dtest=ShopifyWebhookIntegrationTest
 | Docker push unauthorized | Fix Docker Registry service connection to ACR |
 | Deploy succeeds but app unhealthy | Confirm Container App ingress target port is **8001** |
 | Wrong Java version | Pipeline uses **17**; matches `pom.xml` and `Dockerfile` |
+| No Code coverage tab | Push `azure-pipelines.yml` with `PublishCodeCoverageResults@2`; ensure `mvn verify` completes tests |
+| Local Surefire fork fails (path with `(`) | Use JDK 17 without parentheses in the path, or run tests in WSL; CI agents are unaffected |
