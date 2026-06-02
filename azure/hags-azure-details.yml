@@ -34,9 +34,20 @@ resources:
   containerApp:
     name: hags-customer-api
     environment: null
+  # SQL: logical server hags → hags.database.windows.net, database hags_customer (same as Postgres dev)
   sql:
-    server: null
-    database: null
+    serverName: hags
+    serverFqdn: hags.database.windows.net
+    database: hags_customer
+    port: 1433
+    # SQL auth login for app + Key Vault (password never in this file)
+    username: adminhags@hags
+    keyVaultSecrets:
+      azure-sql-server: hags.database.windows.net
+      azure-sql-database: hags_customer
+      azure-sql-username: adminhags@hags
+      azure-sql-password: "<set in Key Vault only>"
+      azure-sql-port: "1433"
 
 applicationSettings:
   springProfile: prod

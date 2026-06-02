@@ -52,24 +52,41 @@ If any are missing, deploy fails fast with:
 
 `Missing required variable from Key Vault/pipeline: <NAME>`
 
-### Runtime mapping
+### Runtime mapping (Key Vault → pipeline → Container App)
 
-The deploy step maps these dashed Key Vault names to runtime env vars used by Spring:
+**Key Vault secret names** use dashes (lowercase), e.g. `azure-sql-server`.
 
-- `azure-sql-server` -> `AZURE_SQL_SERVER`
-- `azure-sql-database` -> `AZURE_SQL_DATABASE`
-- `azure-sql-username` -> `AZURE_SQL_USERNAME`
-- `azure-sql-password` -> `AZURE_SQL_PASSWORD`
-- `azure-sql-port` -> `AZURE_SQL_PORT`
-- `shopify-webhook-secret` -> `SHOPIFY_WEBHOOK_SECRET`
-- `shopify-shop-domain` -> `SHOPIFY_SHOP_DOMAIN`
-- `shopify-webhook-enabled` -> `SHOPIFY_WEBHOOK_ENABLED`
-- `shopify-webhook-verify-hmac` -> `SHOPIFY_WEBHOOK_VERIFY_HMAC`
-- `qr-cert-secret` -> `QR_CERT_SECRET`
+**Azure DevOps `AzureKeyVault@2`** loads them as job env vars with **underscores** and **uppercase**, e.g. `AZURE_SQL_SERVER` (not `AZURE-SQL-SERVER`).
 
-### Suggested values
+The deploy script passes those same names to the Container App, which Spring reads as `AZURE_SQL_*`, `SHOPIFY_*`, `QR_CERT_SECRET`.
 
-- `AZURE_SQL_PORT`: `1433`
+| Key Vault secret | Env var (pipeline + Container App) |
+|------------------|-------------------------------------|
+| `azure-sql-server` | `AZURE_SQL_SERVER` |
+| `azure-sql-database` | `AZURE_SQL_DATABASE` |
+| `azure-sql-username` | `AZURE_SQL_USERNAME` |
+| `azure-sql-password` | `AZURE_SQL_PASSWORD` |
+| `azure-sql-port` | `AZURE_SQL_PORT` |
+| `shopify-webhook-secret` | `SHOPIFY_WEBHOOK_SECRET` |
+| `shopify-shop-domain` | `SHOPIFY_SHOP_DOMAIN` |
+| `shopify-webhook-enabled` | `SHOPIFY_WEBHOOK_ENABLED` |
+| `shopify-webhook-verify-hmac` | `SHOPIFY_WEBHOOK_VERIFY_HMAC` |
+| `qr-cert-secret` | `QR_CERT_SECRET` |
+
+### Suggested / configured values
+
+**Azure SQL** (see also [azure_sql_connection.md](./azure_sql_connection.md)):
+
+| Key Vault secret | Value |
+|------------------|--------|
+| `azure-sql-server` | `hags.database.windows.net` |
+| `azure-sql-database` | `hags_customer` |
+| `azure-sql-username` | `adminhags@hags` |
+| `azure-sql-password` | *(SQL login password — Key Vault only)* |
+| `azure-sql-port` | `1433` |
+
+**Shopify / app:**
+
 - `SHOPIFY_SHOP_DOMAIN`: `h-a-g-s.myshopify.com`
 - `SHOPIFY_WEBHOOK_ENABLED`: `true`
 - `SHOPIFY_WEBHOOK_VERIFY_HMAC`: `true`

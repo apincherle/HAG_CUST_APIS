@@ -10,6 +10,13 @@ target/
 *.ipr
 *.iws
 
+# Local secrets / prod env (use *.example templates in config/)
+config/azure-sql.env
+.env
+.env.*
+!.env.example
+!config/*.env.example
+
 # SQLite database files
 *.db
 *.db-shm
