@@ -1,63 +1,44 @@
-# HAG Customer API — build, test, push to ACR, deploy to Azure Web App for Containers
-#
-# Configure in Azure DevOps (Pipeline → Edit → Variables, or Library variable group):
-#   azureServiceConnection   — Azure Resource Manager service connection name
-#   containerRegistry        — Docker Registry service connection (ACR)
-#   acrLoginServer           — hagsreg.azurecr.io (see azure/hags-azure-details.yml)
-#   webAppName               — Azure Web App name (Linux container)
-#   imageRepository          — optional override (default: hags-customer-api)
-#
-# Web App application settings (prod) — set in Azure Portal, not in this file:
-#   SPRING_PROFILES_ACTIVE=prod
-#   AZURE_SQL_* , SHOPIFY_* , QR_* , etc.
+# Build, push to ACR, and deploy to Azure Container Apps (HAGS)
 
 trigger:
-  branches:
-    include:
-      - master
+  - main
 
-pr:
-  branches:
-    include:
-      - master
-
-parameters:
-  - name: enableDocker
-    type: boolean
-    default: false
-  - name: enableDeploy
-    type: boolean
-    default: false
-  - name: azureServiceConnection
-    type: string
-    default: 'HAGS-ACR-hagsreg'
-  - name: webAppName
-    type: string
-    default: 'hags-customer-api'
-  - name: acrLoginServer
-    type: string
-    default: 'hagsreg.azurecr.io'
-  - name: acrName
-    type: string
-    default: 'hagsreg'
+resources:
+  - repo: self
 
 variables:
-  javaVersion: '17'
-  imageRepository: 'hags-customer-api'
-  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  mavenCacheFolder: $(Pipeline.Workspace)/.m2/repository
+  # Azure / ACR
+  azureSubscription: 'HAGS-ACR-hagsreg'   # AzureRM service connection name
   azureSubscriptionId: '28f3f51f-dea2-4c31-8944-7ff34b40dc96'
+  imageRepository: 'hags-customer-api'
+  containerRegistry: 'hagsreg.azurecr.io'
   acrName: 'hagsreg'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  buildContext: '$(Build.SourcesDirectory)'
+  tag: '$(Build.BuildId)'
+
+  # Container Apps
+  resourceGroup: 'rg-hags-prod'
+  containerAppName: 'hags-customer-api'
+  containerAppEnv: 'hags-env'
+  managedIdentity: 'hags-ca-mi'
+  containerTargetPort: '8001'
+  KeyVaultName: 'kv-hags-prod'
+
+  # Agent
+  vmImageName: 'ubuntu-latest'
+
+  # Build/Test
+  mavenCacheFolder: $(Pipeline.Workspace)/.m2/repository
 
 stages:
-  # ---------------------------------------------------------------------------
-  - stage: BuildAndTest
-    displayName: Build and test
+  - stage: Build
+    displayName: Build and push stage
     jobs:
-      - job: Maven
-        displayName: Maven (JDK 17) + PostgreSQL
+      - job: Build
+        displayName: Build
         pool:
-          vmImage: ubuntu-latest
+          vmImage: $(vmImageName)
         services:
           postgres:
             image: postgres:15-alpine
@@ -92,69 +73,115 @@ stages:
               javaHomeOption: JDKVersion
               mavenOptions: '-Xmx3072m -Dmaven.repo.local=$(mavenCacheFolder)'
 
-          - task: PublishCodeCoverageResults@2
-            displayName: Publish code coverage (if JaCoCo added later)
-            condition: succeededOrFailed()
+          - task: AzureCLI@2
+            displayName: Build and push image to ACR
             inputs:
-              summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/site/jacoco/jacoco.xml'
-            continueOnError: true
+              azureSubscription: $(azureSubscription)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -euo pipefail
+                az acr login --name "$(acrName)"
+                docker build -f "$(dockerfilePath)" -t "$(containerRegistry)/$(imageRepository):$(tag)" "$(buildContext)"
+                docker push "$(containerRegistry)/$(imageRepository):$(tag)"
 
-  # ---------------------------------------------------------------------------
-  - ${{ if eq(parameters.enableDocker, true) }}:
-    - stage: Docker
-      displayName: Build and push image
-      dependsOn: BuildAndTest
-      condition: succeeded()
-      jobs:
-        - job: PushImage
-          displayName: Docker build → ACR
-          pool:
-            vmImage: ubuntu-latest
-          steps:
-            - checkout: self
-              fetchDepth: 1
+  - stage: Deploy
+    displayName: Deploy to Azure Container Apps
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: Deploy
+        displayName: Deploy to Azure Container Apps
+        pool:
+          vmImage: $(vmImageName)
+        environment: 'production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureKeyVault@2
+                  displayName: Download secret keys
+                  inputs:
+                    azureSubscription: $(azureSubscription)
+                    KeyVaultName: $(KeyVaultName)
+                    SecretsFilter: "AZURE_SQL_SERVER,AZURE_SQL_DATABASE,AZURE_SQL_USERNAME,AZURE_SQL_PASSWORD,AZURE_SQL_PORT,SHOPIFY_WEBHOOK_SECRET,SHOPIFY_SHOP_DOMAIN,SHOPIFY_WEBHOOK_ENABLED,SHOPIFY_WEBHOOK_VERIFY_HMAC,QR_CERT_SECRET"
+                    RunAsPreJob: False
 
-            - task: AzureCLI@2
-              displayName: Build and push to ACR (AzureCLI)
-              inputs:
-                azureSubscription: ${{ parameters.azureServiceConnection }}
-                scriptType: bash
-                scriptLocation: inlineScript
-                inlineScript: |
-                  set -euo pipefail
-                  az acr login --name "${{ parameters.acrName }}"
-                  docker build -f "$(dockerfilePath)" -t "${{ parameters.acrLoginServer }}/$(imageRepository):$(Build.BuildId)" "$(Build.SourcesDirectory)"
-                  docker tag "${{ parameters.acrLoginServer }}/$(imageRepository):$(Build.BuildId)" "${{ parameters.acrLoginServer }}/$(imageRepository):$(Build.SourceBranchName)"
-                  docker tag "${{ parameters.acrLoginServer }}/$(imageRepository):$(Build.BuildId)" "${{ parameters.acrLoginServer }}/$(imageRepository):latest"
-                  docker push "${{ parameters.acrLoginServer }}/$(imageRepository):$(Build.BuildId)"
-                  docker push "${{ parameters.acrLoginServer }}/$(imageRepository):$(Build.SourceBranchName)"
-                  docker push "${{ parameters.acrLoginServer }}/$(imageRepository):latest"
+                - task: AzureCLI@2
+                  displayName: Deploy to Container Apps
+                  inputs:
+                    azureSubscription: $(azureSubscription)
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      set -euo pipefail
+                      az extension add --name containerapp --upgrade --only-show-errors
 
-            - script: |
-                echo "##vso[task.setvariable variable=fullImageName;isOutput=true]${{ parameters.acrLoginServer }}/$(imageRepository):$(Build.BuildId)"
-              name: imageTag
-              displayName: Export image tag variable
+                      # Validate required runtime variables are present before deploy.
+                      required_vars=(
+                        "AZURE_SQL_SERVER"
+                        "AZURE_SQL_DATABASE"
+                        "AZURE_SQL_USERNAME"
+                        "AZURE_SQL_PASSWORD"
+                        "AZURE_SQL_PORT"
+                        "SHOPIFY_WEBHOOK_SECRET"
+                        "SHOPIFY_SHOP_DOMAIN"
+                        "SHOPIFY_WEBHOOK_ENABLED"
+                        "SHOPIFY_WEBHOOK_VERIFY_HMAC"
+                        "QR_CERT_SECRET"
+                      )
+                      for var_name in "${required_vars[@]}"; do
+                        if [ -z "${!var_name:-}" ]; then
+                          echo "Missing required variable from Key Vault/pipeline: ${var_name}"
+                          exit 1
+                        fi
+                      done
 
-  # ---------------------------------------------------------------------------
-  - ${{ if and(eq(parameters.enableDocker, true), eq(parameters.enableDeploy, true)) }}:
-    - stage: Deploy
-      displayName: Deploy to Azure
-      dependsOn: Docker
-      condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
-      jobs:
-        - deployment: DeployWebApp
-          displayName: Deploy Web App for Containers
-          pool:
-            vmImage: ubuntu-latest
-          environment: production
-          strategy:
-            runOnce:
-              deploy:
-                steps:
-                  - task: AzureWebAppContainer@1
-                    displayName: Deploy container to ${{ parameters.webAppName }}
-                    inputs:
-                      azureSubscription: ${{ parameters.azureServiceConnection }}
-                      appName: ${{ parameters.webAppName }}
-                      imageName: '${{ parameters.acrLoginServer }}/$(imageRepository):$(Build.BuildId)'
-                      containerCommand: ''
+                      IMAGE_REF="$(containerRegistry)/$(imageRepository):$(tag)"
+                      IDENTITY_RESOURCE_ID="/subscriptions/$(azureSubscriptionId)/resourcegroups/$(resourceGroup)/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$(managedIdentity)"
+
+                      if az containerapp show --name $(containerAppName) --resource-group $(resourceGroup) &>/dev/null; then
+                        # Update existing container app
+                        az containerapp update \
+                          --name $(containerAppName) \
+                          --resource-group $(resourceGroup) \
+                          --image "$IMAGE_REF" \
+                          --query properties.configuration.ingress.fqdn \
+                          --set-env-vars \
+                            SPRING_PROFILES_ACTIVE=prod \
+                            AZURE_SQL_SERVER=$(AZURE_SQL_SERVER) \
+                            AZURE_SQL_DATABASE=$(AZURE_SQL_DATABASE) \
+                            AZURE_SQL_USERNAME=$(AZURE_SQL_USERNAME) \
+                            AZURE_SQL_PASSWORD=$(AZURE_SQL_PASSWORD) \
+                            AZURE_SQL_PORT=$(AZURE_SQL_PORT) \
+                            SHOPIFY_WEBHOOK_SECRET=$(SHOPIFY_WEBHOOK_SECRET) \
+                            SHOPIFY_SHOP_DOMAIN=$(SHOPIFY_SHOP_DOMAIN) \
+                            SHOPIFY_WEBHOOK_ENABLED=$(SHOPIFY_WEBHOOK_ENABLED) \
+                            SHOPIFY_WEBHOOK_VERIFY_HMAC=$(SHOPIFY_WEBHOOK_VERIFY_HMAC) \
+                            QR_CERT_SECRET=$(QR_CERT_SECRET)
+                      else
+                        # Create new container app
+                        az containerapp create \
+                          --name $(containerAppName) \
+                          --resource-group $(resourceGroup) \
+                          --environment $(containerAppEnv) \
+                          --image "$IMAGE_REF" \
+                          --target-port $(containerTargetPort) \
+                          --ingress external \
+                          --registry-server $(containerRegistry) \
+                          --user-assigned "$IDENTITY_RESOURCE_ID" \
+                          --registry-identity "$IDENTITY_RESOURCE_ID" \
+                          --query properties.configuration.ingress.fqdn \
+                          --env-vars \
+                            SPRING_PROFILES_ACTIVE=prod \
+                            AZURE_SQL_SERVER=$(AZURE_SQL_SERVER) \
+                            AZURE_SQL_DATABASE=$(AZURE_SQL_DATABASE) \
+                            AZURE_SQL_USERNAME=$(AZURE_SQL_USERNAME) \
+                            AZURE_SQL_PASSWORD=$(AZURE_SQL_PASSWORD) \
+                            AZURE_SQL_PORT=$(AZURE_SQL_PORT) \
+                            SHOPIFY_WEBHOOK_SECRET=$(SHOPIFY_WEBHOOK_SECRET) \
+                            SHOPIFY_SHOP_DOMAIN=$(SHOPIFY_SHOP_DOMAIN) \
+                            SHOPIFY_WEBHOOK_ENABLED=$(SHOPIFY_WEBHOOK_ENABLED) \
+                            SHOPIFY_WEBHOOK_VERIFY_HMAC=$(SHOPIFY_WEBHOOK_VERIFY_HMAC) \
+                            QR_CERT_SECRET=$(QR_CERT_SECRET)
+                      fi

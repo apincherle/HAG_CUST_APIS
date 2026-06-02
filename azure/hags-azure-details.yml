@@ -22,27 +22,25 @@ pipeline:
   containerRegistryServiceConnection: HAGS-ACR-hagsreg
 
 deploy:
-  webAppName: hags-customer-api
+  containerAppName: hags-customer-api
+  resourceGroup: rg-hags-prod
   containerPort: 8001
-  # App setting for Linux Web App:
-  #   WEBSITES_PORT=8001
-  webhookUrl: https://hags-customer-api.azurewebsites.net/api/webhooks/shopify
+  webhookUrl: https://hags-customer-api.<aca-generated-domain>/api/webhooks/shopify
 
 # Fill in when resources exist in the subscription:
 resources:
-  resourceGroup: null
+  resourceGroup: rg-hags-prod
   location: uksouth
-  webApp:
+  containerApp:
     name: hags-customer-api
-    os: Linux
-    plan: null
+    environment: null
   sql:
     server: null
     database: null
 
 applicationSettings:
   springProfile: prod
-  # Set in Web App → Configuration (secrets via Key Vault references recommended)
+  # Set in Container App secrets/env (Key Vault references recommended)
   required:
     - SPRING_PROFILES_ACTIVE
     - AZURE_SQL_SERVER
@@ -62,5 +60,6 @@ cli:
   login: az login
   setSubscription: az account set --subscription 28f3f51f-dea2-4c31-8944-7ff34b40dc96
   acrLogin: az acr login --name hagsreg
+  updateContainerAppImage: az containerapp update --name hags-customer-api --resource-group rg-hags-prod --image hagsreg.azurecr.io/hags-customer-api:<tag>
   listImages: az acr repository list --name hagsreg --output table
   showImageTags: az acr repository show-tags --name hagsreg --repository hags-customer-api --output table
