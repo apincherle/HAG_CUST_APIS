@@ -33,6 +33,17 @@ Do this **once** in the Portal, then every pipeline run only swaps the image.
 
 7. **Create**
 
+## Pipeline service principal permissions
+
+The app can exist in Portal but deploy still fails with "not found" if the **Azure DevOps service connection** (`HAGS-ACR-hagsreg`) cannot read/update Container Apps.
+
+On **`rg-hags-prod`** → **Access control (IAM)** → add for that service principal:
+
+- **Contributor**, or  
+- **Container Apps Contributor**
+
+(Key Vault access alone is not enough.)
+
 ## After that
 
 Push to `master` → pipeline **Deploy** runs:

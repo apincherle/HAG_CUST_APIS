@@ -123,24 +123,21 @@ stages:
                       RG="$(resourceGroup)"
                       IMAGE_REF="$(containerRegistry)/$(imageRepository):$(tag)"
 
-                      if ! az containerapp show --name "$APP_NAME" --resource-group "$RG" &>/dev/null; then
-                        echo "##vso[task.logissue type=error]Container App '$APP_NAME' was not found in resource group '$RG'."
+                      echo "Container apps in ${RG}:"
+                      az containerapp list --resource-group "$RG" --query "[].name" -o tsv || true
+
+                      SHOW_ERR="$(mktemp)"
+                      if ! az containerapp show --name "$APP_NAME" --resource-group "$RG" -o none 2>"$SHOW_ERR"; then
+                        echo "##vso[task.logissue type=error]Cannot access Container App '${APP_NAME}' in '${RG}'."
+                        echo "Azure CLI error:"
+                        cat "$SHOW_ERR"
                         echo ""
-                        echo "This pipeline does NOT run 'az containerapp create' (Azure CLI bug on first create)."
-                        echo "Create the app once in Azure Portal, then re-run Deploy."
-                        echo ""
-                        echo "Portal checklist:"
-                        echo "  - Resource group: $RG"
-                        echo "  - Container Apps environment: $(containerAppEnv)"
-                        echo "  - App name: $APP_NAME"
-                        echo "  - Image: $IMAGE_REF  (use latest Build ID tag from ACR if this tag missing)"
-                        echo "  - Ingress: external, target port $(containerTargetPort)"
-                        echo "  - Registry: $(containerRegistry), identity $(managedIdentity) with AcrPull"
-                        echo "  - Environment variables: set manually (SPRING_PROFILES_ACTIVE=prod, AZURE_SQL_*, SHOPIFY_*, QR_CERT_SECRET)"
-                        echo ""
+                        echo "If the app exists in Portal but this fails, the pipeline service principal needs"
+                        echo "Contributor or 'Container Apps Contributor' on resource group ${RG} (not only Key Vault/ACR)."
                         echo "Guide: doc/azure_container_app_first_deploy.md"
                         exit 1
                       fi
+                      rm -f "$SHOW_ERR"
 
                       echo "Updating $APP_NAME -> $IMAGE_REF"
                       FQDN="$(az containerapp update \
