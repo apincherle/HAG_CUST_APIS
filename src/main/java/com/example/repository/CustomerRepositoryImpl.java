@@ -24,13 +24,13 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
 
     @Override
     public Optional<Customer> findByCustomerIdNative(String customerIdString) {
-        // PostgreSQL supports native UUID type, so we can cast the string parameter
+        // Compare as string so this works on both PostgreSQL and H2 test profile.
         Query query = entityManager.createNativeQuery(
             "SELECT customer_id, email, phone, full_name, " +
             "billing_line1, billing_line2, billing_city, billing_region, billing_postcode, billing_country, " +
             "shipping_line1, shipping_line2, shipping_city, shipping_region, shipping_postcode, shipping_country, " +
             "marketing_opt_in, status, created_at, updated_at, deleted_at " +
-            "FROM customers WHERE customer_id = CAST(? AS UUID)", 
+            "FROM customers WHERE LOWER(CAST(customer_id AS VARCHAR)) = LOWER(?)", 
             Object[].class
         );
         query.setParameter(1, customerIdString);
