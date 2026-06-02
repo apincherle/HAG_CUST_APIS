@@ -104,7 +104,7 @@ stages:
                   inputs:
                     azureSubscription: $(azureSubscription)
                     KeyVaultName: $(KeyVaultName)
-                    SecretsFilter: "AZURE_SQL_SERVER,AZURE_SQL_DATABASE,AZURE_SQL_USERNAME,AZURE_SQL_PASSWORD,AZURE_SQL_PORT,SHOPIFY_WEBHOOK_SECRET,SHOPIFY_SHOP_DOMAIN,SHOPIFY_WEBHOOK_ENABLED,SHOPIFY_WEBHOOK_VERIFY_HMAC,QR_CERT_SECRET"
+                    SecretsFilter: "azure-sql-server,azure-sql-database,azure-sql-username,azure-sql-password,azure-sql-port,shopify-webhook-secret,shopify-shop-domain,shopify-webhook-enabled,shopify-webhook-verify-hmac,qr-cert-secret"
                     RunAsPreJob: False
 
                 - task: AzureCLI@2
@@ -119,23 +119,36 @@ stages:
 
                       # Validate required runtime variables are present before deploy.
                       required_vars=(
-                        "AZURE_SQL_SERVER"
-                        "AZURE_SQL_DATABASE"
-                        "AZURE_SQL_USERNAME"
-                        "AZURE_SQL_PASSWORD"
-                        "AZURE_SQL_PORT"
-                        "SHOPIFY_WEBHOOK_SECRET"
-                        "SHOPIFY_SHOP_DOMAIN"
-                        "SHOPIFY_WEBHOOK_ENABLED"
-                        "SHOPIFY_WEBHOOK_VERIFY_HMAC"
-                        "QR_CERT_SECRET"
+                        "AZURE-SQL-SERVER"
+                        "AZURE-SQL-DATABASE"
+                        "AZURE-SQL-USERNAME"
+                        "AZURE-SQL-PASSWORD"
+                        "AZURE-SQL-PORT"
+                        "SHOPIFY-WEBHOOK-SECRET"
+                        "SHOPIFY-SHOP-DOMAIN"
+                        "SHOPIFY-WEBHOOK-ENABLED"
+                        "SHOPIFY-WEBHOOK-VERIFY-HMAC"
+                        "QR-CERT-SECRET"
                       )
                       for var_name in "${required_vars[@]}"; do
-                        if [ -z "${!var_name:-}" ]; then
+                        var_value="$(printenv "$var_name" || true)"
+                        if [ -z "$var_value" ]; then
                           echo "Missing required variable from Key Vault/pipeline: ${var_name}"
                           exit 1
                         fi
                       done
+
+                      # Map dashed Key Vault secret names to underscored runtime env vars.
+                      AZURE_SQL_SERVER="$(printenv AZURE-SQL-SERVER)"
+                      AZURE_SQL_DATABASE="$(printenv AZURE-SQL-DATABASE)"
+                      AZURE_SQL_USERNAME="$(printenv AZURE-SQL-USERNAME)"
+                      AZURE_SQL_PASSWORD="$(printenv AZURE-SQL-PASSWORD)"
+                      AZURE_SQL_PORT="$(printenv AZURE-SQL-PORT)"
+                      SHOPIFY_WEBHOOK_SECRET="$(printenv SHOPIFY-WEBHOOK-SECRET)"
+                      SHOPIFY_SHOP_DOMAIN="$(printenv SHOPIFY-SHOP-DOMAIN)"
+                      SHOPIFY_WEBHOOK_ENABLED="$(printenv SHOPIFY-WEBHOOK-ENABLED)"
+                      SHOPIFY_WEBHOOK_VERIFY_HMAC="$(printenv SHOPIFY-WEBHOOK-VERIFY-HMAC)"
+                      QR_CERT_SECRET="$(printenv QR-CERT-SECRET)"
 
                       IMAGE_REF="$(containerRegistry)/$(imageRepository):$(tag)"
                       IDENTITY_RESOURCE_ID="/subscriptions/$(azureSubscriptionId)/resourcegroups/$(resourceGroup)/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$(managedIdentity)"

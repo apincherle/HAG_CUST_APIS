@@ -33,24 +33,39 @@ Current expected values in `azure-pipelines.yml`:
 - `containerTargetPort`: `8001`
 - `KeyVaultName`: `kv-hags-prod`
 
-## 3) Key Vault secrets required
+## 3) Key Vault secrets required (dashed names)
 
-The pipeline fetches these exact secret names:
+The pipeline fetches these exact Key Vault secret names:
 
-- `AZURE_SQL_SERVER`
-- `AZURE_SQL_DATABASE`
-- `AZURE_SQL_USERNAME`
-- `AZURE_SQL_PASSWORD`
-- `AZURE_SQL_PORT`
-- `SHOPIFY_WEBHOOK_SECRET`
-- `SHOPIFY_SHOP_DOMAIN`
-- `SHOPIFY_WEBHOOK_ENABLED`
-- `SHOPIFY_WEBHOOK_VERIFY_HMAC`
-- `QR_CERT_SECRET`
+- `azure-sql-server`
+- `azure-sql-database`
+- `azure-sql-username`
+- `azure-sql-password`
+- `azure-sql-port`
+- `shopify-webhook-secret`
+- `shopify-shop-domain`
+- `shopify-webhook-enabled`
+- `shopify-webhook-verify-hmac`
+- `qr-cert-secret`
 
 If any are missing, deploy fails fast with:
 
 `Missing required variable from Key Vault/pipeline: <NAME>`
+
+### Runtime mapping
+
+The deploy step maps these dashed Key Vault names to runtime env vars used by Spring:
+
+- `azure-sql-server` -> `AZURE_SQL_SERVER`
+- `azure-sql-database` -> `AZURE_SQL_DATABASE`
+- `azure-sql-username` -> `AZURE_SQL_USERNAME`
+- `azure-sql-password` -> `AZURE_SQL_PASSWORD`
+- `azure-sql-port` -> `AZURE_SQL_PORT`
+- `shopify-webhook-secret` -> `SHOPIFY_WEBHOOK_SECRET`
+- `shopify-shop-domain` -> `SHOPIFY_SHOP_DOMAIN`
+- `shopify-webhook-enabled` -> `SHOPIFY_WEBHOOK_ENABLED`
+- `shopify-webhook-verify-hmac` -> `SHOPIFY_WEBHOOK_VERIFY_HMAC`
+- `qr-cert-secret` -> `QR_CERT_SECRET`
 
 ### Suggested values
 
