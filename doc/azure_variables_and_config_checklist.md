@@ -54,24 +54,24 @@ If any are missing, deploy fails fast with:
 
 ### Runtime mapping (Key Vault → pipeline → Container App)
 
-**Key Vault secret names** are lowercase with dashes, e.g. `azure-sql-server` (see screenshot in portal).
+**Key Vault** secret names stay **lowercase with dashes** (e.g. `azure-sql-server`).
 
-**Azure DevOps `AzureKeyVault@2`** exposes the **same names** as pipeline environment variables (lowercase, dashes). Underscores are not used in Key Vault or in the pipeline job env.
+**Azure DevOps** does not export dashed names as Linux env vars. After `AzureKeyVault@2`, reference secrets as **pipeline variables with underscores**:
 
-The deploy script reads `printenv azure-sql-server` etc., then sets **Container App** env vars that Spring expects (`AZURE_SQL_SERVER`, `SHOPIFY_WEBHOOK_SECRET`, …).
+| Key Vault secret name | Pipeline macro (in YAML `env:`) |
+|----------------------|----------------------------------|
+| `azure-sql-server` | `$(azure_sql_server)` |
+| `azure-sql-database` | `$(azure_sql_database)` |
+| `azure-sql-username` | `$(azure_sql_username)` |
+| `azure-sql-password` | `$(azure_sql_password)` |
+| `azure-sql-port` | `$(azure_sql_port)` |
+| `shopify-webhook-secret` | `$(shopify_webhook_secret)` |
+| `shopify-shop-domain` | `$(shopify_shop_domain)` |
+| `shopify-webhook-enabled` | `$(shopify_webhook_enabled)` |
+| `shopify-webhook-verify-hmac` | `$(shopify_webhook_verify_hmac)` |
+| `qr-cert-secret` | `$(qr_cert_secret)` |
 
-| Key Vault secret (also pipeline env name) | Container App / Spring env var |
-|----------------------------------------|--------------------------------|
-| `azure-sql-server` | `AZURE_SQL_SERVER` |
-| `azure-sql-database` | `AZURE_SQL_DATABASE` |
-| `azure-sql-username` | `AZURE_SQL_USERNAME` |
-| `azure-sql-password` | `AZURE_SQL_PASSWORD` |
-| `azure-sql-port` | `AZURE_SQL_PORT` |
-| `shopify-webhook-secret` | `SHOPIFY_WEBHOOK_SECRET` |
-| `shopify-shop-domain` | `SHOPIFY_SHOP_DOMAIN` |
-| `shopify-webhook-enabled` | `SHOPIFY_WEBHOOK_ENABLED` |
-| `shopify-webhook-verify-hmac` | `SHOPIFY_WEBHOOK_VERIFY_HMAC` |
-| `qr-cert-secret` | `QR_CERT_SECRET` |
+`azure-pipelines.yml` maps those into `AZURE_SQL_SERVER`, etc. on the **Container App** (what Spring reads).
 
 ### Suggested / configured values
 

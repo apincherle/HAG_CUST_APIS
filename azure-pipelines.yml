@@ -113,10 +113,23 @@ stages:
                     azureSubscription: $(azureSubscription)
                     KeyVaultName: $(KeyVaultName)
                     SecretsFilter: "azure-sql-server,azure-sql-database,azure-sql-username,azure-sql-password,azure-sql-port,shopify-webhook-secret,shopify-shop-domain,shopify-webhook-enabled,shopify-webhook-verify-hmac,qr-cert-secret"
-                    RunAsPreJob: False
+                    RunAsPreJob: true
 
                 - task: AzureCLI@2
                   displayName: Deploy to Container Apps
+                  env:
+                    # Key Vault keeps lowercase dashed names; Azure DevOps variables use underscores:
+                    #   azure-sql-server  ->  $(azure_sql_server)
+                    AZURE_SQL_SERVER: $(azure_sql_server)
+                    AZURE_SQL_DATABASE: $(azure_sql_database)
+                    AZURE_SQL_USERNAME: $(azure_sql_username)
+                    AZURE_SQL_PASSWORD: $(azure_sql_password)
+                    AZURE_SQL_PORT: $(azure_sql_port)
+                    SHOPIFY_WEBHOOK_SECRET: $(shopify_webhook_secret)
+                    SHOPIFY_SHOP_DOMAIN: $(shopify_shop_domain)
+                    SHOPIFY_WEBHOOK_ENABLED: $(shopify_webhook_enabled)
+                    SHOPIFY_WEBHOOK_VERIFY_HMAC: $(shopify_webhook_verify_hmac)
+                    QR_CERT_SECRET: $(qr_cert_secret)
                   inputs:
                     azureSubscription: $(azureSubscription)
                     scriptType: 'bash'
@@ -125,38 +138,25 @@ stages:
                       set -euo pipefail
                       az extension add --name containerapp --upgrade --only-show-errors
 
-                      # AzureKeyVault@2 exposes secrets as env vars matching Key Vault names exactly
-                      # (lowercase, dashes) — e.g. azure-sql-server — not AZURE_SQL_SERVER.
-                      required_kv_secrets=(
-                        azure-sql-server
-                        azure-sql-database
-                        azure-sql-username
-                        azure-sql-password
-                        azure-sql-port
-                        shopify-webhook-secret
-                        shopify-shop-domain
-                        shopify-webhook-enabled
-                        shopify-webhook-verify-hmac
-                        qr-cert-secret
+                      required_vars=(
+                        AZURE_SQL_SERVER
+                        AZURE_SQL_DATABASE
+                        AZURE_SQL_USERNAME
+                        AZURE_SQL_PASSWORD
+                        AZURE_SQL_PORT
+                        SHOPIFY_WEBHOOK_SECRET
+                        SHOPIFY_SHOP_DOMAIN
+                        SHOPIFY_WEBHOOK_ENABLED
+                        SHOPIFY_WEBHOOK_VERIFY_HMAC
+                        QR_CERT_SECRET
                       )
-                      for secret_name in "${required_kv_secrets[@]}"; do
-                        if [ -z "$(printenv "$secret_name" || true)" ]; then
-                          echo "Missing required Key Vault secret in pipeline env: ${secret_name}"
+                      for var_name in "${required_vars[@]}"; do
+                        if [ -z "${!var_name:-}" ]; then
+                          echo "Missing required variable: ${var_name}"
+                          echo "Key Vault secret names use dashes; pipeline macros use underscores, e.g. azure-sql-server -> \$(azure_sql_server)"
                           exit 1
                         fi
                       done
-
-                      # Map Key Vault names -> Spring / Container App env (underscores, uppercase).
-                      AZURE_SQL_SERVER="$(printenv azure-sql-server)"
-                      AZURE_SQL_DATABASE="$(printenv azure-sql-database)"
-                      AZURE_SQL_USERNAME="$(printenv azure-sql-username)"
-                      AZURE_SQL_PASSWORD="$(printenv azure-sql-password)"
-                      AZURE_SQL_PORT="$(printenv azure-sql-port)"
-                      SHOPIFY_WEBHOOK_SECRET="$(printenv shopify-webhook-secret)"
-                      SHOPIFY_SHOP_DOMAIN="$(printenv shopify-shop-domain)"
-                      SHOPIFY_WEBHOOK_ENABLED="$(printenv shopify-webhook-enabled)"
-                      SHOPIFY_WEBHOOK_VERIFY_HMAC="$(printenv shopify-webhook-verify-hmac)"
-                      QR_CERT_SECRET="$(printenv qr-cert-secret)"
 
                       IMAGE_REF="$(containerRegistry)/$(imageRepository):$(tag)"
                       IDENTITY_RESOURCE_ID="/subscriptions/$(azureSubscriptionId)/resourcegroups/$(resourceGroup)/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$(managedIdentity)"
