@@ -150,3 +150,21 @@ az containerapp show -n hags-customer-api -g rg-hags-prod --query "properties.co
 - Managed identity lacks `AcrPull`
 - Wrong resource group / container app / environment names in variables
 - App deployed but wrong port configured (must be `8001`)
+- **`IndexError` during `az containerapp create`** — usually `Microsoft.App` not registered; pipeline now registers providers first. Service connection needs permission to register providers (e.g. Contributor on subscription), or register once manually (see below).
+- **Container Apps environment not found** — create `hags-env` in `rg-hags-prod` before first deploy.
+
+### One-time prerequisites (before first deploy)
+
+```bash
+az account set --subscription 28f3f51f-dea2-4c31-8944-7ff34b40dc96
+az provider register --namespace Microsoft.App --wait
+az provider register --namespace Microsoft.OperationalInsights --wait
+
+# If missing — adjust names to match azure-pipelines.yml
+az group create --name rg-hags-prod --location uksouth
+az containerapp env create --name hags-env --resource-group rg-hags-prod --location uksouth
+az identity create --name hags-ca-mi --resource-group rg-hags-prod --location uksouth
+# AcrPull on hagsreg for hags-ca-mi
+```
+
+After the app exists, later pipeline runs only **update** image/env (more reliable than create).
