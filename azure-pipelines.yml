@@ -1,7 +1,7 @@
 # Build, push to ACR, and deploy to Azure Container Apps (HAGS)
 
 trigger:
-  - main
+  - master
 
 resources:
   - repo: self
@@ -88,7 +88,7 @@ stages:
   - stage: Deploy
     displayName: Deploy to Azure Container Apps
     dependsOn: Build
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     jobs:
       - deployment: Deploy
         displayName: Deploy to Azure Container Apps
