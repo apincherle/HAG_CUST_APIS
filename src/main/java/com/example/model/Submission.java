@@ -3,6 +3,8 @@ package com.example.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,12 +24,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Submission {
-        @Id
-        @Column(name = "submission_id", columnDefinition = "UUID")
-        private UUID submissionId;
+    @Id
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "submission_id")
+    private UUID submissionId;
 
-        @Column(name = "customer_id", nullable = false, columnDefinition = "UUID")
-        private UUID customerId;
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "customer_id", nullable = false)
+    private UUID customerId;
     
     @Column(name = "submission_number", unique = true, length = 50)
     private String submissionNumber;
@@ -36,7 +40,8 @@ public class Submission {
     @Column(name = "service_level", nullable = false, length = 20)
     private ServiceLevel serviceLevel = ServiceLevel.BRONZE;
     
-    @Column(name = "shipping_address_id", columnDefinition = "UUID", nullable = true)
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "shipping_address_id", nullable = true)
     private UUID shippingAddressId;
     
     @Column(name = "notes_customer", length = 2000, nullable = true)

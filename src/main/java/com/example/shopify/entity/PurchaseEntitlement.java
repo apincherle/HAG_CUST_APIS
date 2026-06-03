@@ -1,6 +1,8 @@
 package com.example.shopify.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +24,8 @@ import java.util.UUID;
 public class PurchaseEntitlement {
 
     @Id
-    @Column(name = "entitlement_id", columnDefinition = "UUID")
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "entitlement_id")
     private UUID entitlementId;
 
     @Column(name = "shopify_order_id", nullable = false)

@@ -1,6 +1,8 @@
 package com.example.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +22,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Customer {
     @Id
-    @Column(name = "customer_id", columnDefinition = "UUID")
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "customer_id")
     private UUID customerId;
     
     @Column(name = "shopify_customer_id", unique = true)

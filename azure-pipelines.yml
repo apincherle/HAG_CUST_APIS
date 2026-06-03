@@ -123,26 +123,29 @@ stages:
                       RG="$(resourceGroup)"
                       IMAGE_REF="$(containerRegistry)/$(imageRepository):$(tag)"
 
-                      echo "Container apps in ${RG}:"
-                      az containerapp list --resource-group "$RG" --query "[].name" -o tsv || true
+                      echo "Deploying image to ${APP_NAME} in ${RG}..."
+                      echo "Image: ${IMAGE_REF}"
+                      echo "Apps visible to pipeline identity in this RG:"
+                      az containerapp list --resource-group "$RG" --query "[].name" -o tsv 2>&1 || true
 
-                      SHOW_ERR="$(mktemp)"
-                      if ! az containerapp show --name "$APP_NAME" --resource-group "$RG" -o none 2>"$SHOW_ERR"; then
-                        echo "##vso[task.logissue type=error]Cannot access Container App '${APP_NAME}' in '${RG}'."
-                        echo "Azure CLI error:"
-                        cat "$SHOW_ERR"
-                        echo ""
-                        echo "If the app exists in Portal but this fails, the pipeline service principal needs"
-                        echo "Contributor or 'Container Apps Contributor' on resource group ${RG} (not only Key Vault/ACR)."
-                        echo "Guide: doc/azure_container_app_first_deploy.md"
-                        exit 1
-                      fi
-                      rm -f "$SHOW_ERR"
-
-                      echo "Updating $APP_NAME -> $IMAGE_REF"
+                      set +e
+                      UPDATE_LOG="$(mktemp)"
                       FQDN="$(az containerapp update \
                         --name "$APP_NAME" \
                         --resource-group "$RG" \
                         --image "$IMAGE_REF" \
-                        --query properties.configuration.ingress.fqdn -o tsv)"
+                        --query properties.configuration.ingress.fqdn -o tsv 2>"$UPDATE_LOG")"
+                      UPDATE_CODE=$?
+                      set -e
+
+                      if [ "$UPDATE_CODE" -ne 0 ]; then
+                        echo "##vso[task.logissue type=error]az containerapp update failed (exit ${UPDATE_CODE})."
+                        cat "$UPDATE_LOG"
+                        echo ""
+                        echo "If the app EXISTS in Portal but update fails here, grant the pipeline service"
+                        echo "principal (HAGS-ACR-hagsreg) Contributor on resource group ${RG}."
+                        echo "Old pipeline messages about 'not found' were misleading — this is usually permissions."
+                        exit 1
+                      fi
+                      rm -f "$UPDATE_LOG"
                       echo "Deployed. URL: https://${FQDN}"

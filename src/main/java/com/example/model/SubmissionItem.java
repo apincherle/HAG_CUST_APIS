@@ -1,6 +1,8 @@
 package com.example.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +20,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class SubmissionItem {
     @Id
-    @Column(name = "item_id", columnDefinition = "UUID")
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "item_id")
     private UUID itemId;
     
     @ManyToOne(fetch = FetchType.LAZY)
