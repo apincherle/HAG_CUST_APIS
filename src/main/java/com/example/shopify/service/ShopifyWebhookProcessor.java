@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
@@ -54,6 +55,8 @@ public class ShopifyWebhookProcessor {
             String shopDomain,
             String webhookId,
             String hmacHeader) {
+        logInboundWebhook(rawBody, topic, shopDomain, webhookId, hmacHeader);
+
         if (!properties.getWebhook().isEnabled()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Shopify webhooks are disabled");
         }
@@ -124,21 +127,74 @@ public class ShopifyWebhookProcessor {
     }
 
     private void validateShopDomain(String shopDomain) {
-        String expected = properties.getShop().getDomain();
-        if (expected == null || expected.isBlank()) {
+        String expectedRaw = properties.getShop().getDomain();
+        if (expectedRaw == null || expectedRaw.isBlank()) {
             return;
         }
-        expected = expected.trim();
-        String received = shopDomain != null ? shopDomain.trim() : null;
-        if (received == null || !expected.equalsIgnoreCase(received)) {
+        String expected = normalizeShopHost(expectedRaw);
+        String received = normalizeShopHost(shopDomain);
+        if (received == null || !expected.equals(received)) {
             log.warn(
-                    "Shopify shop domain mismatch: X-Shopify-Shop-Domain='{}', SHOPIFY_SHOP_DOMAIN='{}'. "
-                            + "In Shopify Admin open Settings → Domains and use the *.myshopify.com hostname, "
-                            + "or clear SHOPIFY_SHOP_DOMAIN to skip this check.",
+                    "Shopify shop domain mismatch: X-Shopify-Shop-Domain='{}' (normalized='{}'), "
+                            + "SHOPIFY_SHOP_DOMAIN='{}' (normalized='{}'). "
+                            + "Use the *.myshopify.com host only (no https://), or remove SHOPIFY_SHOP_DOMAIN to skip.",
+                    shopDomain,
                     received,
+                    expectedRaw,
                     expected);
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unexpected Shopify shop domain");
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Unexpected Shopify shop domain: received="
+                            + received
+                            + ", expected="
+                            + expected
+                            + " (check X-Shopify-Shop-Domain in Shopify webhook delivery)");
         }
+    }
+
+    private void logInboundWebhook(
+            byte[] rawBody,
+            String topic,
+            String shopDomain,
+            String webhookId,
+            String hmacHeader) {
+        int bodyBytes = rawBody != null ? rawBody.length : 0;
+        log.info(
+                "Shopify webhook received: topic={}, X-Shopify-Shop-Domain={}, webhookId={}, "
+                        + "bodyBytes={}, hmacHeaderPresent={}, SHOPIFY_SHOP_DOMAIN='{}'",
+                topic,
+                shopDomain,
+                webhookId,
+                bodyBytes,
+                hmacHeader != null && !hmacHeader.isBlank(),
+                properties.getShop().getDomain());
+
+        if (properties.getWebhook().isLogPayload() && rawBody != null && rawBody.length > 0) {
+            log.info("Shopify webhook JSON body: {}", truncateUtf8(rawBody, 32_000));
+        }
+    }
+
+    private static String truncateUtf8(byte[] rawBody, int maxChars) {
+        String json = new String(rawBody, StandardCharsets.UTF_8);
+        return json.length() <= maxChars ? json : json.substring(0, maxChars) + "...(truncated)";
+    }
+
+    /** Strips https://, paths, and casing so env typos like https://store.myshopify.com/ still match. */
+    static String normalizeShopHost(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        String host = value.trim().toLowerCase();
+        if (host.startsWith("https://")) {
+            host = host.substring(8);
+        } else if (host.startsWith("http://")) {
+            host = host.substring(7);
+        }
+        int slash = host.indexOf('/');
+        if (slash >= 0) {
+            host = host.substring(0, slash);
+        }
+        return host.isEmpty() ? null : host;
     }
 
     private static String sha256Hex(byte[] body) {

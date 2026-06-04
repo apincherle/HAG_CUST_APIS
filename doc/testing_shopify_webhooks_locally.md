@@ -168,7 +168,7 @@ Signing secret in Docker **must** match the value shown in Shopify Admin.
 | Symptom | Likely cause |
 |---------|----------------|
 | **401** Invalid signature | `SHOPIFY_WEBHOOK_SECRET` ≠ Shopify signing secret, or body changed after signing |
-| **401** Unexpected shop domain | `X-Shopify-Shop-Domain` ≠ `SHOPIFY_SHOP_DOMAIN` (use `h-a-g-s.myshopify.com`) |
+| **401** Unexpected shop domain | `X-Shopify-Shop-Domain` ≠ `SHOPIFY_SHOP_DOMAIN` (use `h-a-g-s.myshopify.com`). Set `SHOPIFY_WEBHOOK_LOG_PAYLOAD=true` and check Container App logs for `Shopify webhook received:` / `Shopify webhook JSON body:` |
 | **200** but no entitlement | Wrong topic (`orders/create` does not create entitlements; use `orders/paid`) or SKU not in `shopify.tier-sku-mapping.*` |
 | **500** on order paid | Customer missing (run customer webhook first) or DB constraint — check app logs |
 | Shopify never hits API | URL not HTTPS/public; use ngrok or deploy |

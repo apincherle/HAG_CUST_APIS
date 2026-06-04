@@ -22,6 +22,8 @@ public class ShopifyProperties {
         private boolean enabled = true;
         private String secret = "";
         private boolean verifyHmac = true;
+        /** Log full JSON body to container logs (disable in prod when stable). */
+        private boolean logPayload = false;
     }
 
     @Data
