@@ -24,7 +24,8 @@ public class SubmissionIntakeCode {
     @JoinColumn(name = "submission_id", nullable = false, unique = true)
     private Submission submission;
     
-    @Column(name = "value", nullable = false, length = 100)
+    /** Avoid H2/SQL reserved word {@code value}. */
+    @Column(name = "code_value", nullable = false, length = 100)
     private String value;
     
     @Enumerated(EnumType.STRING)

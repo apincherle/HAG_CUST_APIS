@@ -56,7 +56,8 @@ public class CardCertificate {
     @Column(name = "set_name", length = 255)
     private String setName;
 
-    @Column(name = "year")
+    /** Avoid H2/SQL reserved word {@code year}. */
+    @Column(name = "card_year")
     private Integer year;
 
     @Column(name = "card_number", length = 50)

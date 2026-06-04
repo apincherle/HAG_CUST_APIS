@@ -100,7 +100,7 @@ BEGIN
     CREATE TABLE submission_intake_codes (
         intake_code_id   UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
         submission_id    UNIQUEIDENTIFIER NOT NULL,
-        value            NVARCHAR(100) NOT NULL,
+        code_value       NVARCHAR(100) NOT NULL,
         barcode_format   NVARCHAR(20) NOT NULL,
         qr_value         NVARCHAR(500) NOT NULL,
         CONSTRAINT FK_intake_submission FOREIGN KEY (submission_id) REFERENCES submissions(submission_id),
@@ -122,7 +122,7 @@ BEGIN
         status            NVARCHAR(20) NOT NULL DEFAULT 'VERIFIED',
         card_name           NVARCHAR(255) NOT NULL,
         set_name            NVARCHAR(255) NULL,
-        year                INT NULL,
+        card_year           INT NULL,
         card_number         NVARCHAR(50) NULL,
         variant             NVARCHAR(100) NULL,
         grade               FLOAT NOT NULL,

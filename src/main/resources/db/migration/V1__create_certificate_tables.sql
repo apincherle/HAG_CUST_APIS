@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS card_certificate (
     status VARCHAR(20) NOT NULL DEFAULT 'VERIFIED',
     card_name VARCHAR(255) NOT NULL,
     set_name VARCHAR(255),
-    year INTEGER,
+    card_year INTEGER,
     card_number VARCHAR(50),
     variant VARCHAR(100),
     grade DOUBLE PRECISION NOT NULL,
