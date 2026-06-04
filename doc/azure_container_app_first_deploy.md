@@ -93,3 +93,5 @@ FQDN containing **`.internal.`** (e.g. `hags-customer-api.internal.bravecliff-..
 | Health | `https://<fqdn>/actuator/health` |
 | Swagger UI | `https://<fqdn>/swagger-ui.html` |
 | OpenAPI JSON | `https://<fqdn>/v3/api-docs` |
+
+**Swagger shows `api.yourdomain.com`?** That was a placeholder in an older build. Redeploy latest code (no hard-coded OpenAPI servers) and hard-refresh Swagger (Ctrl+F5) — requests use the same URL as the browser.
