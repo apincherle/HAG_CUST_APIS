@@ -57,3 +57,39 @@ Env vars stay as you set them in Portal unless you change them there.
 ## Optional: re-enable Key Vault in pipeline later
 
 If you want the pipeline to refresh env vars from Key Vault on each deploy, that can be added back to `azure-pipelines.yml` after the app exists (update-only, with `--set-env-vars`).
+
+## Health probes (app starts then stops / “not working”)
+
+Logs like `Started HagsCustomerApplication` followed by `Closing JPA EntityManagerFactory` mean the JVM received **SIGTERM** (new revision rollout, scale-down, or failed probe). The API had **no** root `/` endpoint; probes should use Actuator after the next deploy.
+
+**Portal:** Container App → **Containers** → your container → **Health probes** (or **Scale** / revision health):
+
+| Probe | Type | Port | Path |
+| ----- | ---- | ---- | ---- |
+| Startup (optional) | HTTP | `8001` | `/actuator/health` |
+| Liveness | HTTP | `8001` | `/actuator/health` |
+| Readiness | HTTP | `8001` | `/actuator/health/readiness` |
+
+Remove probes that point at `/` unless you add a handler there.
+
+**Verify after deploy** (from a machine that can reach the app):
+
+```text
+https://<fqdn>/actuator/health
+```
+
+Expect `{"status":"UP"}`.
+
+## Internal vs external ingress
+
+FQDN containing **`.internal.`** (e.g. `hags-customer-api.internal.bravecliff-....azurecontainerapps.io`) is **not reachable from the public internet**. Swagger and webhooks from Shopify require **external** ingress (or VPN / VNet integration to the Container Apps environment).
+
+**Portal:** Container App → **Ingress** → set **Ingress** to **Enabled** and **Ingress traffic** to **Accepting traffic from anywhere** (external) if you need browser/Shopify access.
+
+**URLs** (replace FQDN):
+
+| What | URL |
+| ---- | --- |
+| Health | `https://<fqdn>/actuator/health` |
+| Swagger UI | `https://<fqdn>/swagger-ui.html` |
+| OpenAPI JSON | `https://<fqdn>/v3/api-docs` |
