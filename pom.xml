@@ -118,20 +118,37 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!-- Copy JaCoCo agent into target/ so Surefire avoids javaagent paths under a Windows profile with '(' -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-jacoco-agent</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.jacoco</groupId>
+                                    <artifactId>org.jacoco.agent</artifactId>
+                                    <version>${jacoco.version}</version>
+                                    <classifier>runtime</classifier>
+                                    <destFileName>jacoco-agent.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
                 <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <propertyName>surefireArgLine</propertyName>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
@@ -145,10 +162,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>${surefireArgLine}</argLine>
-                    <!-- Required for JaCoCo javaagent (parent POM may set forkCount=0) -->
-                    <forkCount>1</forkCount>
-                    <reuseForks>true</reuseForks>
+                    <!-- forkCount=0: Windows profiles with '(' in the path break cmd.exe when Surefire forks a JVM -->
+                    <forkCount>0</forkCount>
+                    <reuseForks>false</reuseForks>
+                    <tempDir>${project.build.directory}/surefire-tmp</tempDir>
+                    <argLine>-javaagent:${project.build.directory}/jacoco-agent.jar=destfile=${project.build.directory}/jacoco.exec -Djava.io.tmpdir=${project.build.directory}/surefire-tmp</argLine>
                 </configuration>
             </plugin>
         </plugins>

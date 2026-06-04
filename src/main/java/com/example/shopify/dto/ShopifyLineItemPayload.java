@@ -19,8 +19,9 @@ public class ShopifyLineItemPayload {
     private Long productId;
     @JsonProperty("variant_id")
     private Long variantId;
-    /** Globo custom fields, Subscribee markers, file upload URLs, etc. */
-    private List<ShopifyPropertyPayload> properties = new ArrayList<>();
+    /** Globo custom fields, Subscribee markers, file upload URLs, etc. (JSON key: properties) */
+    @JsonProperty("properties")
+    private List<ShopifyPropertyPayload> lineProperties = new ArrayList<>();
     @JsonProperty("selling_plan_allocation")
     private ShopifySellingPlanAllocationPayload sellingPlanAllocation;
 }

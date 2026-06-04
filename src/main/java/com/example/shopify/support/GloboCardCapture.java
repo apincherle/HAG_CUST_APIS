@@ -65,7 +65,7 @@ public final class GloboCardCapture {
 
         if (order.getLineItems() != null) {
             for (ShopifyLineItemPayload line : order.getLineItems()) {
-                List<GloboCardSlot> cards = parseSlots(line.getProperties());
+                List<GloboCardSlot> cards = parseSlots(line.getLineProperties());
                 if (cards.isEmpty()) {
                     continue;
                 }
@@ -94,7 +94,7 @@ public final class GloboCardCapture {
         if (line == null) {
             return null;
         }
-        List<GloboCardSlot> cards = parseSlots(line.getProperties());
+        List<GloboCardSlot> cards = parseSlots(line.getLineProperties());
         if (cards.isEmpty()) {
             return null;
         }

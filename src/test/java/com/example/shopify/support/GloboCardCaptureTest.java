@@ -64,7 +64,7 @@ class GloboCardCaptureTest {
         var line = new com.example.shopify.dto.ShopifyLineItemPayload();
         line.setId(99L);
         line.setSku("HAGS-SUB-GOLD");
-        line.setProperties(List.of(
+        line.setLineProperties(List.of(
                 prop("cardname-1", "Lugia"),
                 prop("card-back-1", "https://cdn.example/back.jpg")
         ));

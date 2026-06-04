@@ -104,6 +104,9 @@ class ShopifyWebhookIntegrationTest {
         assertEquals(0, entitlements.size(), "orders/create must not create entitlements");
 
         ShopifyOrderExtras extras = orderExtrasRepository.findById(FIXTURE_SHOPIFY_ORDER_ID).orElseThrow();
+        assertNotNull(extras.getLineItemsJson());
+        assertTrue(extras.getLineItemsJson().contains("cardname-1"), "line_items_json should include Globo properties");
+        assertNotNull(extras.getGloboCardsJson(), "globo_cards_json should be parsed from line properties");
         assertTrue(extras.getGloboCardsJson().contains("cardname"));
         assertTrue(extras.getGloboCardsJson().contains("Charizard"));
         assertTrue(extras.getNoteAttributesJson().contains("REF-2026-42"));
@@ -135,7 +138,7 @@ class ShopifyWebhookIntegrationTest {
         ShopifyOrderExtras extras = orderExtrasRepository.findById(FIXTURE_SHOPIFY_ORDER_ID).orElseThrow();
         assertEquals("Please handle with care", extras.getOrderNote());
         assertTrue(extras.getSubscriptionMetadataJson().contains("selling_plan"));
-        assertTrue(extras.getGloboCardsJson().contains("cardname-1"));
+        assertTrue(extras.getGloboCardsJson().contains("\"cardname\":\"Charizard\""));
         assertTrue(extras.getGloboCardsJson().contains("\"slot\":5"));
     }
 

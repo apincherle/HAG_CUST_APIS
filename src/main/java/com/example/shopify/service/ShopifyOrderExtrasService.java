@@ -47,15 +47,16 @@ public class ShopifyOrderExtrasService {
         extras.setSourceName(order.getSourceName());
         extras.setSubscriptionMetadataJson(buildSubscriptionMetadataJson(order));
         extras.setLineItemsJson(buildLineItemsJson(order));
+        extras.setGloboCardsJson(GloboCardCapture.toOrderJson(order, objectMapper));
         repository.save(extras);
         log.debug("Saved shopify_order_extras for order {}", order.getId());
     }
 
     public String linePropertiesJson(ShopifyLineItemPayload lineItem) {
-        if (lineItem.getProperties() == null || lineItem.getProperties().isEmpty()) {
+        if (lineItem.getLineProperties() == null || lineItem.getLineProperties().isEmpty()) {
             return null;
         }
-        return toJson(lineItem.getProperties());
+        return toJson(lineItem.getLineProperties());
     }
 
     public String globoCardsJson(ShopifyLineItemPayload lineItem) {
@@ -104,7 +105,7 @@ public class ShopifyOrderExtrasService {
                     // keep other fields
                 }
             }
-            List<ShopifyPropertyPayload> subProps = subscriptionRelatedProperties(item.getProperties());
+            List<ShopifyPropertyPayload> subProps = subscriptionRelatedProperties(item.getLineProperties());
             if (!subProps.isEmpty()) {
                 try {
                     lineNode.set("subscription_properties", objectMapper.valueToTree(subProps));
