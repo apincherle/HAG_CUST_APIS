@@ -1,5 +1,5 @@
--- Azure SQL Server: Globo line properties + shopify_order_extras (Subscribee metadata)
--- Run in SSMS / Azure Data Studio against hags_customer (use GO between batches).
+-- Run on Azure SQL database hags_customer (one script, in order).
+-- Creates shopify_order_extras + entitlement columns if missing, then globo_cards_json.
 
 IF COL_LENGTH('purchase_entitlements', 'line_item_title') IS NULL
     ALTER TABLE purchase_entitlements ADD line_item_title NVARCHAR(500) NULL;
@@ -7,6 +7,10 @@ GO
 
 IF COL_LENGTH('purchase_entitlements', 'line_properties_json') IS NULL
     ALTER TABLE purchase_entitlements ADD line_properties_json NVARCHAR(MAX) NULL;
+GO
+
+IF COL_LENGTH('purchase_entitlements', 'globo_cards_json') IS NULL
+    ALTER TABLE purchase_entitlements ADD globo_cards_json NVARCHAR(MAX) NULL;
 GO
 
 IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'shopify_order_extras')
@@ -26,4 +30,11 @@ BEGIN
     );
     CREATE INDEX idx_shopify_order_extras_updated ON shopify_order_extras(updated_at);
 END
+ELSE
+BEGIN
+    IF COL_LENGTH('shopify_order_extras', 'globo_cards_json') IS NULL
+        ALTER TABLE shopify_order_extras ADD globo_cards_json NVARCHAR(MAX) NULL;
+END
 GO
+
+PRINT 'shopify_order_extras setup complete.';
