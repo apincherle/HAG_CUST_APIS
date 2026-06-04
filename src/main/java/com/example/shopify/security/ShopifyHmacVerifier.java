@@ -33,6 +33,7 @@ public class ShopifyHmacVerifier {
         if (secret == null || secret.isBlank()) {
             return false;
         }
+        secret = secret.trim();
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));

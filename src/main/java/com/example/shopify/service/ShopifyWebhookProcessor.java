@@ -38,8 +38,17 @@ public class ShopifyWebhookProcessor {
         this.dispatcher = dispatcher;
     }
 
-    @Transactional
     public void process(
+            byte[] rawBody,
+            String topic,
+            String shopDomain,
+            String webhookId,
+            String hmacHeader) {
+        validateBeforePersistence(rawBody, topic, shopDomain, webhookId, hmacHeader);
+        processInTransaction(rawBody, topic, shopDomain, webhookId);
+    }
+
+    private void validateBeforePersistence(
             byte[] rawBody,
             String topic,
             String shopDomain,
@@ -50,6 +59,14 @@ public class ShopifyWebhookProcessor {
         }
         validateShopDomain(shopDomain);
         if (!hmacVerifier.verify(rawBody, hmacHeader)) {
+            if (properties.getWebhook().getSecret() == null || properties.getWebhook().getSecret().isBlank()) {
+                log.error("Shopify webhook HMAC failed: SHOPIFY_WEBHOOK_SECRET is not set on the container");
+            } else if (hmacHeader == null || hmacHeader.isBlank()) {
+                log.warn("Shopify webhook HMAC failed: missing X-Shopify-Hmac-Sha256 header");
+            } else {
+                log.warn("Shopify webhook HMAC failed: secret does not match Shopify signing secret "
+                        + "(check SHOPIFY_WEBHOOK_SECRET vs Admin → Settings → Notifications → Webhooks)");
+            }
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Shopify webhook signature");
         }
         if (topic == null || topic.isBlank()) {
@@ -58,7 +75,10 @@ public class ShopifyWebhookProcessor {
         if (webhookId == null || webhookId.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing X-Shopify-Webhook-Id");
         }
+    }
 
+    @Transactional
+    void processInTransaction(byte[] rawBody, String topic, String shopDomain, String webhookId) {
         Optional<ShopifyWebhookEvent> existing = eventRepository.findById(webhookId);
         if (existing.isPresent() && existing.get().getStatus() == ShopifyWebhookEvent.ProcessingStatus.OK) {
             log.debug("Duplicate Shopify webhook {}, already processed", webhookId);
@@ -108,7 +128,15 @@ public class ShopifyWebhookProcessor {
         if (expected == null || expected.isBlank()) {
             return;
         }
-        if (shopDomain == null || !expected.equalsIgnoreCase(shopDomain.trim())) {
+        expected = expected.trim();
+        String received = shopDomain != null ? shopDomain.trim() : null;
+        if (received == null || !expected.equalsIgnoreCase(received)) {
+            log.warn(
+                    "Shopify shop domain mismatch: X-Shopify-Shop-Domain='{}', SHOPIFY_SHOP_DOMAIN='{}'. "
+                            + "In Shopify Admin open Settings → Domains and use the *.myshopify.com hostname, "
+                            + "or clear SHOPIFY_SHOP_DOMAIN to skip this check.",
+                    received,
+                    expected);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unexpected Shopify shop domain");
         }
     }
