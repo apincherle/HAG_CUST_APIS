@@ -40,6 +40,17 @@ public class PurchaseEntitlement {
     @Column(name = "shopify_order_name", length = 32)
     private String shopifyOrderName;
 
+    @Column(name = "line_item_title", length = 500)
+    private String lineItemTitle;
+
+    /** JSON array of {name,value} — Globo text fields, file upload URLs, Subscribee line markers. */
+    @Column(name = "line_properties_json", columnDefinition = "TEXT")
+    private String linePropertiesJson;
+
+    /** Parsed Globo cardname/notes/front/back slots for this line item. */
+    @Column(name = "globo_cards_json", columnDefinition = "TEXT")
+    private String globoCardsJson;
+
     @Column(name = "tier_code", nullable = false, length = 32)
     private String tierCode;
 

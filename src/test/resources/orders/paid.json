@@ -11,6 +11,12 @@
   "total_price": "49.99",
   "subtotal_price": "49.99",
   "total_tax": "0.00",
+  "note": "Please handle with care",
+  "tags": "subscription, subscribee",
+  "source_name": "web",
+  "note_attributes": [
+    { "name": "Submission reference", "value": "REF-2026-42" }
+  ],
   "customer": {
     "id": 8800123456789,
     "email": "collector@hags-grading.co.uk",
@@ -22,10 +28,41 @@
       "id": 77000112233,
       "product_id": 88000112233,
       "variant_id": 99000112233,
-      "title": "HAGS Card Grading — Bronze Submission",
+      "title": "HAGS Card Grading — 5 Card Bundle",
       "sku": "HAGS-SUB-BRONZE",
       "quantity": 1,
-      "price": "49.99"
+      "price": "49.99",
+      "properties": [
+        { "name": "cardname-1", "value": "Charizard" },
+        { "name": "notes-1", "value": "Holo swirl" },
+        { "name": "card-front-1", "value": "https://cdn.shopify.com/s/files/1/example/front1.jpg" },
+        { "name": "card-back-1", "value": "https://cdn.shopify.com/s/files/1/example/back1.jpg" },
+        { "name": "cardname-2", "value": "Blastoise" },
+        { "name": "notes-2", "value": "PSA candidate" },
+        { "name": "card-front-2", "value": "https://cdn.shopify.com/s/files/1/example/front2.jpg" },
+        { "name": "card-back-2", "value": "https://cdn.shopify.com/s/files/1/example/back2.jpg" },
+        { "name": "cardname-3", "value": "Venusaur" },
+        { "name": "notes-3", "value": "Light play" },
+        { "name": "card-front-3", "value": "https://cdn.shopify.com/s/files/1/example/front3.jpg" },
+        { "name": "card-back-3", "value": "https://cdn.shopify.com/s/files/1/example/back3.jpg" },
+        { "name": "cardname-4", "value": "Pikachu" },
+        { "name": "notes-4", "value": "Yellow cheeks" },
+        { "name": "card-front-4", "value": "https://cdn.shopify.com/s/files/1/example/front4.jpg" },
+        { "name": "card-back-4", "value": "https://cdn.shopify.com/s/files/1/example/back4.jpg" },
+        { "name": "cardname-5", "value": "Mewtwo" },
+        { "name": "notes-5", "value": "1st edition" },
+        { "name": "card-front-5", "value": "https://cdn.shopify.com/s/files/1/example/front5.jpg" },
+        { "name": "card-back-5", "value": "https://cdn.shopify.com/s/files/1/example/back5.jpg" },
+        { "name": "_subscription_id", "value": "sub_abc123" }
+      ],
+      "selling_plan_allocation": {
+        "selling_plan_group_id": 12345,
+        "selling_plan": {
+          "id": 67890,
+          "name": "Monthly grading subscription",
+          "description": "Subscribee plan"
+        }
+      }
     }
   ]
 }

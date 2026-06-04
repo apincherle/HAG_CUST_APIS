@@ -4,7 +4,9 @@ import com.example.model.Customer;
 import com.example.repository.CustomerRepository;
 import com.example.shopify.entity.PurchaseEntitlement;
 import com.example.shopify.entity.ShopifyWebhookEvent;
+import com.example.shopify.entity.ShopifyOrderExtras;
 import com.example.shopify.repository.PurchaseEntitlementRepository;
+import com.example.shopify.repository.ShopifyOrderExtrasRepository;
 import com.example.shopify.repository.ShopifyWebhookEventRepository;
 import com.example.shopify.support.ShopifyWebhookTestSupport;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,6 +52,9 @@ class ShopifyWebhookIntegrationTest {
 
     @Autowired
     private ShopifyWebhookEventRepository webhookEventRepository;
+
+    @Autowired
+    private ShopifyOrderExtrasRepository orderExtrasRepository;
 
     @Test
     @Order(1)
@@ -96,6 +102,11 @@ class ShopifyWebhookIntegrationTest {
         List<PurchaseEntitlement> entitlements =
                 entitlementRepository.findByShopifyOrderId(FIXTURE_SHOPIFY_ORDER_ID);
         assertEquals(0, entitlements.size(), "orders/create must not create entitlements");
+
+        ShopifyOrderExtras extras = orderExtrasRepository.findById(FIXTURE_SHOPIFY_ORDER_ID).orElseThrow();
+        assertTrue(extras.getGloboCardsJson().contains("cardname"));
+        assertTrue(extras.getGloboCardsJson().contains("Charizard"));
+        assertTrue(extras.getNoteAttributesJson().contains("REF-2026-42"));
     }
 
     @Test
@@ -116,6 +127,16 @@ class ShopifyWebhookIntegrationTest {
         assertEquals(10, entitlement.getCardsAllowed());
         assertEquals(PurchaseEntitlement.EntitlementStatus.ACTIVE, entitlement.getStatus());
         assertEquals("#HAGS-1001", entitlement.getShopifyOrderName());
+        assertNotNull(entitlement.getGloboCardsJson());
+        assertTrue(entitlement.getGloboCardsJson().contains("\"slot\":5"));
+        assertTrue(entitlement.getGloboCardsJson().contains("Mewtwo"));
+        assertTrue(entitlement.getGloboCardsJson().contains("card_front_url"));
+
+        ShopifyOrderExtras extras = orderExtrasRepository.findById(FIXTURE_SHOPIFY_ORDER_ID).orElseThrow();
+        assertEquals("Please handle with care", extras.getOrderNote());
+        assertTrue(extras.getSubscriptionMetadataJson().contains("selling_plan"));
+        assertTrue(extras.getGloboCardsJson().contains("cardname-1"));
+        assertTrue(extras.getGloboCardsJson().contains("\"slot\":5"));
     }
 
     @Test

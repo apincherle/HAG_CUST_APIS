@@ -193,6 +193,36 @@ shopify_webhook_events
 | `status` | active / consumed / refunded / cancelled |
 | `created_at` | |
 
+### `shopify_order_extras` (Globo + Subscribee on order webhooks)
+
+Persisted on **`orders/create`**, **`orders/updated`**, and **`orders/paid`**:
+
+| Column | Source |
+|--------|--------|
+| `line_items_json` | Full `line_items[]` including **`properties`** (Globo text + file upload URLs) and **`selling_plan_allocation`** (Subscribee / Shopify subscriptions) |
+| `note_attributes_json` | Checkout/cart attributes |
+| `subscription_metadata_json` | Aggregated selling plans, subscription-related properties, tags, `source_name` |
+| `order_note`, `tags` | Order-level fields |
+
+`purchase_entitlements.line_properties_json` keeps the raw Globo property list; `globo_cards_json` stores parsed slots.
+
+**Globo field names (per card slot N):** `cardname-N`, `notes-N`, `card-front-N` (upload URL), `card-back-N` (upload URL). Five-card bundles use N=1..5 on one line item. Parsed JSON example:
+
+```json
+{
+  "line_items": [{
+    "line_item_id": 77000112233,
+    "sku": "HAGS-SUB-BRONZE",
+    "cards": [
+      { "slot": 1, "cardname": "Charizard", "notes": "…", "card_front_url": "https://…", "card_back_url": "https://…" },
+      { "slot": 5, "cardname": "Mewtwo", "notes": "…", "card_front_url": "https://…", "card_back_url": "https://…" }
+    ]
+  }]
+}
+```
+
+**Optional later:** register `subscription_contracts/create|update` if contract-level IDs are required beyond order payload.
+
 ### Optional: `shopify_order_refs`
 
 Cache order name (`#1042`), financial status, tags for ops without calling Shopify API on every read.

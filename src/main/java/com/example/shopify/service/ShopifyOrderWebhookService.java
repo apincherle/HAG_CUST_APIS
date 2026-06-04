@@ -20,14 +20,17 @@ public class ShopifyOrderWebhookService {
     private static final Logger log = LoggerFactory.getLogger(ShopifyOrderWebhookService.class);
 
     private final PurchaseEntitlementRepository entitlementRepository;
+    private final ShopifyOrderExtrasService orderExtrasService;
     private final ShopifyProperties properties;
     private final ObjectMapper objectMapper;
 
     public ShopifyOrderWebhookService(
             PurchaseEntitlementRepository entitlementRepository,
+            ShopifyOrderExtrasService orderExtrasService,
             ShopifyProperties properties,
             ObjectMapper objectMapper) {
         this.entitlementRepository = entitlementRepository;
+        this.orderExtrasService = orderExtrasService;
         this.properties = properties;
         this.objectMapper = objectMapper;
     }
@@ -45,6 +48,8 @@ public class ShopifyOrderWebhookService {
                     order.getId(), order.getFinancialStatus());
             return;
         }
+        orderExtrasService.upsertFromOrder(order);
+
         Long shopifyCustomerId = resolveCustomerId(order);
         if (shopifyCustomerId == null) {
             throw new IllegalArgumentException("Order " + order.getId() + " has no customer id");
@@ -74,6 +79,9 @@ public class ShopifyOrderWebhookService {
             entitlement.setShopifyLineItemId(lineItem.getId());
             entitlement.setShopifyCustomerId(shopifyCustomerId);
             entitlement.setShopifyOrderName(order.getName());
+            entitlement.setLineItemTitle(lineItem.getTitle());
+            entitlement.setLinePropertiesJson(orderExtrasService.linePropertiesJson(lineItem));
+            entitlement.setGloboCardsJson(orderExtrasService.globoCardsJson(lineItem));
             entitlement.setTierCode(tierCode);
             entitlement.setCardsAllowed(cardsAllowed);
             entitlement.setCardsUsed(0);
@@ -81,7 +89,8 @@ public class ShopifyOrderWebhookService {
             entitlementRepository.save(entitlement);
             created++;
         }
-        log.info("Processed orders/paid for order {} — {} new entitlement(s)", order.getId(), created);
+        log.info("Processed orders/paid for order {} — {} new entitlement(s), extras persisted",
+                order.getId(), created);
     }
 
     @Transactional
@@ -104,7 +113,8 @@ public class ShopifyOrderWebhookService {
     @Transactional
     public void handleOrderCreateOrUpdate(String topic, byte[] payload) throws Exception {
         ShopifyOrderPayload order = objectMapper.readValue(payload, ShopifyOrderPayload.class);
-        log.info("Received {} for order {} ({})", topic, order.getId(), order.getName());
+        orderExtrasService.upsertFromOrder(order);
+        log.info("Persisted {} extras for order {} ({})", topic, order.getId(), order.getName());
     }
 
     private Long resolveCustomerId(ShopifyOrderPayload order) {

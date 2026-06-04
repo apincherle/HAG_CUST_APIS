@@ -11,6 +11,9 @@
   "total_price": "49.99",
   "subtotal_price": "49.99",
   "total_tax": "0.00",
+  "note_attributes": [
+    { "name": "Submission reference", "value": "REF-2026-42" }
+  ],
   "customer": {
     "id": 8800123456789,
     "email": "collector@hags-grading.co.uk",
@@ -25,7 +28,13 @@
       "title": "HAGS Card Grading — Bronze Submission",
       "sku": "HAGS-SUB-BRONZE",
       "quantity": 1,
-      "price": "49.99"
+      "price": "49.99",
+      "properties": [
+        { "name": "cardname-1", "value": "Charizard" },
+        { "name": "notes-1", "value": "Holo swirl" },
+        { "name": "card-front-1", "value": "https://cdn.shopify.com/s/files/1/example/front1.jpg" },
+        { "name": "card-back-1", "value": "https://cdn.shopify.com/s/files/1/example/back1.jpg" }
+      ]
     }
   ]
 }
