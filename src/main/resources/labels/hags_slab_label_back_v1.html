@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Hags label — back</title>
+  <link rel="stylesheet" href="label_theme.css"/>
+  <style>
+    .brand-col { padding: 0.25mm 0.4mm; color: #c58f2b; }
+    .logo-cell { width: 12mm; text-align: center; vertical-align: middle; }
+    .logo-back {
+      width: 9.5mm;
+      height: 9.5mm;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .brand-detail { padding-left: 0.3mm; vertical-align: middle; color: #c58f2b; }
+    .brand-detail .company-name { font-size: 9pt; text-align: left; }
+    .qr-col { width: 16mm; padding: 0.25mm 0.5mm 0.25mm 0.2mm; text-align: center; }
+    .tagline {
+      font-size: 4pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #c58f2b;
+      line-height: 1.1;
+      margin-top: 0.1mm;
+    }
+    .verify-stack {
+      margin-top: 0.2mm;
+      font-size: 5.8pt;
+      font-weight: bold;
+      color: #c58f2b;
+      line-height: 1.1;
+      text-align: left;
+    }
+    .verify-stack .verify-cert { margin-bottom: 0.06mm; }
+    .verify-stack .verify-url {
+      font-size: 4pt;
+      font-weight: bold;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .qr-box {
+      width: 12.5mm;
+      height: 12.5mm;
+      border: 0.3mm solid #ffffff;
+      margin: 0 auto;
+      padding: 0.2mm;
+    }
+    .qr { width: 11.5mm; height: 11.5mm; }
+    .scan-text {
+      font-size: 4pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.12mm;
+      color: #c58f2b;
+    }
+  </style>
+</head>
+<body>
+  <div class="label-shell">
+    <div class="label-inner">
+      <table class="content-table" role="presentation">
+        <tr>
+          <td class="brand-col v-middle">
+            <table role="presentation">
+              <tr>
+                <td class="logo-cell">
+                  <img class="logo-back" src="{{logoImage}}" alt=""/>
+                </td>
+                <td class="brand-detail">
+                  <span class="company-name">{{companyName}}</span>
+                  <div class="h-rule"></div>
+                  <div class="tagline">Grade with magic. Trust in every card.</div>
+                  <div class="verify-stack mono">
+                    <div class="verify-cert">{{certificateNumber}}</div>
+                    <div class="verify-url">{{certificateUrlDisplay}}</div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td class="v-line"></td>
+          <td class="qr-col v-middle">
+            <div class="qr-box">
+              <img class="qr" src="{{qrImage}}" alt=""/>
+            </div>
+            <div class="scan-text">Scan to verify</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

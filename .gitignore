@@ -3,6 +3,9 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 .mvn/wrapper/maven-wrapper.properties
 
+# Node (local scripts tooling)
+scripts/node_modules/
+
 # IDE
 .idea/
 .vscode/

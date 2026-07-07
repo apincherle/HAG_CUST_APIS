@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Hags label — front</title>
+  <link rel="stylesheet" href="label_theme.css"/>
+  <style>
+    .brand-col { width: 15mm; padding: 0.1mm 0.25mm; vertical-align: middle; height: 100%; }
+    .brand-table-front { width: 100%; height: 17.5mm; border-collapse: collapse; }
+    .brand-name-cell { vertical-align: top; text-align: center; padding: 0; height: 3.5mm; }
+    .brand-logo-row { height: 100%; }
+    .brand-logo-cell { vertical-align: middle; text-align: center; padding: 0; }
+    .logo-front {
+      width: 10.5mm;
+      height: 10.5mm;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .company-name-front {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 9pt;
+      line-height: 0.95;
+    }
+    .info-col { padding: 0.25mm 0.8mm; }
+    .grade-col { width: 15mm; padding: 0 0.3mm; text-align: center; }
+    .card-name {
+      font-size: 8pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      line-height: 1.05;
+      color: #c58f2b;
+      border-bottom: 0.12mm solid #c58f2b;
+      padding-bottom: 0.15mm;
+      margin-bottom: 0.15mm;
+    }
+    .set-name {
+      font-size: 7pt;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      line-height: 1.05;
+      color: #c58f2b;
+      margin-top: 0.1mm;
+    }
+    .footer-stack {
+      margin-top: 0.25mm;
+      font-size: 7.5pt;
+      font-weight: bold;
+      color: #c58f2b;
+      line-height: 1.15;
+      text-align: center;
+    }
+    .footer-stack .cert-line { margin-bottom: 0.08mm; }
+    .grade-num {
+      font-family: "Times New Roman", Times, serif;
+      font-weight: bold;
+      font-size: 16pt;
+      color: #c58f2b;
+      line-height: 0.9;
+    }
+    .grade-suffix {
+      font-size: 5pt;
+      font-weight: bold;
+      color: #c58f2b;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 0.05mm;
+    }
+    .grade-block { text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="label-shell">
+    <div class="label-inner">
+      <table class="content-table" role="presentation">
+        <tr>
+          <td class="brand-col">
+            <table class="brand-table brand-table-front" role="presentation">
+              <tr>
+                <td class="brand-name-cell">
+                  <span class="company-name company-name-front">{{companyName}}</span>
+                </td>
+              </tr>
+              <tr class="brand-logo-row">
+                <td class="brand-logo-cell">
+                  <img class="logo-front" src="{{logoImage}}" alt=""/>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td class="v-line"></td>
+          <td class="info-col v-middle center">
+            <div class="card-name">{{cardName}}</div>
+            <div class="set-name">{{setName}}</div>
+            <div class="footer-stack mono">
+              <div class="cert-line">#{{certificateNumber}}</div>
+              <div class="card-line">{{cardNumber}}</div>
+            </div>
+          </td>
+          <td class="v-line"></td>
+          <td class="grade-col v-middle">
+            <div class="grade-block">
+              <div class="grade-num">{{gradeNumeric}}</div>
+              <div class="grade-suffix">{{gradeSuffix}}</div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

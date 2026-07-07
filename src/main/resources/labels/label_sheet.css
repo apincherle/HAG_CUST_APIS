@@ -1,0 +1,38 @@
+/* A4 batch sheet — table grid of 70×20 mm label cells */
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+html.sheet-root,
+body.sheet-page {
+  width: 210mm !important;
+  height: 297mm !important;
+  margin: 0;
+  padding: 8mm 0;
+  background: #ffffff;
+}
+
+.sheet-grid {
+  width: 210mm;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.label-cell {
+  width: 70mm;
+  height: 20mm;
+  padding: 0;
+  margin: 0;
+  vertical-align: top;
+  overflow: hidden;
+}
+
+.row-gap td {
+  height: 2mm;
+  padding: 0;
+  border: none;
+  line-height: 0;
+  font-size: 0;
+}
