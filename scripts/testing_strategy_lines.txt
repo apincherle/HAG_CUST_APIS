@@ -1,0 +1,673 @@
+0: PPL Placing Platform Evolution
+1: PPL
+2: Testing Strategy Management
+3: Deliverable ID:
+4: D00X
+5: Version:
+6: 0.1
+7: Contents
+8: TOC \o "1-3" \h \z \u 1. Introduction PAGEREF _Toc208411236 \h 2
+9: 1.1 Purpose PAGEREF _Toc208411237 \h 2
+10: 1.2 Objectives PAGEREF _Toc208411238 \h 2
+11: 1.3 Scope PAGEREF _Toc208411239 \h 3
+12: 2. Test Approach PAGEREF _Toc208411240 \h 4
+13: 2.1 Testing Lifecycle PAGEREF _Toc208411241 \h 4
+14: 2.2 Test Design & Planning PAGEREF _Toc208411242 \h 4
+15: 2.3 Test Levels & Types PAGEREF _Toc208411243 \h 6
+16: 2.3.1Unit Tests PAGEREF _Toc208411244 \h 6
+17: 2.3.2 In Sprint QA Tests PAGEREF _Toc208411245 \h 7
+18: 2.3.3 Integration Tests PAGEREF _Toc208411246 \h 7
+19: 2.3.4 E2E Tests PAGEREF _Toc208411247 \h 7
+20: 2.3.5 POET Tests PAGEREF _Toc208411248 \h 7
+21: 2.3.6 JIT Tests PAGEREF _Toc208411249 \h 7
+22: 2.3.7 UAT Tests PAGEREF _Toc208411250 \h 7
+23: 2.3.8 MT Tests PAGEREF _Toc208411251 \h 7
+24: 2.3.9 NFT Tests PAGEREF _Toc208411252 \h 7
+25: 2.3.10 OAT Tests PAGEREF _Toc208411253 \h 7
+26: 3. Test Automation PAGEREF _Toc208411254 \h 7
+27: 4. Defect Management PAGEREF _Toc208411255 \h 8
+28: 5. Test Data & Environments PAGEREF _Toc208411256 \h 8
+29: 5.1 Test Environments PAGEREF _Toc208411257 \h 8
+30: 5.2 Test Data PAGEREF _Toc208411258 \h 9
+31: 5.3 Environment Gates and Exit Criteria PAGEREF _Toc208411259 \h 9
+32: 6. Test Deliverables PAGEREF _Toc208411260 \h 10
+33: 7. Metrics & Reporting PAGEREF _Toc208411261 \h 10
+34: 8. Roles & Responsibilities PAGEREF _Toc208411262 \h 11
+35: 9. Tools & Accelerators PAGEREF _Toc208411263 \h 11
+36: 10. Entry and Exit Criteria PAGEREF _Toc208411264 \h 13
+37: 10.1 Entry Criteria PAGEREF _Toc208411265 \h 13
+38: 10.2 Exit Criteria PAGEREF _Toc208411266 \h 13
+39: 11. Risks and Mitigations PAGEREF _Toc208411267 \h 14
+40: 12. Traceability and Coverage PAGEREF _Toc208411268 \h 15
+41: 11. Appendix PAGEREF _Toc208411269 \h 15
+42: 1. Introduction
+43: 1.1 Purpose
+44: This Test Strategy sets out the core elements of the testing methodology that will be applied within the programme. It is intended to be a dynamic, evolving document that will be refined as delivery progresses, adapting to meet changing needs and demands.The strategy provides clear guidance throughout all phases of testing. It outlines the overall approach at a high level while also highlighting key considerations across test phases.
+45: 1.2 Objectives
+46: The objectives of this Test Strategy are to:
+47: Ensure Quality: Validate that all delivered solutions meet business, functional, and non-functional requirements.
+48: Enable Early Defect Detection: Testing will begin as early as possible with overlapping phases, enabling early detection of defects to reduce rework and cost.
+49: Provide Transparency: Test results, dashboards, and metrics will be generated from Azure DevOps pipelines and test plans, giving near real-time visibility.
+50: Standardized Practices: Apply consistent, auditable, and reusable testing approaches across teams, including traceability from requirements to test outcomes.
+51: Leverage Automation: Embed automated testing in CI/CD pipelines across unit, integration, system, and E2E phases, producing reusable regression suites.
+52: Support Business Confidence: Provide reliable evidence that the solution is fit for purpose and ready for release.
+53: Define Clear Responsibility and Ownership: Establish accountability for each test phase (unit, integration, system, UAT, performance, security) and environment management (dev, test, staging, production-like), ensuring clarity in roles and responsibilities.
+54: Define Tooling for Testing: Standardize on a defined set of tools for test management, automation, performance, and security testing (e.g., Azure DevOps for planning and reporting, Selenium/Playwright for automation, JMeter/K6 for performance, OWASP/ZAP for security).
+55: Acceptance Gates for Testing: Define measurable quality gates (e.g., unit test pass rate thresholds, code coverage %, defect severity thresholds, performance benchmarks) that must be met before progressing to the next test phase or release
+56: 1.3 Scope
+57: 1.3.1 In Scope
+58: Core applications and capabilities: OutSystems, MongoDB, Azure Microservice Components, Market APIs, New REST services, New Micro UI screens, Existing Test suites.Test Phases in Scope
+59: Test Phase
+60: Description
+61: Responsibility
+62: Environment(s)
+63: In-Sprint Test
+64: Unit and system testing carried out during development sprints.
+65: BIP
+66: Dev, Staging
+67: Unit / System Testing
+68: For non-sprint development, unit and system testing will be performed by the dev/test teams.
+69: BIP
+70: Dev (variable by area)
+71: End-to-End (E2E)
+72: Integration testing across in-scope applications and full end-to-end scenarios covering one or more user stories.
+73: PPL
+74: E2E
+75: Product Owner Exploratory
+76: Product owners validate that completed user stories deliver the intended user experience.
+77: PPL
+78: E2E
+79: Joint Integration Testing (JIT)
+80: Proves that Gateway APIs can be consumed by London Market organisations.
+81: Market Users/PPL
+82: JIT
+83: User Acceptance Testing (UAT)
+84: Business-led validation that user stories meet business requirements.
+85: PPL
+86: UAT
+87: Market Testing (MT)
+88: Market users test functionality in a production-like environment.
+89: PPL / BIP (TBC)
+90: Pre-Prod
+91: Performance / Stress / Soak
+92: Evaluates responsiveness, stability, and workload limits over time.
+93: BIP (TBC)
+94: Performance
+95: Security Testing
+96: Vulnerability scans, penetration tests, and static code analysis.
+97: BIP
+98: Staging, Pre-Prod, Production
+99: Operational Acceptance Test (OAT)
+100: Operations team acceptance testing (deployment rollback, failover, resilience, monitoring).
+101: PPL
+102: Pre-Prod (TBC), Prod, Disaster Recovery
+103: 1.3.2 Out of Scope
+104: Any activity not explicitly listed above (e.g., environment provisioning, data migration of historical transactions).
+105: 2. Test Approach
+106: 2.1 Testing Lifecycle
+107: Testing will follow a hybrid Agile model. Activities include planning, design, execution, defect management, reporting, and closure. Testing will integrate tightly with CI/CD pipelines.
+108: This diagram shows the different stages where testing teams are involved – each arrow represents a gate
+109: 2.2 Test Design & Planning
+110: 2.2.1 Requirements & Story Readiness
+111: Test leadership (Scrum Lead, InSprint Test lead, QA/PROD ) ensure that user stories are clear, unambiguous, and testable as standalone items, with explicit documentation of technical dependencies.
+112: Test teams contribute during detailed design by reviewing and signing off acceptance criteria, validating supporting detail (e.g., data matrix, process diagrams, screen designs), confirming APIs and dependencies, and highlighting test or test data needs.
+113: The Definition of Ready (DoR) includes test team sign-off, ensuring stories are testable before entering a sprint.
+114: 2.2.2 Test Case Design
+115: Test cases are derived from requirements, user stories, and acceptance criteria. Full traceability is maintained in Azure DevOps by linking requirements, test cases, executions, and defects.
+116: 2.2.3 In-Sprint Test Planning & Execution
+117: All stories are expected to be completed within a sprint; however, where this is not achievable, stories may be carried forward into the subsequent sprint. A story will not be formally closed until all Definition of Done (DoD) criteria have been fully satisfied and verified.
+118: Developers:
+119: Agree story scope and DOR / DOD
+120: Write and automate unit tests within the CI pipeline.
+121: Ensure unit tests pass before code promotion.
+122: Submit code to peer review and static analysis prior to moving into staging.
+123: Testers (embedded in scrum teams):
+124: Agree story scope and DOR / DOD
+125: Own system testing for sprint deliverables.
+126: Execute tests based on approved acceptance criteria.
+127: Perform exploratory testing alongside scripted tests, validating both “happy path” and “unhappy path” flows (including database checks and role-based access).
+128: Highlight UI defects even when APIs are mocked (not formally passable until real APIs are available).
+129: 2.3 Test Levels & Types
+130: Below is a table showing the Testing levels/types:
+131: Level
+132: Description
+133: Owner
+134: When it runs
+135: Env
+136: Trigger
+137: Results
+138: Unit
+139: written and automated by developers, validated in CI pipelines.
+140: Devs
+141: every PR
+142: CI
+143: push/pull_request
+144: CI job “unit-tests” → JUnit artifacts, coverage report Azure DevOps
+145: In-Sprint
+146: testers validate system functionality within sprints; exploratory testing complements scripted tests.
+147: QA
+148: daily
+149: INT
+150: manual/cron
+151: Test mgmt dashboard / sprint board / story
+152: Integration
+153: validate interactions between services and APIs.
+154: QA/Devs
+155: on merge to main
+156: INT
+157: main pipeline
+158: CI job “integration-tests” → report link
+159: E2E
+160: validate complete business workflows across applications.
+161: QA
+162: nightly
+163: Pre-Prod
+164: schedule
+165: Selenium/Cypress dashboard
+166: POET
+167: POs validate user stories against expected experience.
+168: Product Owner
+169: per story
+170: INT/UAT
+171: post-dev demo
+172: PO checklist + notes (link)
+173: JIT
+174: market-level testing with external gateway APIs.
+175: QA + External
+176: per gateway change
+177: Partner Sandboxes
+178: coordinated runbook
+179: Shared results folder + partner sign-off
+180: UAT
+181: business validation of user stories against requirements.
+182: Business
+183: per release
+184: UAT
+185: release candidate
+186: UAT sign-off doc + defects
+187: MT
+188: production-like validation by external users.
+189: External Users
+190: time-boxed
+191: Pre-Prod
+192: Client testing
+193: Feedback board + analytics
+194: NFT
+195: performance, scalability, security, vulnerability, and resilience.
+196: Perf/Sec
+197: weekly & before release
+198: Perf/Staging
+199: schedule/manual
+200: k6/JMeter/Grafana, SAST/DAST reports
+201: OAT
+202: validate monitoring, rollback, failover, and operational readiness.
+203: SRE
+204: before go-live
+205: Pre-Prod
+206: runbook
+207: Ops checklist: monitoring, rollback, DR test
+208: Unit Tests
+209: Goal: (why we run this level)
+210: Scope: (what’s in/out)
+211: Owner: (team/role; e.g., Devs, QA, PO, External Partner)
+212: Environments: (e.g., local, CI, INT, UAT, Pre-Prod)
+213: Data: (synthetic vs. masked prod, refresh cadence)
+214: Entry / Exit Criteria: (gates)
+215: Tooling: (frameworks, runners, security/perf tools)
+216: How to Run: (one-liner commands or links)
+217: Results & Where to Find Them: (dashboards/artifacts/paths)
+218: Metrics: (pass rate, coverage, MTTR, p95 latency targets…)
+219: Risks & Mitigations: (flaky tests, environment coupling)
+220: Change Frequency: (when this level is reviewed/tuned
+221: 2.3.2 In Sprint QA Tests
+222: ..
+223: 2.3.3 Integration Tests
+224: ..
+225: 2.3.4 E2E Tests
+226: ..
+227: 2.3.5 POET Tests
+228: ..
+229: 2.3.6 JIT Tests
+230: ..
+231: 2.3.7 UAT Tests
+232: ..
+233: 2.3.8 MT Tests
+234: ..
+235: 2.3.9 NFT Tests
+236: ..
+237: 2.3.10 OAT Tests
+238: ..
+239: Test Resources
+240: Effective delivery of the testing strategy relies on well-structured and collaborative test resources. The programme will leverage a combination of embedded QA specialists, dedicated test teams, and business representatives to ensure that testing is both comprehensive and efficient. Test resources are drawn from PPL test teams, BIP scrum teams with embedded QA testers, and the central BIP test team.
+241: Each group plays a distinct role within the lifecycle, from early in-sprint validation and automation to end-to-end and user acceptance testing. This blended approach ensures that quality is built into the solution from the outset, while also providing independent assurance at later stages. Clear ownership, accountability, and communication channels across these teams are essential to maintaining consistency, maximising test coverage, and supporting timely defect resolution.
+242: PPL Test teams
+243: BIP Scrum Teams with embedded QA testersBIP Test team
+244: 3. Test Automation
+245: - Scope: Automate smoke, regression, and high-value repeatable tests.- Smoke Tests: Quick validation that a deployed build is stable for further testing.- Regression Tests: Ensure existing functionality continues to work after changes or fixes.- Framework: Automated tests executed through Azure DevOps pipelines, integrated with tools such as Selenium and Cypress.- Coverage: Balanced approach combining automated regression with manual exploratory testing.
+246: 4. Defect Management
+247: Within the scope of testing, defects are managed to ensure issues discovered during execution are properly tracked, verified, and used to strengthen future test coverage. Broader defect processes (lifecycle, prioritization, reporting) are addressed in the TOM and Service Management documentation.
+248: Defect Logging: All defects identified during testing are logged in Azure DevOps and linked to the relevant test case and user story.
+249: Verification: Once resolved, defects are re-tested; regression tests are created/updated if needed.
+250: Traceability: Test execution reports in Azure DevOps provide visibility of open defects against requirements.
+251: Continuous Improvement: Root cause insights from defects guide where new tests (unit, integration, regression) should be added to strengthen coverage.
+252: 5. Test Data & Environments
+253: 5.1 Test Environments
+254: Environment
+255: Description / Usage
+256: Used By
+257: Dev
+258: Build & unit testing
+259: BIP Scrum Teams - Developers
+260: Staging
+261: System, integration, regression
+262: BIP Scrum Teams – Developers and QA testers
+263: E2E
+264: End to end flows
+265: BIP/PPL QA
+266: UAT
+267: Business led acceptance
+268: PPL QA team
+269: Pre Production
+270: Support test for production, configuration and APIS
+271: PPL Market test team
+272: Performance
+273: Load, stress, soak testing
+274: ?
+275: Joint Integration testing (JIT)
+276: Market API integration testing
+277: Developers or external customers testing API integration
+278: DR
+279: Disaster recovery validation
+280: PPL DR test team
+281: Production
+282: Live + penetration testing & OAT
+283: PPL Customers , PPL Admin & Service Desk
+284: Demo
+285: Sandbox for training/demos
+286: PPL Customer Relationship Managers
+287: 5.2 Test Data
+288: - Entirely synthetic transactional data (no production data).- Representative entities, users, and companies fabricated for testing.- Reference data mirrors production.- Documents and records provided in depersonalized format.
+289: 5.3 Environment Gates and Exit Criteria
+290: Movement between environments is controlled by test completion gates to ensure quality and stability before progressing:
+291: From → To
+292: Gate / End-of-Test Criteria
+293: Approval / Evidence
+294: Dev → Staging
+295: Unit tests pass in CI/CD; build artifacts generated
+296: Azure DevOps pipeline reports
+297: Staging → E2E
+298: Smoke + system/integration tests pass; key regression pack green
+299: Azure DevOps test run summary
+300: E2E → UAT
+301: End-to-end flows validated; no critical/high defects open
+302: QA lead sign-off
+303: UAT → Pre-Prod
+304: UAT scenarios executed; business acceptance recorded; priority defects resolved/deferred
+305: Product Owner / Business sign-off
+306: Pre-Prod → Performance
+307: Environment configured and stable; production-like setup
+308: Environment readiness checklist
+309: Performance → JIT / DR
+310: Load/stress tests completed; environment health validated
+311: Perf test report in AzureDevOps
+312: Pre-Prod → Production
+313: All regression, NFT, OAT completed; monitoring/rollback tested; no critical defects
+314: Release board approval
+315: Production → Demo
+316: Not gated (used for sandbox/training only)
+317: –
+318: End-of-Test Steps (per environment)
+319: Record Results: All executed tests logged in Azure DevOps.
+320: Defect Review: Any open defects triaged and prioritised.
+321: Test Evidence: Reports and dashboards updated.
+322: Sign-Off: Formal approval (QA, Product Owner, or Business) before promotion.
+323: 6. Test Deliverables
+324: - Programme Test Strategy (this document).- Test Plans, Test Suites, Test Cases, and Execution Evidence (in Azure DevOps).- Automated Regression Packs and Pipeline Logs.- Test Dashboards & Metrics (real-time via Azure DevOps/Power BI).- Defect Records (Azure Boards bugs).- Test Closure Reports (per phase: E2E, UAT, NFT).
+325: 7. Metrics & Reporting
+326: - In-Sprint: Daily updates via Azure DevOps dashboards (execution, coverage, defects).- E2E & UAT: Weekly snapshots (daily if required).- NFT: Published automatically via pipelines.- Executive Reports: Performance/security summaries and final test report at programme level.
+327: 8. Roles & Responsibilities
+328: QA/Test Lead – Owns strategy, planning, and reporting.
+329: Test Engineers – Design, execute, and automate tests.
+330: Developers – Write and maintain unit tests, support defect fixes.
+331: Product Owners – Lead exploratory testing and approve UAT.
+332: Market Users – Support JIT and MT validation.
+333: Ops/Release Teams – Maintain test environments, support OAT, manage CI/CD
+334: pipelines.
+335: RACI Matrix (see appendix)
+336: 9. Tools & Accelerators
+337: Test Type
+338: Purpose
+339: Tooling / Framework
+340: Where Run (Env)
+341: When Run (Stage)
+342: Owner
+343: Notes
+344: Unit Testing
+345: Validate individual components and methods.
+346: xUnit, ViTest
+347: Dev / Local
+348: On PR merge (CI pipeline)
+349: Developers
+350: Full Azure DevOps integration.
+351: Integration Testing
+352: Validate service-to-service interactions.
+353: MSTest / NUnit + Azure DevOps Test Plans; Pact.NET for contract testing
+354: Dev, QA
+355: Post-build, nightly CI
+356: Developers / QA
+357: Supports REST APIs and microservices.
+358: QA (In-Sprint Testing)
+359: Functional / exploratory testing within sprint.
+360: Azure DevOps Test Plans (manual execution)
+361: QA
+362: Ongoing during sprint
+363: QA
+364: Linked directly to stories in ADO Boards.
+365: Performance Testing
+366: Validate throughput, latency, and resilience.
+367: Azure Load Testing (managed JMeter engine), Visual Studio Load Test (legacy)
+368: QA, PT
+369: Pre-release, nightly builds
+370: QA / Perf Eng
+371: Azure Load Testing recommended.
+372: API Testing
+373: Validate REST/SOAP APIs for correctness.
+374: Postman + Newman CLI (integrated to Azure DevOps); RestSharp (C#)
+375: Dev, QA
+376: CI pipeline & regression
+377: Dev / QA
+378: Can run in build/release pipelines.
+379: Accessibility Testing
+380: Ensure WCAG/ADA compliance.
+381: Axe for Selenium/Cypress, Accessibility Insights (MS tool)
+382: QA, UAT
+383: Functional + regression phases
+384: QA / UX
+385: Accessibility Insights is MS-first.
+386: Regression Testing
+387: Verify no breakage after changes.
+388: Selenium. Cypress (JS), Playwright (MS-backed, supports .NET)
+389: QA, PT
+390: Nightly CI + pre-release
+391: QA / Automation
+392: Playwright or Cypress is Microsoft’s recommended UI automation.
+393: UAT / Acceptance Testing
+394: Business validation of functionality.
+395: Azure DevOps Test Plans (manual execution)
+396: UAT
+397: End of sprint / Pre-GoLive
+398: Business / Product Owners
+399: Supports traceability & reporting.
+400: Penetration Testing
+401: Identify exploitable security risks.
+402: Burp Suite, Microsoft Security Tools (Defender for Endpoint/Cloud)
+403: PT / Pre-Prod
+404: Pre-GoLive
+405: Security / 3rd party
+406: Can be scheduled into release readiness.
+407: Disaster Recovery (DR) Testing
+408: Validate failover, recovery, RPO/RTO.
+409: Azure Site Recovery, Azure Automation Runbooks
+410: DR / Secondary Region
+411: Pre-GoLive + annual
+412: Infra / Ops
+413: Annual exercise recommended.
+414: Post-Production Testing
+415: Sanity check after go-live.
+416: Smoke tests via Selenium/Playwright + API tests (Postman/Newman) triggered from ADO pipelines
+417: Prod
+418: Immediately post-deploy
+419: QA / DevOps
+420: Automated health checks & rollback guardrails.
+421: Test Case Development & Data ManagementSystem Test and E2E test cases will be authored and managed in Azure DevOps Test Plans, with test data captured directly within test case fields.
+422: Test Results & Requirements TrackingExecution of tests and tracking of results will be done in Azure DevOps, with user stories linked to test cases at the story level. Screenshots and exploratory sessions can be attached to validate acceptance criteria.
+423: Defect ManagementDefects will be logged, tracked, and managed through Azure DevOps Boards.
+424: Test AutomationAutomated tests will be created and executed using Azure DevOps Pipelines integrated with Selenium, Cypress, and Microsoft-hosted agents
+425: Performance Testing
+426: During CI, SonarQube (Azure integrated) will ensure performance-oriented coding rules are enforced.
+427: For performance benchmarking, Azure Load Testing and Apache JMeter (via Azure Pipelines) will be used.
+428: Continuous monitoring will leverage Azure Monitor and Application Insights to detect and alert on performance issues.
+429: Security Testing
+430: During CI, SonarQube and Microsoft Security Code Analysis (Checkmarx/Veracode optional) will provide static code analysis.
+431: During deployment, container security will be assessed with Microsoft Defender for Containers.
+432: API and application penetration testing will use OWASP ZAP integrated in Azure Pipelines.
+433: Continuous monitoring and threat detection will be managed by Microsoft Defender for Cloud and Azure Security Center.
+434: 10. Entry and Exit Criteria
+435: Clear entry and exit criteria ensure that testing only begins when environments and prerequisites are ready, and that progression to the next phase occurs only once agreed quality standards have been met.
+436: 10.1 Entry Criteria
+437: Testing at each level will only start when the following conditions are met:
+438: Build Availability: Code compiled, packaged, and deployed successfully to the target environment.
+439: Environment Readiness: Required test environment provisioned, stable, and configured with relevant integrations.
+440: Test Data: Required synthetic/representative data sets loaded and available.
+441: Requirements/Test Cases: User stories or test scenarios documented, peer-reviewed, and approved in Azure DevOps.
+442: Defect Status: No open blocker defects from earlier test phases.
+443: 10.2 Exit Criteria
+444: Testing at each level will be considered complete when the following conditions are satisfied:
+445: Planned Coverage Executed: All in-scope test cases for that level executed in Azure DevOps.
+446: Defect Status:
+447: No critical/blocker defects remain open.
+448: All high severity defects triaged with resolution or agreed deferral.
+449: Results Logged: Test results published in Azure DevOps with evidence attached.
+450: Sign-Off: QA Lead (or Product Owner for UAT) has approved progression to the next environment.
+451: 11. Risks and Mitigations
+452: Risk
+453: Impact
+454: Mitigation
+455: Test environment instability or downtime
+456: Delays in execution, false failures
+457: Environment monitoring, pre-run smoke checks, fallback environment where possible
+458: Test data not available or corrupted
+459: Blocked test execution
+460: Maintain synthetic data sets in source control; automate data refresh pipelines
+461: Late or changing requirements
+462: Missed coverage, rework
+463: Agile ceremonies for early clarification; testers engaged during backlog refinement
+464: High volume of defects in later stages
+465: Increased cost and delay
+466: Shift-left with unit/integration tests; run regression early in CI
+467: Flaky automated tests
+468: False alarms, wasted effort
+469: Regularly review and quarantine unstable tests; fix root causes promptly
+470: External dependency unavailable (e.g., 3rd party API)
+471: Tests blocked, incomplete coverage
+472: Use stubs/mocks in lower environments; coordinate JIT window with partners
+473: Limited tester availability during UAT
+474: Business acceptance delayed
+475: Plan UAT windows early; secure business resource commitment
+476: 12. Traceability and Coverage
+477: 11. Appendix
+478: Activity / Deliverable
+479: Programme Test Manager
+480: PPL Test Architect
+481: PPL Testers
+482: Product Office
+483: Defect Manager
+484: Sprint Test Lead
+485: In Sprint QA  Testers
+486: Automation team
+487: E2E Test Lead
+488: E2E Testers
+489: Test Lead
+490: Developers
+491: Run Team
+492: Cyber Team
+493: Overall Test Strategy
+494: RA
+495: C
+496: C
+497: I
+498: C
+499: C
+500: I
+501: I
+502: C
+503: I
+504: C
+505: I
+506: I
+507: I
+508: Definition of Ready (for test)
+509: C
+510: RA
+511: C
+512: C
+513: I
+514: C
+515: I
+516: I
+517: C
+518: I
+519: C
+520: I
+521: I
+522: I
+523: Sprint Test planning, preparation and execution to meet DOD
+524: I
+525: I
+526: R
+527: C
+528: I
+529: RA
+530: R
+531: R
+532: C
+533: I
+534: C
+535: I
+536: I
+537: I
+538: Unit Testing
+539: I
+540: I
+541: I
+542: I
+543: I
+544: I
+545: C
+546: I
+547: I
+548: I
+549: I
+550: RA
+551: I
+552: I
+553: Defect Management Process
+554: C
+555: C
+556: C
+557: C
+558: RA
+559: C
+560: I
+561: I
+562: C
+563: I
+564: C
+565: I
+566: I
+567: I
+568: Defect creation/update
+569: I
+570: I
+571: R
+572: R
+573: A
+574: R
+575: R
+576: R
+577: R
+578: R
+579: R
+580: I
+581: I
+582: I
+583: Defect triage
+584: I
+585: C
+586: C
+587: C
+588: RA
+589: C
+590: I
+591: I
+592: C
+593: I
+594: C
+595: C
+596: I
+597: I
+598: Overall Status reports
+599: RA
+600: R
+601: I
+602: I
+603: R
+604: R
+605: R
+606: I
+607: R
+608: I
+609: R
+610: I
+611: I
+612: I
+613: E2E test preparation: test design, preparation, scenario scripting
+614: I
+615: I
+616: I
+617: C
+618: I
+619: I
+620: I
+621: I
+622: RA
+623: R
+624: I
+625: I
+626: I
+627: I
+628: E2E Testing
+629: A
+630: C
+631: I
+632: I
+633: I
+634: I
+635: I
+636: I
+637: R
+638: C
+639: I
+640: I
+641: I
+642: I
+643: UAT Testing
+644: I
+645: C
+646: RA
+647: C
+648: I
+649: I
+650: I
+651: C
+652: I
+653: I
+654: I
+655: I
+656: I
+657: I
+658: Performance Testing
+659: I
+660: I
+661: I
+662: I
+663: I
+664: I
+665: I
+666: I
+667: I
+668: I
+669: RA
+670: I
+671: I
+672: I

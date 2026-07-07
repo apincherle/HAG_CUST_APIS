@@ -18,6 +18,8 @@
         <java.version>17</java.version>
         <lombok.version>1.18.38</lombok.version>
         <jacoco.version>0.8.12</jacoco.version>
+        <azure-sdk-blob.version>12.28.1</azure-sdk-blob.version>
+        <azure-sdk-identity.version>1.15.0</azure-sdk-identity.version>
     </properties>
 
     <dependencies>
@@ -90,6 +92,18 @@
             <groupId>com.openhtmltopdf</groupId>
             <artifactId>openhtmltopdf-pdfbox</artifactId>
             <version>1.0.10</version>
+        </dependency>
+
+        <!-- Azure Blob Storage (same account as HAGS_ximilar_ai_spring: hagsimagestorage) -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+            <version>${azure-sdk-blob.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>${azure-sdk-identity.version}</version>
         </dependency>
 
         <!-- Test -->

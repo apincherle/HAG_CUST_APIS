@@ -25,7 +25,7 @@ import java.util.Map;
  */
 @Service
 @Slf4j
-public class LabelPdfRenderer {
+public class LabelPdfRenderer implements LabelPdfGenerator {
 
     private static final String LABELS_DIR = "labels/";
     private static final String FRONT_TEMPLATE = "hags_slab_label_front_v1.html";

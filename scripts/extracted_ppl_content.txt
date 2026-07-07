@@ -1,0 +1,1548 @@
+========== TESTING STRATEGY DOCX ==========
+PPL Placing Platform EvolutionPPLTesting Strategy ManagementDeliverable ID:D00XVersion:0.1Contents TOC \o "1-3" \h \z \u 1. Introduction PAGEREF _Toc208411236 \h 21.1 Purpose PAGEREF _Toc208411237 \h 21.2 Objectives PAGEREF _Toc208411238 \h 21.3 Scope PAGEREF _Toc208411239 \h 32. Test Approach PAGEREF _Toc208411240 \h 42.1 Testing Lifecycle PAGEREF _Toc208411241 \h 42.2 Test Design & Planning PAGEREF _Toc208411242 \h 42.3 Test Levels & Types PAGEREF _Toc208411243 \h 62.3.1Unit Tests PAGEREF _Toc208411244 \h 62.3.2 In Sprint QA Tests PAGEREF _Toc208411245 \h 72.3.3 Integration Tests PAGEREF _Toc208411246 \h 72.3.4 E2E Tests PAGEREF _Toc208411247 \h 72.3.5 POET Tests PAGEREF _Toc208411248 \h 72.3.6 JIT Tests PAGEREF _Toc208411249 \h 72.3.7 UAT Tests PAGEREF _Toc208411250 \h 72.3.8 MT Tests PAGEREF _Toc208411251 \h 72.3.9 NFT Tests PAGEREF _Toc208411252 \h 72.3.10 OAT Tests PAGEREF _Toc208411253 \h 73. Test Automation PAGEREF _Toc208411254 \h 74. Defect Management PAGEREF _Toc208411255 \h 85. Test Data & Environments PAGEREF _Toc208411256 \h 85.1 Test Environments PAGEREF _Toc208411257 \h 85.2 Test Data PAGEREF _Toc208411258 \h 95.3 Environment Gates and Exit Criteria PAGEREF _Toc208411259 \h 96. Test Deliverables PAGEREF _Toc208411260 \h 107. Metrics & Reporting PAGEREF _Toc208411261 \h 108. Roles & Responsibilities PAGEREF _Toc208411262 \h 119. Tools & Accelerators PAGEREF _Toc208411263 \h 1110. Entry and Exit Criteria PAGEREF _Toc208411264 \h 1310.1 Entry Criteria PAGEREF _Toc208411265 \h 1310.2 Exit Criteria PAGEREF _Toc208411266 \h 1311. Risks and Mitigations PAGEREF _Toc208411267 \h 1412. Traceability and Coverage PAGEREF _Toc208411268 \h 1511. Appendix PAGEREF _Toc208411269 \h 151. Introduction1.1 PurposeThis Test Strategy sets out the core elements of the testing methodology that will be applied within the programme. It is intended to be a dynamic, evolving document that will be refined as delivery progresses, adapting to meet changing needs and demands.The strategy provides clear guidance throughout all phases of testing. It outlines the overall approach at a high level while also highlighting key considerations across test phases.1.2 ObjectivesThe objectives of this Test Strategy are to:Ensure Quality: Validate that all delivered solutions meet business, functional, and non-functional requirements.Enable Early Defect Detection: Testing will begin as early as possible with overlapping phases, enabling early detection of defects to reduce rework and cost.Provide Transparency: Test results, dashboards, and metrics will be generated from Azure DevOps pipelines and test plans, giving near real-time visibility.Standardized Practices: Apply consistent, auditable, and reusable testing approaches across teams, including traceability from requirements to test outcomes.Leverage Automation: Embed automated testing in CI/CD pipelines across unit, integration, system, and E2E phases, producing reusable regression suites.Support Business Confidence: Provide reliable evidence that the solution is fit for purpose and ready for release.Define Clear Responsibility and Ownership: Establish accountability for each test phase (unit, integration, system, UAT, performance, security) and environment management (dev, test, staging, production-like), ensuring clarity in roles and responsibilities.Define Tooling for Testing: Standardize on a defined set of tools for test management, automation, performance, and security testing (e.g., Azure DevOps for planning and reporting, Selenium/Playwright for automation, JMeter/K6 for performance, OWASP/ZAP for security).Acceptance Gates for Testing: Define measurable quality gates (e.g., unit test pass rate thresholds, code coverage %, defect severity thresholds, performance benchmarks) that must be met before progressing to the next test phase or release1.3 Scope1.3.1 In ScopeCore applications and capabilities: OutSystems, MongoDB, Azure Microservice Components, Market APIs, New REST services, New Micro UI screens, Existing Test suites.Test Phases in ScopeTest PhaseDescriptionResponsibilityEnvironment(s)In-Sprint TestUnit and system testing carried out during development sprints.BIPDev, StagingUnit / System TestingFor non-sprint development, unit and system testing will be performed by the dev/test teams.BIPDev (variable by area)End-to-End (E2E)Integration testing across in-scope applications and full end-to-end scenarios covering one or more user stories.PPLE2EProduct Owner ExploratoryProduct owners validate that completed user stories deliver the intended user experience.PPLE2EJoint Integration Testing (JIT)Proves that Gateway APIs can be consumed by London Market organisations.Market Users/PPLJITUser Acceptance Testing (UAT)Business-led validation that user stories meet business requirements.PPLUATMarket Testing (MT)Market users test functionality in a production-like environment.PPL / BIP (TBC)Pre-ProdPerformance / Stress / SoakEvaluates responsiveness, stability, and workload limits over time.BIP (TBC)PerformanceSecurity TestingVulnerability scans, penetration tests, and static code analysis.BIPStaging, Pre-Prod, ProductionOperational Acceptance Test (OAT)Operations team acceptance testing (deployment rollback, failover, resilience, monitoring).PPLPre-Prod (TBC), Prod, Disaster Recovery1.3.2 Out of ScopeAny activity not explicitly listed above (e.g., environment provisioning, data migration of historical transactions).2. Test Approach2.1 Testing LifecycleTesting will follow a hybrid Agile model. Activities include planning, design, execution, defect management, reporting, and closure. Testing will integrate tightly with CI/CD pipelines.This diagram shows the different stages where testing teams are involved – each arrow represents a gate  2.2 Test Design & Planning2.2.1 Requirements & Story ReadinessTest leadership (Scrum Lead, InSprint Test lead, QA/PROD ) ensure that user stories are clear, unambiguous, and testable as standalone items, with explicit documentation of technical dependencies.Test teams contribute during detailed design by reviewing and signing off acceptance criteria, validating supporting detail (e.g., data matrix, process diagrams, screen designs), confirming APIs and dependencies, and highlighting test or test data needs.The Definition of Ready (DoR) includes test team sign-off, ensuring stories are testable before entering a sprint.2.2.2 Test Case DesignTest cases are derived from requirements, user stories, and acceptance criteria. Full traceability is maintained in Azure DevOps by linking requirements, test cases, executions, and defects.2.2.3 In-Sprint Test Planning & ExecutionAll stories are expected to be completed within a sprint; however, where this is not achievable, stories may be carried forward into the subsequent sprint. A story will not be formally closed until all Definition of Done (DoD) criteria have been fully satisfied and verified.Developers:Agree story scope and DOR / DODWrite and automate unit tests within the CI pipeline.Ensure unit tests pass before code promotion.Submit code to peer review and static analysis prior to moving into staging.Testers (embedded in scrum teams):Agree story scope and DOR / DODOwn system testing for sprint deliverables.Execute tests based on approved acceptance criteria.Perform exploratory testing alongside scripted tests, validating both “happy path” and “unhappy path” flows (including database checks and role-based access).Highlight UI defects even when APIs are mocked (not formally passable until real APIs are available).2.3 Test Levels & TypesBelow is a table showing the Testing levels/types: LevelDescriptionOwnerWhen it runsEnvTriggerResultsUnitwritten and automated by developers, validated in CI pipelines.Devsevery PRCIpush/pull_requestCI job “unit-tests” → JUnit artifacts, coverage report Azure DevOpsIn-Sprinttesters validate system functionality within sprints; exploratory testing complements scripted tests.QAdailyINTmanual/cronTest mgmt dashboard / sprint board / storyIntegrationvalidate interactions between services and APIs.QA/Devson merge to mainINTmain pipelineCI job “integration-tests” → report linkE2Evalidate complete business workflows across applications.QAnightlyPre-ProdscheduleSelenium/Cypress dashboardPOETPOs validate user stories against expected experience.Product Ownerper storyINT/UATpost-dev demoPO checklist + notes (link)JITmarket-level testing with external gateway APIs.QA + Externalper gateway changePartner Sandboxescoordinated runbookShared results folder + partner sign-offUATbusiness validation of user stories against requirements.Businessper releaseUATrelease candidateUAT sign-off doc + defectsMTproduction-like validation by external users.External Userstime-boxedPre-ProdClient testingFeedback board + analyticsNFTperformance, scalability, security, vulnerability, and resilience.Perf/Secweekly & before releasePerf/Stagingschedule/manualk6/JMeter/Grafana, SAST/DAST reportsOATvalidate monitoring, rollback, failover, and operational readiness.SREbefore go-livePre-ProdrunbookOps checklist: monitoring, rollback, DR testUnit Tests Goal: (why we run this level)Scope: (what’s in/out)Owner: (team/role; e.g., Devs, QA, PO, External Partner)Environments: (e.g., local, CI, INT, UAT, Pre-Prod)Data: (synthetic vs. masked prod, refresh cadence)Entry / Exit Criteria: (gates)Tooling: (frameworks, runners, security/perf tools)How to Run: (one-liner commands or links)Results & Where to Find Them: (dashboards/artifacts/paths)Metrics: (pass rate, coverage, MTTR, p95 latency targets…)Risks & Mitigations: (flaky tests, environment coupling)Change Frequency: (when this level is reviewed/tuned  2.3.2 In Sprint QA Tests..2.3.3 Integration Tests..2.3.4 E2E Tests..2.3.5 POET Tests..2.3.6 JIT Tests..2.3.7 UAT Tests..2.3.8 MT Tests..2.3.9 NFT Tests..2.3.10 OAT Tests..Test ResourcesEffective delivery of the testing strategy relies on well-structured and collaborative test resources. The programme will leverage a combination of embedded QA specialists, dedicated test teams, and business representatives to ensure that testing is both comprehensive and efficient. Test resources are drawn from PPL test teams, BIP scrum teams with embedded QA testers, and the central BIP test team.Each group plays a distinct role within the lifecycle, from early in-sprint validation and automation to end-to-end and user acceptance testing. This blended approach ensures that quality is built into the solution from the outset, while also providing independent assurance at later stages. Clear ownership, accountability, and communication channels across these teams are essential to maintaining consistency, maximising test coverage, and supporting timely defect resolution.PPL Test teamsBIP Scrum Teams with embedded QA testersBIP Test team 3. Test Automation- Scope: Automate smoke, regression, and high-value repeatable tests.- Smoke Tests: Quick validation that a deployed build is stable for further testing.- Regression Tests: Ensure existing functionality continues to work after changes or fixes.- Framework: Automated tests executed through Azure DevOps pipelines, integrated with tools such as Selenium and Cypress.- Coverage: Balanced approach combining automated regression with manual exploratory testing.4. Defect ManagementWithin the scope of testing, defects are managed to ensure issues discovered during execution are properly tracked, verified, and used to strengthen future test coverage. Broader defect processes (lifecycle, prioritization, reporting) are addressed in the TOM and Service Management documentation.Defect Logging: All defects identified during testing are logged in Azure DevOps and linked to the relevant test case and user story.Verification: Once resolved, defects are re-tested; regression tests are created/updated if needed.Traceability: Test execution reports in Azure DevOps provide visibility of open defects against requirements.Continuous Improvement: Root cause insights from defects guide where new tests (unit, integration, regression) should be added to strengthen coverage.5. Test Data & Environments5.1 Test EnvironmentsEnvironmentDescription / UsageUsed ByDevBuild & unit testingBIP Scrum Teams - DevelopersStagingSystem, integration, regressionBIP Scrum Teams – Developers and QA testersE2EEnd to end flowsBIP/PPL QAUATBusiness led acceptancePPL QA teamPre ProductionSupport test for production, configuration and APISPPL Market test team PerformanceLoad, stress, soak testing?Joint Integration testing (JIT)Market API integration testing Developers or external customers testing API integrationDRDisaster recovery validationPPL DR test teamProductionLive + penetration testing & OATPPL Customers , PPL Admin & Service DeskDemoSandbox for training/demosPPL Customer Relationship Managers5.2 Test Data- Entirely synthetic transactional data (no production data).- Representative entities, users, and companies fabricated for testing.- Reference data mirrors production.- Documents and records provided in depersonalized format.5.3 Environment Gates and Exit CriteriaMovement between environments is controlled by test completion gates to ensure quality and stability before progressing:From → ToGate / End-of-Test CriteriaApproval / EvidenceDev → StagingUnit tests pass in CI/CD; build artifacts generatedAzure DevOps pipeline reportsStaging → E2ESmoke + system/integration tests pass; key regression pack greenAzure DevOps test run summaryE2E → UATEnd-to-end flows validated; no critical/high defects openQA lead sign-offUAT → Pre-ProdUAT scenarios executed; business acceptance recorded; priority defects resolved/deferredProduct Owner / Business sign-offPre-Prod → PerformanceEnvironment configured and stable; production-like setupEnvironment readiness checklistPerformance → JIT / DRLoad/stress tests completed; environment health validatedPerf test report in AzureDevOpsPre-Prod → ProductionAll regression, NFT, OAT completed; monitoring/rollback tested; no critical defectsRelease board approvalProduction → DemoNot gated (used for sandbox/training only)–End-of-Test Steps (per environment)Record Results: All executed tests logged in Azure DevOps.Defect Review: Any open defects triaged and prioritised.Test Evidence: Reports and dashboards updated.Sign-Off: Formal approval (QA, Product Owner, or Business) before promotion.6. Test Deliverables- Programme Test Strategy (this document).- Test Plans, Test Suites, Test Cases, and Execution Evidence (in Azure DevOps).- Automated Regression Packs and Pipeline Logs.- Test Dashboards & Metrics (real-time via Azure DevOps/Power BI).- Defect Records (Azure Boards bugs).- Test Closure Reports (per phase: E2E, UAT, NFT).7. Metrics & Reporting- In-Sprint: Daily updates via Azure DevOps dashboards (execution, coverage, defects).- E2E & UAT: Weekly snapshots (daily if required).- NFT: Published automatically via pipelines.- Executive Reports: Performance/security summaries and final test report at programme level.8. Roles & ResponsibilitiesQA/Test Lead – Owns strategy, planning, and reporting.Test Engineers – Design, execute, and automate tests.Developers – Write and maintain unit tests, support defect fixes.Product Owners – Lead exploratory testing and approve UAT.Market Users – Support JIT and MT validation.Ops/Release Teams – Maintain test environments, support OAT, manage CI/CD pipelines.RACI Matrix (see appendix)9. Tools & AcceleratorsTest TypePurposeTooling / FrameworkWhere Run (Env)When Run (Stage)OwnerNotesUnit TestingValidate individual components and methods.xUnit, ViTestDev / LocalOn PR merge (CI pipeline)DevelopersFull Azure DevOps integration.Integration TestingValidate service-to-service interactions.MSTest / NUnit + Azure DevOps Test Plans; Pact.NET for contract testingDev, QAPost-build, nightly CIDevelopers / QASupports REST APIs and microservices.QA (In-Sprint Testing)Functional / exploratory testing within sprint.Azure DevOps Test Plans (manual execution)QAOngoing during sprintQALinked directly to stories in ADO Boards.Performance TestingValidate throughput, latency, and resilience.Azure Load Testing (managed JMeter engine), Visual Studio Load Test (legacy)QA, PTPre-release, nightly buildsQA / Perf EngAzure Load Testing recommended.API TestingValidate REST/SOAP APIs for correctness.Postman + Newman CLI (integrated to Azure DevOps); RestSharp (C#)Dev, QACI pipeline & regressionDev / QACan run in build/release pipelines.Accessibility TestingEnsure WCAG/ADA compliance.Axe for Selenium/Cypress, Accessibility Insights (MS tool)QA, UATFunctional + regression phasesQA / UXAccessibility Insights is MS-first.Regression TestingVerify no breakage after changes.Selenium. Cypress (JS), Playwright (MS-backed, supports .NET)QA, PTNightly CI + pre-releaseQA / AutomationPlaywright or Cypress is Microsoft’s recommended UI automation.UAT / Acceptance TestingBusiness validation of functionality.Azure DevOps Test Plans (manual execution)UATEnd of sprint / Pre-GoLiveBusiness / Product OwnersSupports traceability & reporting.Penetration TestingIdentify exploitable security risks.Burp Suite, Microsoft Security Tools (Defender for Endpoint/Cloud)PT / Pre-ProdPre-GoLiveSecurity / 3rd partyCan be scheduled into release readiness.Disaster Recovery (DR) TestingValidate failover, recovery, RPO/RTO.Azure Site Recovery, Azure Automation RunbooksDR / Secondary RegionPre-GoLive + annualInfra / OpsAnnual exercise recommended.Post-Production TestingSanity check after go-live.Smoke tests via Selenium/Playwright + API tests (Postman/Newman) triggered from ADO pipelinesProdImmediately post-deployQA / DevOpsAutomated health checks & rollback guardrails.Test Case Development & Data ManagementSystem Test and E2E test cases will be authored and managed in Azure DevOps Test Plans, with test data captured directly within test case fields.Test Results & Requirements TrackingExecution of tests and tracking of results will be done in Azure DevOps, with user stories linked to test cases at the story level. Screenshots and exploratory sessions can be attached to validate acceptance criteria.Defect ManagementDefects will be logged, tracked, and managed through Azure DevOps Boards.Test AutomationAutomated tests will be created and executed using Azure DevOps Pipelines integrated with Selenium, Cypress, and Microsoft-hosted agentsPerformance TestingDuring CI, SonarQube (Azure integrated) will ensure performance-oriented coding rules are enforced.For performance benchmarking, Azure Load Testing and Apache JMeter (via Azure Pipelines) will be used.Continuous monitoring will leverage Azure Monitor and Application Insights to detect and alert on performance issues.Security TestingDuring CI, SonarQube and Microsoft Security Code Analysis (Checkmarx/Veracode optional) will provide static code analysis.During deployment, container security will be assessed with Microsoft Defender for Containers.API and application penetration testing will use OWASP ZAP integrated in Azure Pipelines.Continuous monitoring and threat detection will be managed by Microsoft Defender for Cloud and Azure Security Center.10. Entry and Exit CriteriaClear entry and exit criteria ensure that testing only begins when environments and prerequisites are ready, and that progression to the next phase occurs only once agreed quality standards have been met.10.1 Entry CriteriaTesting at each level will only start when the following conditions are met:Build Availability: Code compiled, packaged, and deployed successfully to the target environment.Environment Readiness: Required test environment provisioned, stable, and configured with relevant integrations.Test Data: Required synthetic/representative data sets loaded and available.Requirements/Test Cases: User stories or test scenarios documented, peer-reviewed, and approved in Azure DevOps.Defect Status: No open blocker defects from earlier test phases.10.2 Exit CriteriaTesting at each level will be considered complete when the following conditions are satisfied:Planned Coverage Executed: All in-scope test cases for that level executed in Azure DevOps.Defect Status:No critical/blocker defects remain open.All high severity defects triaged with resolution or agreed deferral.Results Logged: Test results published in Azure DevOps with evidence attached.Sign-Off: QA Lead (or Product Owner for UAT) has approved progression to the next environment.11. Risks and MitigationsRiskImpactMitigationTest environment instability or downtimeDelays in execution, false failuresEnvironment monitoring, pre-run smoke checks, fallback environment where possibleTest data not available or corruptedBlocked test executionMaintain synthetic data sets in source control; automate data refresh pipelinesLate or changing requirementsMissed coverage, reworkAgile ceremonies for early clarification; testers engaged during backlog refinementHigh volume of defects in later stagesIncreased cost and delayShift-left with unit/integration tests; run regression early in CIFlaky automated testsFalse alarms, wasted effortRegularly review and quarantine unstable tests; fix root causes promptlyExternal dependency unavailable (e.g., 3rd party API)Tests blocked, incomplete coverageUse stubs/mocks in lower environments; coordinate JIT window with partnersLimited tester availability during UATBusiness acceptance delayedPlan UAT windows early; secure business resource commitment12. Traceability and Coverage11. AppendixActivity / DeliverableProgramme Test ManagerPPL Test ArchitectPPL TestersProduct OfficeDefect ManagerSprint Test LeadIn Sprint QA  TestersAutomation teamE2E Test LeadE2E TestersTest LeadDevelopersRun TeamCyber TeamOverall Test StrategyRACCICCIICICIIIDefinition of Ready (for test)CRACCICIICICIIISprint Test planning, preparation and execution to meet DODIIRCIRARRCICIIIUnit TestingIIIIIICIIIIRAIIDefect Management ProcessCCCCRACIICICIIIDefect creation/updateIIRRARRRRRRIIIDefect triageICCCRACIICICCIIOverall Status reportsRARIIRRRIRIRIIIE2E test preparation: test design, preparation, scenario scriptingIIICIIIIRARIIIIE2E TestingACIIIIIIRCIIIIUAT TestingICRACIIICIIIIIIPerformance TestingIIIIIIIIIIRAIII
+
+========== PROPOSAL PPTX ==========
+--- Slide 1 ---
+PPL EVOLUTION
+Capital Markets & Insurance
+Modernise the platform
+Evolve from market utility to fintech
+Establish PPL as core to broker / underwriter workflows
+--- Slide 2 ---
+DELIVER REAL USER IMPROVEMENTS & REDUCE VENDOR DEPENDENCY
+BY NOVEMBER
+Kick off on in July, and by November, PPL will have working functionality in the hands of users
+- not just a plan, but progress.
+JUL 2025 – OCT 2025
+UNDERWRITER DASHBOARD
+BROKER DASHBOARD
+JUN 2025
+NOVEMBER
+First functionality drop
+UAT
+DESIGN  AND  INITITATION
+WE ARE HERE
+Time to Value: 4 Months
+Defined and tangible outcome: Broker and Underwriter Dashboards rebuilt in modern architecture without user disruption.
+Low commitment required
+--- Slide 3 ---
+{21E4AEA4-8DFA-4A89-87EB-49C32662AFE0}Joint Ownership from Day 1
+PPL and BIP will form a blended, integrated team from the outset. Decision-making, operations, and delivery are shared — not delegated.
+Define the Target Operating Model
+Model (TOM) together - Within the first 4–6 weeks, BIP and PPL will co-develop a future-state TOM. The TOM will define roles, capabilities, structure, and scaling plans to support long-term in-house ownership.
+Initial Team Formation - BIP provides a ready-to-go team with experience delivering FXall for LSEG — a proven, high-performing unit. We start with 15–20 team members, scaling as needed to support all streams.
+Build and Internalize PPL Team
+Around 1/3 of the BIP team will be available for internalisation into PPL. PPL will have the option to internalise these staff at project conclusion, ensuring continuity and lowering long-term risk.
+PPL Hiring and Integration
+Support - BIP will assist PPL with recruitment, onboarding, and integration of new staff. Early integration enables efficient knowledge transfer and upskilling throughout the programme.
+Continuous Handover and Training
+Knowledge transfer is continuous and embedded, not left to the end. Our aim is to fully enable the PPL team to own and evolve the platform independently.
+Joint Development and Service
+Desk Setup - BIP can help set up a near-shore or off-shore development centre and business service desk. Once established, these teams can be handed over fully to PPL for long-term control.
+JOINT OWNERSHIP APPROACH
+--- Slide 4 ---
+“Our goal is to enable PPL lead its own future; with a model you define, own, and drive, backed by a platform that reflects your ambition.”
+THE REAL PARTNERSHIP CHOICE
+--- Slide 5 ---
+Riskcare were acquired by BIP in 2022 and offers extensive experience delivering highly performant trading and risk platforms, supplemented with quantitative engineering. We are focused exclusively on financial services, and have done for the last 30 years.
+We have built 100s of complex financial platforms for Investment Banks, Insurers and Asset Managers
+This includes trading, intra-day risk, capital adequacy platforms, e-commerce systems, and automated broker / underwriter platforms.
+We deliver on an outcome basis, typically for a fixed price, ensuring we share the risk.
+We supply experienced onshore teams of market-facing BAs, architects and engineers:
+Front-to-back cross-functional teamsAnalysts and full-stack developers with deep experience in financial services, enabling us to deliver more productively with smaller teams, and to rapidly iterate the build by working closely with users.
+Real-world experienceOur team includes ex traders / brokers / actuaries / risk managers with hands-on experience using multiple platforms, giving invaluable insights. All our consultants are full-time employees, and the vast majority have more than ten year’s experience in financial markets.
+Close collaboration with usersOur financial services developers are in London / New York adjacent with your users.
+Highly maintainable architecture / designWe deliver highly modular, extensible, testable, and performant platforms, using industry best practices.
+Efficient full lifecycle deliveryWe use smaller teams of very experienced developers, and leverage AI at all stages of the development lifecycle to increase velocity. Our blend of business knowledge and technology delivery enables us to deliver the full project lifecycle, from analysis / design through to build.
+RISKCARE – THE FINANCIAL SERVICES CENTRE OF EXCELLENCE WITHIN BIP
+--- Slide 6 ---
+PPL is losing market share, constrained by a low-code ecosystem that restricts access to talent and modern technologies. This is slowing development, stifling innovation, and delivering poor user experience, driving users away.To regain competitive edge, you must take back control from OutSystems and Deloitte:
+Modernise the platformRebuild using modern, open technologies, decomposing the monolithic code base into micro front-ends and services.Your goal is a highly maintainable, modular, testable, and extensible platform, on which you can then rapidly innovate.
+Evolve from market utility to fintechBuild an in-house technology team to own and evolve the platform.
+Establish PPL as core to the broker-underwriter relationshipSeamlessly integrate PPL into the daily workflows and lives of brokers / underwriters.
+Deepen desktop integrationLeverage partnerships to integrate with the users’ desktop environments, enabling a seamless transition between PPL, Teams, Outlook, Copilot, and third-party applications / bots.
+We have a ready-to-go team of experts who recently delivered a complex, high-frequency, Azure-based trading platform for LSEG, and who are already engaged with your technology team, and ready to begin replatforming, de-risking and accelerating your delivery.
+PPL – THE CHALLENGE
+Usability, performance, and stability issues in NextGen have eroded market confidence, leaving no margin for error - it is critical that you
+minimise risk during replatforming, seamlessly transitioning users with zero disruption to their workflows.
+--- Slide 7 ---
+Our team recently completed delivery of a complex, trading platform (LSEG FXall), which has been very well received by the market.
+The FXall replatforming shared many of the same challenges as PPL.
+We will supplement this team with BIP engineers who have deep knowledge of OutSystems, enabling us to support / extend the existing platform as we migrate.
+We will also leverage BIP’s application management, operations and cybersecurity teams in Italy.
+Huge team sizes and inefficiencies at big four consultancies have resulted in low innovation and wasted opportunity.
+By using a specialised team of experts that have a proven delivery track record in this domain, you can significantly reduce risk and accelerate delivery.
+WE HAVE A READY-TO-GO TEAMWHO RECENTLY REPLATFORMED FXALL
+Azure based microservice architectureWe decomposed the monolithic FXall codebase into a microservice-based architecture.
+Fully automated testingWe delivered a fully automated test harness with CI/CD pipelines, enabling daily releases to QA and monthly production releases.
+Micro frontendsWe decomposed the existing FXall application into loosely coupled, independently deployable apps within LSEG Workspace, with context sharing between our own apps and third-party market data / news apps.
+Fixed price deliveryWe delivered for a fixed price with regular drops, and payments contingent on delivery.
+Incremental migrationWe incrementally migrated screens, ensuring interoperability between old and new.
+Complex workflowsLike PPL, FXall supports complex workflows, with globally distributed users working on the same orders, and seeing updates / ticking prices in real time.
+User ExperienceUser experience is critical in a trading UI and this is particularly challenging when migrating from an existing UI. We successfully modernised the UX, reduced key clicks and improved  performance, without disrupting familiarity with existing workflows.
+Strict NFRs – FXall demanded low latency, high throughput, horizontal scalability and high availability, with $460 billion traded daily, and 30k quotes per second.
+The FXall build shared many of the same challenges as PPL
+Huge team sizes and inefficiencies at big four consultancies have resulted in low innovation, wasted opportunity and excessive costs.
+--- Slide 8 ---
+Our approach focuses on stability and minimising disruption to users – taking ownership of the existing platform from Deloitte, incrementally migrating workflows from OutSystems to an open modular Azure architecture and improving performance / usability.
+WE WILL TAKE OWNERSHIP OF BAU WHILE INCREMENTALLY RE-ENGINEERING
+TIMELINE
+Month 3.Take ownership from Deloitte
+Month 8.
+UAT Release 2: Firm order / Quote submission and Placements
+Month 4.
+UAT Release 1: Broker and underwriter dashboards
+Month 16
+RE-ENGINEERING COMPLETE.
+UAT Release 4: Config and other admin features:
+Month 12.
+ALL CLIENT FACING UIs MIGRATED
+UAT Release 3: Endorsements,  renewals and MI:
+AwardContract
+Design & Initiation
+(1 month)
+STREAM 1
+Transition BAU
+Transition from Deloitte by month 3+
+STREAM 2
+Evolve
+Timeline: 0-16 months (migrate all client facing screens in 12 months)
+STREAM 3
+Innovate
+Innovate in parallel from day one
+Take over management of the PPL Next Gen OutSystems platform from Deloitte.
+Migrate incrementally without disrupting user workflows.
+Regain competitive advantage and market share leveraging AI
+--- Slide 9 ---
+Services (after 3 months)
+Services (now)
+STREAM 1 –TRANSITION BAU FROM DELOITTE
+BIP will ensure business continuity while transitioning ownership of the current PPL OutSystems platform, leveraging our:
+Lowcode / OutSystems delivery centre
+Cybersecurity Service Centre
+Application Management and Operations hub (managed service / help desk)
+We will also make use of certified London Markets SMEs to providing training and to support the business service desk.
+BUSINESS SERVICE DESK (9)
+Technology (now)
+APPLICATION MANAGEMENT (RUNTEAM) (12)
+APPLICATION DEVELOPMENT      (AD FACTORY) (16)
+SECURITY MANAGEMENT
+(ECC Madrid)
+SERVICE MANAGEMENT (4)
+PROJECT MANAGEMENT OFFICE (4)
+RELEASE MANAGEMENT (2)
+ARCHITECTURE (4)
+UX/UI DESIGN (2)
+INFRASTRUCTURE MANAGEMENT (4)
+TESTING (25)
+Technology (after 3 months)
+BUSINESS SERVICE DESK (8)
+APPLICATION MANAGEMENT (RUNTEAM) (6)
+SECURITY MANAGEMENT (1)
+(Cybersec Italy)
+SERVICE MANAGEMENT (1)
+SINGLE PM
+ALL STREAMS
+RELEASE MANAGEMENT (1)
+INFRASTRUCTURE MANAGEMENT (1)
+TESTING (5)
+Stream 2
+Stream 2
+Stream 2
+DATA (3)
+DATA (1)
+PPL OUTSYSTEMS LCAP AND APPLICATION
+PPL AZURE TENANT
+PPL AZURE TENANT
+PPL OUTSYSTEMS LCAP AND APPLICATION
+--- Slide 10 ---
+STREAM 2 – INCREMENTALLY REPLACE OUTSYSTEMS SCREENS
+Incremental Transition
+We will incrementally replace PPL NextGen features / screens with modern components, until OutSystems is fully retired.
+This approach streamlines testing, minimizes changes to existing OutSystems logic, reduces complexity / risk, and enables faster, safer releases.
+Seamless User Experience
+We will maintain the current PPL NextGen look and feel, avoiding any disruption to user workflows, while improving usability and performance.
+Modular, Future-Proof Architecture
+We will deliver a modern, extensible design with independently developed modules / screens for a more testable and robust solution.
+Our modular UI will support 3rd party apps / bots, allowing these to be integrated into the solution
+Low Risk Approach
+We will keep the current datastore during the transition to reduce complexity, avoiding a risky client data migration.
+Fully Automated Testing
+Enables simpler, safer, and faster releases, significantly reducing manual effort / cost.
+--- Slide 11 ---
+STREAM 3 – INNOVATE
+{21E4AEA4-8DFA-4A89-87EB-49C32662AFE0}AI agents and large language models support intelligent inferencing over data-sets using natural language that make traditional point-and-click interfaces appear cumbersome and dated.  As Market Reform Contracts (MRC) are semi-structured it makes sense to use AI to simplify the PPL user-experience.  The following are some Innovation use-cases to implement during the re-platforming project.
+Intelligent Business Service Desk
+Most PPL support tickets are users asking for help navigating the interface and modern AI chatbots can deal with these queries, given a background PPL knowledge-base, benefitting users and helpdesk resources
+Streamline current UI
+A quick win for usability is anticipating broker/underwriter intentions from their previous activity as they draft a placement, thus reducing ‘death-by-dropdown’.
+Natural language interfaces
+More interestingly, the MRC can be normalized on upload and AI agents guide the user, using natural language, through the placement workflow.  RAG (Retrieval Augmented Generation) sends relevant placements data to an LLM which prompts the user to update the MRC in a natural but controlled manner.   Using the same RAG techniques a PPL Chat Bot enables brokers / underwriters to query placements within Microsoft Teams.
+Third-party integrations
+Once PPL is API-driven, integration with third-party feeds, such as sanctions lists, becomes straightforward.  Similarly, monetizing PPL data by serving aggregate insurance data to third-parties and integrating PPL micro-front ends in context (e.g., commercial shipping apps) becomes possible.
+SAMPLE AGENT WORKFLOW
+Microsoft Teams
+Upload MRC Doc and assign to underwriter.
+Microsoft Copilot
+Interpret the natural language command and assign to agent.
+MRC Conversion
+Use AI to convert to structured format.
+Placement API
+Perform PPL workflow steps.
+It is critical that PPL innovates to keep abreast with fast changing technologies, to regain market share from Whitespace, and to generate new revenue streams.  We bring valuable experience of Microsoft Azure AI integration.
+--- Slide 12 ---
+6000+
+Consultants
+47
+Nationalities
+12
+Countries
+Transformation Management
+Transformation design & execution
+Program Management
+Change management & communication
+Strategy, Distribution & Ecosystem
+Business and Operations
+Investment and Finance
+Due Diligence & M&A advisory
+Distribution digitalization
+Insurtech, ecosystems and beyond
+Operational optimisation and efficiency
+Cybersecurity
+Application management and operations
+Service desk migration
+Investment management
+Quantitative analytics and technology
+Process design and improvement
+Data & Technology
+AI Strategy, Adoption & Solutions
+Environmental, Social, and Governance
+Actuarial, Risk & Compliance
+Data Strategy & Data journey
+IT strategy & Design
+Cloud migration (Microsoft Partners)
+AI Strategy
+AI Solution design, implementation & integration
+Regulation design & execution
+Financial platform builds
+Risk / trading platforms
+ESG strategy
+Company-wide ESG programs
+Green IT
+Through BIP Group we have access to a breadth and depth of capabilities with UK specific focus.
+BUSINESS INTEGRATION PARTNERS
+OutSystems and Microsoft Partners
+Business and Operations
+--- Slide 13 ---
+WE WILL HELP YOU BUILD YOUR OWN TECHNOLOGY ORGANISATION
+{21E4AEA4-8DFA-4A89-87EB-49C32662AFE0}Initial Team Formation
+We have a ready-made core team
+We have a ready-to-go team who recently delivered FXall for LSEG, ensuring a high-performing cohesive team from day one.We will begin with a team of 15-20 and gradually ramp up.
+Team
+Internalisation
+PPL can internalise a % of the team
+Approximately 1/3 of the team will be made available for PPL to internalise.
+At project conclusion PPL will have the option to internalise these staff members, ensuring continuity and reducing risk.
+PPL Hiring / Integration
+We can support your hiring process
+We will support this process by assisting with identifying, onboarding, and integrating new PPL staff into the delivery/support teams. This early integration will enable efficient knowledge transfer and rapid upskilling.
+Continuous Handover / Training
+We will handover continuously
+We will ensure continuous handover of knowledge throughout, ensuring we have helped to build the PPL team, so they can fully support the platform.
+Having transitioned the platform to you, we can continue to assist with accelerating innovation initiatives, as required.
+Joint Development and Business Service Desk setup
+We can help you build a dev centre and take ownership of the business service desk
+in a near-shore / off-shore location
+We can help you setup a completely new team in a near-shore or off-shore location, building the team and then handing them over to you.
+TIMELINE
+WE WILL HELP YOU BUILD YOUR TECHNOLOGY CAPABILITY
+--- Slide 14 ---
+INCREMENTAL DELIVERY PLAN WITH REGULAR DROPS
+ORGANIZATION CONFIG
+FIRM ORDER & QUOTE SUBMISSION
+MANAGEMENT INFORMATION & LOGIN PAGE
+STRATEGIC DATA MODEL,  RAG FLEXIBLE QUERY LAYER, LLM SUPPORTED WORKFLOWS, CO-PILOT / TEAMS  INTEGRATION
+CORE
+FEATURETEAMS
+INNOVATION
+RELEASE 3:  ALL CLIENT         FACING UIs COMPLETE
+TEAM
+PROJECT START
+15-MAY-25
+TOLLGATE 3
+30-JUN-26
+COMMERCIALTOLLGATES
+DEVOPS
+JUL 2025 – OCT 2025
+UI IMPROVEMENTS
+OPEN MARKET AND FACILITY PLACEMENT
+ENDORSEMENTS & RENEWALS
+RELEASE 2
+UNDERWRITER DASHBOARD
+BROKER DASHBOARD
+OTHER ADMIN FEATURES
+TRANSITION OWNERSHIP OF PPL OUTSYSTEMS PLATFORM AND ESSENTIAL BAU DEVELOPMENT,
+INTEGRATE NEW PLATFORM SUPPORT AND INNOVATION RELEASES
+PRODUCTIONISE AZURE, PERFORMANCE, STABILITY , MONITORING, CI/CD PIPELINES
+JUN 2025
+RUN PLATFORM
+S1
+S2
+S3
+TOLLGATE 1
+31-OCT-25
+RELEASE 1
+DEVOPS SETUP
+TOLLGATE 2
+27-FEB-26
+TOLLGATE 4
+30-OCT-26
+UAT
+UAT
+UAT
+UAT
+NOV 2025 – FEB 2026
+MAR 2026 – JUN 2026
+JUL 2026 – OCT 2026
+CREATE SHELL AND COMMON STYLES, SHARED UI COMPONENT LIBRARY, SECURITY, USABILITY, SETTING UP TESTING, CREATING  COMMON ARCHITECTURAL DESIGN
+DESIGN   AND  INITITATION
+RELEASE 4:
+REPLATFORMING COMPLETE
+--- Slide 15 ---
+STREAM 3
+STREAM 2
+STREAM 1
+PROJECT MANAGEMENT (1)
+PPL Steering Committee
+PPL Design Authority
+PPL Product (4)
+PPL DevOps Team (1)
+PPL QA Team (14)
+PPL Service Mgmt. / Infrastructure (1)
+OUR TEAM AND HOW WE WILL WORK WITH YOU
+ARCHITECT (1)
+Guiding All teams in best solution best practice architecture
+PRODUCT (3)
+Product team working with PPL Product to help refine stories
+CORE TEAM (7)
+Full Stack Devs, BA, UI/UX Specialists, DB Experts.
+FEATURE TEAM (7)
+Full Stack Devs, BA, UI/UX Specialists, DB Experts.
+FEATURE TEAM (7)
+Full Stack Devs, BA, UI/UX Specialists, DB Experts.
+DEVOPS (2)
+Creating pipelines and deployment tools needed for CICD.
+INNOVATION TEAM (5)
+Full-stack developers with deep experience looking at NLP / AI / Future data model and best practice, solution and design
+PPL
+Data (2)
+PPL Application Development
+SERVICE MANAGEMENT (1)
+APPLICATION MANAGEMENT (RUNTEAM) (6)
+SECURITY MANAGEMENT
+(Cybersec Italy)
+(1)
+BUSINESS SERVICE DESK (8)INCLUDES 2 LONDON MARKET SMEs
+RELEASE MANAGEMENT (1)
+INFRASTRUCTURE (1)
+TESTING (5)
+DATA (1)
+Microsoft Architecture
+CISO (1)
+--- Slide 16 ---
+WHY BIP? WE ARE HERE TO EVOLVE YOUR PLATFORM AND SUPPORT IN EVOLVING YOUR BUSINESS
+TRANSITION BAU
+EVOLVE
+INNOVATE
+OutSystems and Microsoft development capabilities / partnership.
+Globally distributed operations across 12 countries.
+Dedicated application management hub and cybersecurity centre.
+Strong financial engineering and management consulting London team.
+Experience transitioning ownership.
+30+ years of delivering highly performant financial trading and risk platforms.
+Improvements to performance and broker experience by month 4 (first drop).
+We have a proven, ready-made & cohesive team of financial experts able to begin Immediately.
+Enhanced and extensible platform delivered within 16 months.
+We never own IP, our aim is to build your technology team.
+You must regain control from Deloitte and OutSystems to drive new functionality.
+Regain competitive advantage and market share by evolution of PPL’s business.
+Create a sticky, digital desktop - London Markets equivalent of Bloomberg / LSEG workspace
+Generate new revenue streams by monetising placement data.
+Automation of user workflows using AI and 3rd party integrations.
+--- Slide 17 ---
+ENHANCED PPL RISK MANAGEMENT TABLE (1)
+{74C1A8A3-306A-4EB7-A6B1-4F7E0EB9C5D6}Risk
+Business Impact
+BIP Mitigation Strategy
+BIP’s Perspective on Current Challenges
+Loss of Platform Knowledge
+Delays, rework, or missed features due to lack of understanding of legacy systems.
+Structured transition (shadowing, supervised handover, phased ownership); full knowledge transfer by month 3.
+The incumbent vendor’s long tenure has led to stagnation — their knowledge is outdated and embedded in legacy decisions. BIP’s approach highlights the gap in innovation and speed—proving that global scale alone does not ensure fit-for-purpose delivery. The incumbent vendor’s long-term involvement has not prevented the current platform issues; in fact, it’s part of why urgent change is required.
+Lack of Customer Insight
+Misaligned features, low adoption, weak stakeholder engagement.
+Deploys specialists and financial experts; direct collaboration with PPL users.
+Despite their long presence, customer frustration with UX and workflow inefficiencies proves the incumbent vendor has failed to understand user needs. BIP highlights in its proposal  user mapping and journey design, which the incumbent vendor has not adequately implemented. A lack of user-centricity is a systemic failure.
+Lack of Lloyd’s Market Experience
+Non-compliance or misfit with Lloyd’s regulatory and operational standards.
+Proven FS experience (LSEG FXall, UBS and many other referenceable customers); builds to Lloyd’s digital architecture goals plus multiple multi-year projects for Lloyd’s of London.
+Familiarity with the Lloyd’s market hasn’t translated into action. The incumbent vendor’s delivery model lacks market-specific responsiveness, and BIP’s positioning demonstrates what the incumbent vendor should have achieved by now.
+PPL’s platform has reached an inflection point. Years of vendor lock-in, outdated design choices, and over-resourced delivery have led to stagnation, missed opportunities for innovation, and increasing technical debt.
+Continuing with the current approach will worsen costs, delay the ability to drive new revenue streams, and restrict PPL’s capacity to develop the platform independently. The incumbent vendor’s long tenure has not eliminated ongoing UX problems, technical rigidity, and escalating user frustration.
+BIP provides a lean, high-skill alternative. Its transition model is based on well-tested service migration strategies, transparency, test coverage, modular architecture, and internal enablement.
+--- Slide 18 ---
+ENHANCED PPL RISK MANAGEMENT TABLE (2)
+{74C1A8A3-306A-4EB7-A6B1-4F7E0EB9C5D6}Risk
+Business Impact
+BIP Mitigation Strategy
+BIP’s Perspective on Current Challenges
+Small Company Size / Scale Perception
+Concerns over resilience, capacity for ramp-up, or service continuity.
+Backed by BIP Group (6000+ consultants); highly skilled lean teams deliver faster.
+The incumbent vendor’s scale has resulted in bureaucracy, not agility. Their model may look scalable but often overengineers delivery. BIP offers a high-skill, low-footprint alternative that delivers what incumbents have repeatedly failed to do: focused delivery and speed.
+Underinvestment in Lloyd’s-Specific Capability
+Missed market changes, limited product vision.
+Invests in Lloyd’s integration (e.g. APIs, microservices) and deep domain UX.
+Years of the incumbent vendor engagement without meaningful Lloyd’s-first innovation highlights their strategic misalignment – the customer losses to Whitespace as an example. Bip’s market readiness shows what should have been done. BIP is not just catching up, we’re surpassing with focused investment where it counts and driving a platform for future growth.
+Weak Internal Development Practices
+Poorly structured code, limited automation, long-term maintainability risk.
+Test-driven development, CI/CD pipelines, automated testing, clean architecture.
+Legacy practices have persisted under the incumbent vendor’s project such as minimal automated testing, heavy manual cycles, and technical debt accumulation. BIP’s  best practice SDLC contrasts sharply with the incumbent vendor’s outdated methods. BIP brings the clean slate and DevOps maturity that has long been missing.
+Inadequate Knowledge Transfer to PPL Team
+Long-term dependency on vendor, poor continuity after project end.
+Continuous handover, staff internalisation option, support for team recruitment.
+The incumbent vendor has made limited progress on knowledge transfer and internal capability building. Their model creates dependency. BIP’s transition models show how this could be handled better. BIP’s approach prioritises in-house enablement and lasting independence from day one.
+Regression Risk During Migration
+Loss of key functionality or system instability during handover.
+Strangler pattern, shared datastore, incremental testing, automated QA.
+The incumbent vendor’s tie in with the existing codebase increases the chance they would reproduce its flaws. BIP’s approach emphasises environment mirroring, but with a clearer modular migration plan and proactive risk reduction.
+--- Slide 19 ---
+ENHANCED PPL RISK MANAGEMENT TABLE (3)
+{74C1A8A3-306A-4EB7-A6B1-4F7E0EB9C5D6}Risk
+Business Impact
+BIP Mitigation Strategy
+BIP’s Perspective on Current Challenges
+Security & Compliance Risk
+Data breaches, audit failures, or reputational harm.
+Integrated CyberSec team, DevSecOps, Azure Defender, GitHub security scanning.
+the incumbent vendor’s legacy tooling and OutSystems dependency reduce observability and control. alternative suppliers promotes continuous compliance and embedded security — BIP applies this from the ground up, not as an afterthought.
+Disruption to Business as Usual
+SLA breaches, productivity drops, loss of trust.
+Dedicated Stream 1 BAU support team, stable platform under BIP control leveraging existing managed services global division
+BAU under the incumbent vendor has been reactive, slow and lacking the leverage of new technical innovation to drive customer experience. Bips use of the ITIL model shows what structured support could look like — BIP’s approach is already structured for stability with separation of concerns between BAU and transformation.
+Uncertainty Around Optimal Team Sizing
+Risk of under-resourcing could delay delivery; over-resourcing may inflate costs or reduce efficiency.
+BIP uses a right-sized delivery model based on lean, senior teams with proven velocity. Team sizing is validated against early delivery velocity benchmarks and reviewed continuously.
+The incumbent vendor has historically over-resourced the account with a volume-based model that increases overhead without improving output. Their bloated team structures slow decision-making and reduce agility. BIP brings compact, high-performing squads that deliver more value with fewer people, ensuring optimal ROI and governance clarity.
+--- Slide 20 ---
+DETAILED
+PROPOSAL
+We have engaged our technology team, and spent the last month working closely with PPL on the current state, approach to transitioning, and design of the platform.
+We have reviewed the following proposal with multiple PPL stakeholders, and believe it provides the best value / least risk solution.
+--- Slide 21 ---
+Transition management and support of PPL Next Gen from Deloitte with no interruption / disruption to clients utilising;
+Business centric approach to reduce risk of the Deloitte Off-boarding / BIP On-boarding
+Managed Knowledge Transfer using proven industry proven methods with PPL oversight
+We will manage this process leveraging our group capabilities;
+Lowcode / OutSystems Delivery Centre
+Cybersecurity Service Centre
+Application Management and Operations Hub
+STREAM 1TRANSITION BAU
+--- Slide 22 ---
+DURING THE FIRST FEW MONTHS WE WILL TRANSITION OWNERSHIP FROM DELOITTE
+Hypercare Launch
+and Stabilisation
+Increase monitoring, reporting, and rapid response capability during Hypercare to ensure a smooth transition into steady-state operations.
+Deep-dive and
+Confirm Scope
+Initial review, deep-dive analysis, prioritise critical knowledge area gaps, risk analysis and confirm scope.
+Deloitte team to scale down over a 3 month period.
+Required functions mapped to BIP teams to ensure knowledge transfer
+BIP team to ramp up to full capacity by month 3.
+Hypercare period
+4-6 weeks following Deloitte exit.
+IDENTIFY
+EDUCATE & ACCELERATE
+HARVEST & INTEGRATE
+OPERATE
+MONITOR & CONTROL
+Knowledge Acquisition and Shadowing
+Focus on documentation gathering, system access requests, and observing incumbent teams.
+Supervised Hands-On Practice
+Teams perform tasks under incumbent supervision, with increasing autonomy.
+Independent Ownership and Final Validation
+New teams independently run operations, with formal acceptance criteria validated.
+MONTH 1
+MONTH 2
+MONTH 3
+MONTH 4
+DISCOVERY
+--- Slide 23 ---
+PPL Journey
+PPL was formed in 2016 with the mission of digitizing the London Market, streamlining the placement process between brokers and underwriters.
+PPL is part-way on that journey but is hampered by an expensive, outdated, and cumbersome technology stack that it does not control. To get back on track, PPL plans to leverage modern open Microsoft Azure and AI technologies to make workflows vastly simpler, faster and more efficient, monetizing PPLs position at the heart of broker / underwriter relations.
+This is our proposal to help PPL realize that vision, working closely with PPL over the next 16 months, across three core streams:
+Transition BAU – migrating platform ownership from Deloitte to BIP
+Evolve the platform  – incrementally migrating Outsystems to an open extensible architecture on Azure while building PPL’s technology capability
+Innovate – incorporating innovative features such as the use of AI / LLMs as well as integrating with MS Office and 3rd party applications
+We will ensure that by October 2026, PPL has full control over a modern, performant, innovation-ready placements platform, enabling you to regain market share, reduce costs, and exploit new revenue streams.
+EXECUTIVE SUMMARY
+--- Slide 24 ---
+SIMPLIFYING STREAM 1 DISCOVERY
+{21E4AEA4-8DFA-4A89-87EB-49C32662AFE0}Discovery involves a structured and disciplined approach to enable the systematic assessment of the current IT environment that includes people, processes and tools that sit inside an organisational structure. Key objectives are:
+Identify and catalogue all existing IT services and service relationships / dependencies.
+Clearly understand the IT service management framework in play at PPL and document service management processes (e.g. Incident, Problem, Change).
+Assess existing IT infrastructure, applications, tools and data flows.
+Build a matrix of responsibility between PPL and its third parties to ensure ownership of tasks and delivery of services.
+Understand current service performance, SLAs and customer satisfaction.
+We recognize that the Discovery stage is the foundation to a successful transition.
+To successfully execute on Discovery BIP will appoint a Transition Lead to oversee a small team of multi skilled experts. This will reduce complexity, enable rapid progress, lower lines of communication and provide complete transparency of ownership to all parties.
+--- Slide 25 ---
+DEEPER DIVE INTO TRANSITIONING THE SERVICES TO BIP
+{7DF18680-E054-41AD-8BC1-D1AEF772440D}
+IDENTIFY
+1. Kick-off meeting (all stakeholders).
+2. PPL invoke formal exit of Deloitte and trigger commencement of Stream 1.
+3. Define knowledge transfer scope.
+4. Identify key people from out / in suppliers.
+5. Establish collaboration workspaces.
+6. Baseline all SLAs and KPI metrics.
+7. Define RACI matrix across PPL and suppliers to determine services framework interactions.
+8. Review of Release plans and engagement during Transition schedule.
+9. Create Knowledge Transfer Plan.
+10. Schedule Knowledge Transfer sessions.
+11. Identify roles and prioritize staff onboarding.
+HARVEST & INTEGRATE
+12. Commence Knowledge Transfer and build Knowledge library.
+13. Understand business operating model with PPL.
+14 Understand Current Mode Service Desk operations.
+15. Review Current Mode service management support processes and procedures, service framework and service level metrics.
+16. Validate support documentation inventory with Deloitte and PPL. Identify gaps and agree remediation action plan.
+17. Overview of infrastructure landscape: servers, networks, cloud (AWS/Azure), backups.
+18. Knowledge transfer on application architecture, dependencies, integrations.
+19. Code walkthroughs.
+20. Review documentation of ongoing application support tickets or bugs/agree next steps.
+EDUCATE & ACCELERATE
+21. Review service artefacts.
+22. Assess readiness with Deloitte & PPL and determine Go/No Go to commence Reverse Shadow.
+23. Go. Commence Reverse Shadow of agreed scope of work.
+24. No Go. Determine Action Plan with schedule.
+25. Monitor execution of service take-on and accelerate depth of independent understanding.
+OPERATE
+26. Evidence autonomous support and operate services.
+Note. Determine with PPL and Deloitte early take-on of services if feasible so potential for phased take-on of support.
+27. PPL signoff on acceptance of transition.
+28. Deloitte exit.
+29. BIP service commencement live.
+MONITOR & CONTROL
+30. Continuous monitoring of service health and improvement.
+Note. The above is a guideline and is not exhaustive.
+MONTH 1
+MONTH 2
+MONTH 3
+MONTH 4
+DISCOVERY
+From our experience we expect key tasks to include the following:
+--- Slide 26 ---
+{74C1A8A3-306A-4EB7-A6B1-4F7E0EB9C5D6}Team Name
+Company currently responsible
+Staff
+Location
+Proposed company responsible
+Staff
+Proposed Location
+Key tasks/responsibilities for handover
+Business Service Desk
+Deloitte
+9
+Belfast
+BIP
+62
+ItalyLondon
+2000 service requests + 300 incidents
+Deep-dive into incident logs, problem management history, application dependencies, maintenance schedules. Support with London Market SMEs
+Service Management
+DeloittePPL
+4
+3
+LisbonLondon
+BIP
+1
+Italy
+SLAs, Incidents & Problems & Change Management, Ticketing & Tooling, Operational Reports & Metrics, Escalation & Communication Plans
+Application Management
+(Run Team)
+Deloitte
+PPL
+12
+Growing
+Lisbon
+London
+BIP
+PPL
+6
+London & Italy
+Handle fixes for BAU.
+Application Development
+(AD Factory)
+Deloitte
+16
+Hyderabad
+NA
+S2
+London
+-> near-shore PPL
+Due to change freeze no new feature development
+Security Management
+Deloitte
+4 UK analysts
+ECC Madrid
+UK
+BIP
+1
+Italy
+Access & Credential Transfer, Security Policies & Procedures
+Incident History & Risk Logs, Monitoring & Alerts
+Compliance & Audit, Third-Party & Integration Risks
+PMO
+Deloitte
+4
+London
+BIP
+1*
+London
+Project Portfolio Overview, Governance & Methodologies, Reporting & Metrics, Tools & Templates, Risk & Issue Management* Single PM across all streams.
+Release
+Deloitte
+2
+Lisbon
+BIP
+1
+London
+Release BAU fixes in coordination with S2 and PPL Product Team
+Architecture
+Deloitte
+4
+London
+Lisbon
+BIP
+S2
+London
+Stream 2 team and architect will support stream 1 fixes as required
+UI/UX
+Deloitte
+2
+Lisbon
+BIP
+S2
+London
+Due to code freeze no UI/UX needed on stream1 only on new feature changes in stream2
+Infrastructure Management
+Deloitte
+4
+Lisbon
+BIP
+1
+Italy
+Monitoring & Alerts, Backup & Disaster Recovery, SDLC
+Data team
+Deloitte
+3
+LisbonUK
+BIP
+1
+London
+Handle data changes and help with data fixes
+Testing
+Deloitte
+PPL
+25
+14
+Lisbon
+BIPPPL
+5
+20
+Italy London
+System, platform, unit and regression testing, support UAT testing, API testing and data testing
+STREAM 1 – RESPONSIBILITY, PEOPLE AND PLACES
+--- Slide 27 ---
+We will migrate from OutSystems to a new Micro-frontend, API-driven platform, while helping you fully take ownership of the platform, providing you with the flexibility needed to support a better user experience and third-party integrations.
+Our solution involves splitting the estate into UI components and Microservices according to business domain (Placements, Endorsements, Corrections etc.) and incrementally migrating screens and services.
+DevOps pipelines with automated testing will ensure friction-free releases.
+AI will be used to accelerate the development process.
+Our number one priority is to make the transition from OutSystems as quick and safe as possible – Incrementally migrating to a highly modular and extensible platform without disrupting user workflows.
+STREAM 2EVOLVE
+--- Slide 28 ---
+WE WILL BEGIN BY AGREEING THE DETAILED ROADMAP / DESIGN
+DOCUMENTS
+NOTIFICATIONS
+MI REPORTING
+ORG CONFIG / ADMIN
+EXTERNAL APIs
+During the initial discovery phase, we will decompose the system into well-defined modules
+These modules will be broken down into user stories, utilizing the existing epics / user stories from Jira / Confluence as input.
+Stories will be created in Azure Boards
+A roadmap will be defined with incremental delivery milestones and phased releases, including the high-level stories in scope ("Drops").
+User stories will be refined on an agile basis in advanced of each drop, according to the vertical / horizontal slices (e.g. Placement / Notifications)
+Payment tollgates for each drop will be based on QA of that drop.
+CROSS CUTTING FEATURES
+Build and send firm order submission pack
+Underwriter firm order response
+Broker / underwriter negotiation
+Create and send quote submission pack
+Underwriter reviews request and responds
+Broker reviews response pack
+Send amended quote submission pack or firm order
+…
+Create / edit placement record
+Create / edit programmes
+Create / edit contracts
+Create / edit sections
+Add supporting documents and carrier data
+PLACEMENT
+Sign and close
+Corrections
+FIRM ORDER
+Create / edit endorsements
+Add supporting documents
+Build / send endorsement firm order submission
+Underwriter endorsement response
+Endorsement completion
+ENDORSEMENT
+QUOTE
+USER WORKFLOWS
+Select placement for renewal and click renew
+Select contracts within placement for renewal
+Create new placement record from expiring contract
+Edit new / renewed placement record
+…
+RENEWALS
+AUTHENTICATION
+--- Slide 29 ---
+WE WILL INCREMENTALLY REPLATFORM, SCREEN BY SCREEN
+8. DEPLOY & DELIVER
+Complete production readiness checks and release the module, ensuring a smooth launch and stable system integration.
+3. BUILD & DEVELOPDevelop responsive UIs and scalable microservices with clear contracts, ensuring modern standards and future-ready design.
+4. CI/CD PIPELINECreate unit and integration tests with minimum 80% coverage. Integrate into CI/CD for fast feedback and code quality gates. Will include code scanning / vulnerability testing.
+5. SYSTEM INTEGRATION
+Integrate new module with existing automated regression suite to guarantee stability during transition
+6. QA TESTING
+Run existing Selenium automated regression suite to validate the complete user journey.Run performance testing.
+7. USER ACCEPTANCE (PPL)
+Execute PPL manual regression pack with testing team to validate business readiness and confirm functionality meets expectations.
+INCREMENTALLYREPLATFORM
+SCREENS / MODULES
+Payment
+tollgate
+2. QA & TEST STRATEGY
+Review refine and agree automated and manual test matrix for new module defining acceptance test criteria (DOD).
+1. REQUIREMENTS DEFINITIONSelect a key screen/module as a vertical slice. Agree and sign-off on user stories.
+--- Slide 30 ---
+{21E4AEA4-8DFA-4A89-87EB-49C32662AFE0}Approach
+Benefits
+Defer databasemigration
+Retain existing MongoDB data model during migration.
+Single source of truth for both legacy (OutSystems) and new.
+Data model re-engineering deferred until after replatforming.
+Minimize testing effort / regression risk / complexity
+Reduces changes to existing OutSystems logic.
+Enables faster, safer releases.
+Incremental migration
+Incremental replacement strategy - features transitioned step by step to a modern, modular architecture.
+New components will be integrated with OutSystems modules.
+Reduces risk by isolating changes and enabling controlled rollouts.
+Derisks delivery through smaller, manageable releases.
+Ensures business continuity by allowing old and new systems to coexist.
+Delivers a seamless end-user experience, with no disruption during the transition.
+Fully automated testing
+Integrate automated testing into a CI/CD pipeline.
+Gradually reduce the manual test approach used with OutSystems.
+PPL QA team sign off at each tollgate.
+Run existing semi-automated selenium regression test and update tests for new re-platformed modules
+Reduces manual effort and regression risk.
+Faster, safer releases with confidence, allowing more focus on feature delivery.
+Early bug detection reduces the cost of development.
+Enables easier refactoring and continuous improvement.
+Running existing selenium regression pack will give confidence in incremental changes
+Micro frontendframework
+Micro frontend architecture with independent, self-contained modules (using React / Typescript / HTML5)
+Shared component library of low-level UI elements
+Match current design using custom CSS styling
+Incremental replacement of OutSystems UIs with improved flexibility / testability.
+Independent deployment of features without the need to redeploy the whole UI.
+Maintain consistent UX – no disruption to users / retraining.
+Centralised styling allows UI changes to be made once and reflected everywhere.
+Leverage modern, open technologies for long-term maintainability / extensibility.
+Microservice
+based architecture
+Replace OutSystems with a microservice based architecture.
+No reuse of OutSystems code in the new system – we do not want to carry forward existing design flaws / technical debt.
+Generated code lacks the structure and clarity needed for a maintainable, extensible architecture.
+Enables a clear, maintainable design built from the ground up.
+Enforces a modular architecture, that is easier to develop, test, and extend.
+Independent service deployment without the need to redeploy the whole system.
+Separation of concerns between business logic and infrastructure/data access.
+Improve code readability, avoiding opaque auto-generated constructs.
+Foundation for scalable, long-term system evolution without legacy constraints.
+WE PROPOSE THE FOLLOWING DESIGN PRINCIPLES
+--- Slide 31 ---
+WE WILL INCREMENTALLY REPLACE SCREENS, WITHOUT DISRUPTING USER WORKFLOWS
+Incrementally replace each OutSystems module with React‑based micro frontends, embedded as same‑origin iframes.
+This approach (Strangler Fig Pattern) keeps risk low and simplifies testing.
+Once all screens are replaced, migrate to a new React shell / Micro frontend framework with dynamic module loading.
+Enables gradual rollouts, version switching, and instant rollbacks via configuration, resulting in safer, faster, and more flexible deployments.
+We will implement the React shell early, ensuring each micro frontend plugs into the target runtime seamlessly, making the eventual cut‑over simple and frictionless.
+--- Slide 32 ---
+WE WILL REPLACE VERTICAL SLICES, WHILE RETAINING THE EXISTING DB
+New React components integrate into the existing UI under the same origin (e.g. https://pplnextgen.com/...), enabling direct communication, sharing state with the parent container and handling authentication without disrupting the user experience.
+Seamless SSO – users will not have to login separately
+Current OutSystems and new service API server components exchange events via Azure Service Bus, enabling real-time, bidirectional updates such as notifications, status, and workflow changes.
+Existing MongoDB data model is left intact during the transition from OutSystems to reduce complexity and risk. Innovation stream will look at the data strategy (e.g. migrating to a relational database) in parallel.
+--- Slide 33 ---
+The platform will be built using Microsoft App Service frameworks​
+Azure PubSub will be used for the asynchronous, WebSocket comms ​
+Azure Container Apps used for APIs​
+Each service is clustered, so no single point of failure​
+State is shared via a cache, to provide a more stable platform​
+Shared transaction locking strategy across OutSystems / new platform
+Service instances scaled up as required to meet demand, automatically or manually.
+Stateless services enable higher performance / stability
+​No changes to the MongoDB during the replatform ensure stability - we will review your data strategy in parallel which may include migrating to a more co-located platform).
+ARCHITECTURE
+AN EXTENSIBLE MICROSERVICE / MICRO FRONTEND PLATFORM
+--- Slide 34 ---
+WE HAVE A READY-TO-GO TEAMWHO RECENTLY REPLATFORMED FXALL
+The FXall build shared many of the same challenges:
+Global Trading Platform
+Azure based microservice architecture
+Fully automated testing
+Micro frontends / trading desktop
+Fixed price delivery
+Incremental migration
+Complex workflows
+User Experience is critical
+Strict NFRs
+Enabled new revenue streams
+“Riskcare, a BIP Company, has played a pivotal role in helping Refinitiv/LSEG maintain its leadership position in FX trading.”
+Niell Penney,
+LSEG Group Head of FX
+--- Slide 35 ---
+WE WILL BUILD A MAINTAINABLE, MODULAR AND EXTENSIBLE PLATFORM
+Microservices allow individual features to be focused on and scaled individually, according to workload.
+Micro frontends extend this concept to the UI, enabling independent development and deployment of frontend features.
+Allow service development to progress at different velocities, independently owned by different teams.
+Reduces risk with shorter testing cycles and more streamlined deployments.
+Fault isolation: one service can fail without breaking the whole system.
+Shared state used to provide service horizontal scalability and no loss of data/progress on failover.
+Independent automated build and deployment process.
+Simplified and improved observability.
+Microservices & Micro-Frontends
+Enforced Code Quality
+User-Centric Development – We prioritize user needs, focusing on thorough understanding of requirements, frequent demos, and feedback loops.
+Cross-Functional Teams – seasoned, multi-skilled engineers with strong focus on collaboration - no silos.
+Automated Testing – high coverage of unit, integration, and E2E tests run on every build.
+Lean Development Process – We follow agile practices to deliver efficiently, keeping the process focused and structured through fortnightly sprints.
+Robust, Maintainable Systems – We build reliable, extensible, and fault-tolerant systems with clear, consistent, standards-based code and modular architecture following proven patterns.
+Modern Technology Stack – We use modern, industry-standard tools to deliver reliability and quality.
+GitHub Advanced Security for Azure DevOps
+Code Scanning for vulnerabilities
+Secret Scanning for passwords/IDs.
+Dependency Scanning for malware infested or broken third party libraries.
+CodeQL Scanning.
+Azure Defender Cloud Security Posture Management
+Monitor APIs and malware attacks.
+AI embedded IDEs
+'Pair' programming with, e.g. Copilot or Junie to ensure best practices and code quality notifications.
+Language neutral, consistent code formatting.
+Manual code reviews
+Best practices/design patterns utilized.
+Overall architecture adhered to
+CI/CD Pipelines - using Azure DevOps
+One-click deployment pipelines with integrated testing
+Commitment to Best Practices
+--- Slide 36 ---
+Modular Micro-Frontend Framework
+Domain specific, modular separation of components using a micro-frontend (MFE) framework, providing:
+Ability for independent teams to build, test, and deploy features in parallel
+Separation of concerns - less risk of breaking changes leaking between components/features.
+Quicker ramp-up – teams can focus on a specific area.
+Extensibility - as PPL NextGen evolves, new features can be developed and plugged-in for (subsets of) users.
+UI Components and Styling with Dark/Light Themes
+Re-usable set of core UI elements (e.g. inputs, buttons etc.) using a headless (no-CSS) component library.
+NextGen-matched CSS styling – ensuring the current look and feel (layout, sizing/spacing, colours, fonts, icons, etc.) is mirrored as closely as possible.
+The ability to switch between dark and light mode will be added, and the selected theme will be remembered.
+Accessibility
+Full compliance with WCAG 2.2 standards to ensure accessibility for all users.
+Automated accessibility testing will run on the Azure DevOps CI/CD pipelines.
+UX Improvements
+Usability improvements incrementally to address:
+Slow performance, too many clicks, redundant inputs, etc.
+Elimination of hidden UI elements to ensure all key actions are visible and discoverable.
+Use of space (i.e. reduction of excessive whitespace)
+Clear display of current action state, with feedback on any updates/failures (e.g. no silent failures)
+Behavioural consistency – maintain user settings/preferences (e.g. sorting, column order, filtering, theme, etc.)
+WE WILL KEEP THE CURRENT LOOK AND FEEL, WHILST IMPROVING THE USER EXPERIENCE
+--- Slide 37 ---
+OUTSYSTEMS
+3rd party
+PPL
+CURRENT
+TESTING PROCESS
+DR Test
+Manual
+Developer Tests
+Regression Test
+(Selenium)
+API Test
+(Postman)
+Performance Test (JMeter /LoadRunner)
+UAT AcceptanceTesting
+Post Prod Test
+Pen Test
+Post Prod Test
+UAT AcceptanceTesting
+Pen Test
+DR Test
+Unit/Integration Test
+Regression Test
+(Selenium)
+Performance Test
+API Test
+(Integration Test)
+Manual
+Semi-Automated
+Automated
+Code Scanning
+(Azure)
+TARGETTESTING PROCESS
+Automate
+WE WILL INTEGRATE AUTOMATED TESTING INTO CI / CD PIPELINES
+Accessibility Testing
+--- Slide 38 ---
+CASE STUDIES
+--- Slide 39 ---
+CASE STUDIES
+We have built 100s of complex financial platforms for Investment Banks, Insurers and Asset Managers
+This includes trading, intra-day risk, capital adequacy platforms, e-commerce systems, and automated broker / underwriter platforms.
+We deliver on an outcome basis, typically for a fixed price, ensuring we share the risk.
+We have delivered 100s of platforms within financial services
+--- Slide 40 ---
+LSEG FXall REPLATFORM
+Objective
+Deliver the next generation of a leading global multibank platform for FX
+Approach
+Full lifecycle delivery from initial advisory, through to architecture, detailed requirements, screen designs, development and DevOps
+Outcome
+Delivered multiple trading workflows for RFQ and fixing orders, including netting and auto-execution, with support for multiple regulatory venues and products.
+Context sharing between trading and market data apps (selecting a ccy pair tenor would select it in news / TCA apps
+Migrated the platform to Azure using a modern scalable microservice-based architecture with HTML5 tickets / blotters
+Increased adoption with trade volumes rising exponentially each month, and exceptionally positive feedback
+Designed and built the next generation of a leading global multibank platform for Foreign Exchange. This was delivered as a suite of trading apps within the client’s flagship trading, data, workflow and analytics platform.
+Delivered a high-level vision and strategy for modernising and consolidating the client’s FX offering across all their trading UIs and venues using a small team of SMEs and ex-traders. This was followed by a detailed planning phase to analyse the requirements, interfaces and workflows, delivering architecture, screen designs, requirements and a phased roadmap.
+We were selected by competitive tender to deliver the first phase as a fixed-price build, using a team-based engagement model, with a hybrid team of technology leads, architects, BAs (ex-traders) and developers.
+We defined and delivered a modern cloud-based architecture with microservices for sourcing static data, validating and netting orders, managing the RFQ / order lifecycle and communicating with gateways over FIX.
+Having proven the first phase, we were re-engaged to deliver additional components and workflows, including additional execution methods, complex netting logic, and a sophisticated rule-based auto-execution engine.
+Next-generation FX multi-bank trading platform (part 1)
+--- Slide 41 ---
+Delivered multiple discrete trading applications that could be composed in a single desktop:
+RFQ Ticket for requesting quotes in competition– supporting Spot, Fwd, NDF, Swap, NDSwap, Precious Metals across single / multi allocation, and MTF / UK MTF / Off Venue / SEF . Included user configuration for defaulting ccy pair, request type, product, tenors, location, settle ccy and preferred LPs (which could also be selected based on TCA)
+Trade History Blotter – supporting historical queries and live updates with drill down to allocations and detailed trade ticket
+Order Staging Blotter – upload / validate requirements, sort, filter and net; with inline-execution, net-on-upload, and support for launching both RFQs and fixing orders
+Auto Execution –highly configurable execution and netting rules across all trading workflows
+Next-generation FX multi-bank trading platform (part 2)
+Delivered Multiple Trading Apps
+RFQ Ticket
+Trade History Blotter
+Order Staging Blotter
+Auto-execution Engine
+Delivery
+﻿Hybrid team of architects, analysts and developers, including ex-traders
+Strategic advisory project to define a consolidated vision for their FX offering
+Fixed price build, with incremental drops / tollgates
+Technology
+SpringBoot Microservices, Java, HTML5, React, Azure, NodeJS, EventHubs, Kafka Avro, Docker, Kubernetes, GitLab Pipelines, Postgres, Redis, Rest
+LSEG FXall REPLATFORM
+--- Slide 42 ---
+UBS RISK IN THE CLOUD
+Objective
+Next generation risk platform
+Approach
+Design and delivery of Azure microservice architecture, working closely with the quant team to map new products and triage breaks
+Outcome
+Increased regulatory compliance by providing a single shared platform across front office, finance and risk
+Reduced TCO by providing a single highly scalable Azure-based platform with automated data lineage
+Delivery
+Hybrid team of 12 analysts / developers / quants
+T&M agile build (inflight)
+Technology
+HTML5, SpringBoot Microservices, Java, Azure, EventHubs, Cosmos, Databricks, Kubernetes, Python, FastAPI, Pydantic, Numpy, Pandas
+Design and delivery of a cross-product next generation risk platform in Azure, offering cloud-based cross-product valuation and risk management, replacing all the bank’s legacy risk platforms
+Deliver Kubernetes-based microservices for ingesting, translating and aggregating positions
+Design a new data model in Databricks to capture the risk run outputs. Work closely with the quants to agree the model and map products from Murex
+Delivered a robust regression testing Platform, allowing users to automatically reconcile results against legacy risk platforms and efficiently triage breaks.
+Built a translation framework ingesting trades from Murex and performing numerical validation of PV and risk
+Delivered a UI that enabled trading desks to kick off intra-day user-defined stress scenario (market and trade attribute) runs, utilizing distributed computing to provide a scalable solution to users.
+Azure-based cross-product front office risk
+Data Feeds
+Validation
+Versioned Inputs
+Compute Engine
+Orchestration
+Risk Run Store
+Monitoring
+Entitlements
+Front office scenario tool
+Cross-asset Analytics Access
+Trades, positions, market data input over EventHub and stored in Cosmos.
+Result sets from risk runs stored in Azure Data Lake with Spark-based analytics processing using Databricks.
+Large-scale distributed risk runs orchestrated over Azure Batch.
+Monitoring via Azure App Insights.
+Single cross-asset analytics library / model designed in close collaboration with the bank’s quant team.
+HTML5-based UIs for investigating / triaging breaks, modelling scenarios and viewing risk outputs.
+--- Slide 43 ---
+ALLIANZ & BIP
+1) One platform for standardized Products/Processes
+BIP is a key partner to Allianz and has a wide portfolio of initiatives over the last 12 years.
+60+ resources on average
+100+ projects
+Projects cover:
+IT Strategy and Transformation Mgmt.
+Sales Transformation
+Operations (inc. International Call Centre)
+IT Ops and Support Functions (inc. Test Factory Management)
+Application Development, AMS and Data Migration.
+We have highly relevant experience supporting the transition of Allianz’ master IT platforms to one being developed by BIP. We also supported the transition of their global IT ‘Gearshift’ program, optimizing cost and business processes.
+2) Lift & Shift of IT Assets and Activities
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}Harmonize IT and Business master platforms among all Countries within a worldwide Insurance Group, defining one common IT suite and standardized Products and Processes. We ensured governance of the transformation program aimed at replacing the local core technology suite with the one being developed by BIP.
+ACTIVITIES
+BENEFITS
+Strategic support for Transformation steering
+Operating governance towards management while supporting daily activities of the Scrum teams
+Agile way of working definition
+Task force guidance for killer issues resolution
+Global vs Local coordination and support
+Sourcing model definition
+Support to Architecture definition and support to key principles adoption within individual agile teams
+Non-Life platform and new multi-risk product gone live as planned, in line with the challenging roadmap shared with the Group
+Agile methodology successfully adopted (first large initiative with this approach in Italy)
+Italy recognized as the leading country for Non-Life workstream, anticipating solutions inherited by other countries
+The solution has been built around a proprietary asset for core functionalities, with a blend of centralized customizations and local enhancements, based on country-specific needs (e.g., regulatory)
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}BIP is supporting Allianz Spa and Allianz Technology in the process of the global IT Transfer “Gearshift” program, aimed at identifying those IT assets and resources to be transferred to AzTech to achieve a simplified and more efficient IT operating model.
+ACTIVITIES
+BENEFITS
+PMO to the overall program, with a particular focus on Allianz Technology Italy and interactions with the Central governance from Allianz Tech SE
+Directly leading several streams to deliver expected outputs to ensure IT Transfer and day-one operations: target organization design, target interaction model, day-one checklist, applications inventory, procurement
+Direct support to the Data Gathering activities for all workstreams managed
+Preparation of strategic meeting for problem resolution and steering committees
+Supporting decision making and alignment of all local stakeholders
+Reduce IT related costs
+Rationalise the application portfolio leveraging on global solutions
+Simplify IT governance processes
+Enable subsequent processes rationalisation within the Group, to exploit further synergies
+--- Slide 44 ---
+APPENDIX
+--- Slide 45 ---
+To succeed, we believe the future state for PPL must:
+Become a product-centric fintech with full autonomy and control
+Retain market share by providing customers with a compelling platform that meets their future needs
+Reduce operating costs significantly
+But change is risky – you need to:
+Retain existing clients
+Minimise user disruption
+Choose a supplier that can deliver what they promise
+We have a plan that:
+delivers new features and innovation at pace
+targets reduced operating costs
+delivers incrementally with minimal risk
+To show you that the risks are manageable, we have already built part of the solution.
+FRAMING THE JOURNEY AHEAD
+We will empower PPL to shape its own future, enabling you to evolve from market utility to fintech
+--- Slide 46 ---
+The members of the projects below will also be on the PPL evolution project.
+LLOYD’S OF LONDON EXPERIENCE
+Architectural Review & Optimisation Strategy
+6 month engagement
+Design, document & assist with the development of an Insurance specific language (Domain Specific Language) to improve the speed and accuracy of other development teams
+Written in Fortran
+MORF – Model Runner Framework
+18 month engagement
+Development of a custom low-code platform to facilitate rapid creation and execution of model testing cycles
+Python, web and web service backends
+CCK Model Development
+18 month engagement
+QuIC Model development from Actuarial spreadsheets
+Refactoring of an additional 27 plugins
+Full documentation
+Test suite
+.NET High Performance Computing (HPC) platform
+12 month engagement
+Portal development
+API unification
+Design of the HPC development environment
+--- Slide 47 ---
+Rebuilding the platform from the ground up provides a strategic opportunity to break away from legacy constraints and build a future-ready, scalable, and maintainable digital foundation that supports long-term business agility and growth.
+Reduces risk and ensures stability
+An AI-based code conversion introduces significant delivery risk, with system failures and critical bugs likely to surface only after deployment—potentially causing extended downtime, reputational damage, and lost productivity. In contrast, a ground-up evolution approach allows for controlled, incremental releases with comprehensive test coverage and code reviews, providing greater confidence in stability, quality, and rollout timelines.
+Avoids technical debt and reduces long-term costs
+AI conversion replicates flawed legacy designs and poor code structure, compounding technical debt. A clean rebuild enables the elimination of inefficiencies and duplication, resulting in a leaner, more maintainable codebase. This reduces ongoing support costs and accelerates future enhancements.
+Empowers internal teams and builds capability
+A modern, well-structured platform allows internal technology teams to develop, maintain, and innovate independently, reducing reliance on external partners and enabling the business to build internal expertise and resilience.
+Improves release quality and delivery velocity
+The evolution approach enables the integration of automated testing, test-driven development, and modern DevOps practices, leading to faster, more reliable deployments and reduced rework—ultimately shortening time-to-value.
+Drives flexibility and integration readiness
+By adopting a microservices-based architecture, the platform becomes modular, extensible, and ready to integrate seamlessly with third-party systems and cloud services. This creates a composable, open ecosystem that supports faster innovation and adaptability to future business needs.
+Enhances user experience and operational performance
+Building from the ground up allows us to address deep-rooted usability, performance, and stability issues that AI code conversion would simply carry over.
+This results in a more intuitive, responsive, and efficient platform, directly improving user satisfaction and productivity.
+BUSINESS IMPACTS OF AN EXPERT-GUIDED INCREMENTAL RE-PLATFORM
+--- Slide 48 ---
+Migration Risks & Timeline
+Monolithic system architecture: While AI tools can assist in extracting and cleaning the underlying C# code the resulting codebase typically reflects a monolithic architecture. This process would compromise design quality, maintainability, and adherence to best practices, potentially leading to suboptimal outcomes in the resulting system architecture. Decomposing a monolith into a well-structured set of microservices demands substantial time, effort, and architectural expertise.
+Unreliable AI-generated code: Our AI experts know that new experimental AI tools cannot produce well-structured, maintainable code at the scale of an application like PPL. Outputs often include bugs which are difficult to find and are not covered with existing test packs.
+Time-consuming manual rework: We have complete confidence we can develop quicker from the ground up than by trying to re-use the existing code.
+Maintainability, Technical Debt & Cost
+Hard to evolve: Converting the existing code retains existing poor design, duplicated logic, and anti-patterns, compounding technical debt. This results in a platform that is still difficult to improve.
+Impedes internal technology team: Unworkable code and entrenched technical debt will block PPL’s ability to build in-house technology teams, and you will remain beholden to Deloitte for future development.
+Increased maintenance effort: Working with poorly structured or AI-generated legacy code slows development and increases long-term costs.
+Quality & Testing
+Test coverage: Current code lacks unit/integration tests. A converted version will result in a continuation of highly manual test cycles. Our ground-up rebuild ensures 90%+ coverage.
+Low confidence in delivery: Without test-driven development and code reviews, quality and stability remain unpredictable.
+User Experience & Performance
+UI/UX issues persist: Conversion won't fix existing usability, performance, or stability problems without full re-engineering.
+Slow interactions: AI conversion can't optimise backend/frontend data exchange, leading to a cumbersome UI and poor user perception. The ability of data to be pushed or streamed from the server to the client without the user requesting it will be absent, as will dynamic progress and status updates to e.g. file uploading.
+Scalability & Innovation Readiness
+Inflexible APIs: Current platform APIs (e.g. for placements) are rigid. New AI capabilities require more flexible REST/WebSocket APIs, which can’t be retrofitted easily on legacy structures.
+Innovation blocked: Features like AI-driven workflows and real-time updates can't be layered onto a legacy structure; our approach integrates them natively.
+AUTOMATED CODE CONVERSION VS EXPERT-GUIDED INCREMENTAL RE-PLATFORM
+--- Slide 49 ---
+BIP’s decision to pursue a ground-up, evolution rather than an AI-driven code conversion, is a deliberate, strategic response to both the technical realities of the legacy OutSystems platform and the business need for stability, scalability, and innovation.
+Proven path to delivery: We have already delivered the platform foundation, broker dashboard screens and ci/cd pipelines, enabling us to further reduce our delivery timeline. We’ve also proven new Agentic AI features that will enable you to regain market share.
+Upgrade, Don’t Convert: Taking time to extract all the code from the OutSystems platform and then give it all to an AI/LLM to refactor into a non-OutSystems version achieves nothing useful. Code conversion would copy over poor design, technical debt, and performance issues. A fresh build enables test coverage, UX improvement, and integration with new APIs.
+Specialised Industry Expertise: AI tools cannot create an elegant, maintainable & extensible distributed platform from this OutSystems monolith. What’s required are teams of highly skilled developers who can code quickly based on industry-proven architectures, patterns and designs.
+Built to Support Long-Term Business Independence: PPL gains a platform it can evolve and own internally, without continued reliance on external partners.
+Architected for Innovation and Ecosystem Integration: Using a microservices-based architecture, we are building an agile platform that can integrate effortlessly with best-in-class third-party technologies, support AI-driven workflows and enable a dynamic user experience that evolves with the market.
+It is the only approach that enables PPL to regain control of its digital future, deliver a better user experience, and move at the pace of market innovation.
+OUR APPROACH RATIONALE
+--- Slide 50 ---
+Ongoing BAU Support
+Roadmap showing drops with tollgates and epics delivery schedule
+Documents
+Placement
+Broker Firm Order
+UW Firm Order
+Quote
+Broker Dashboard
+Renewals
+m1
+m2
+m3
+m4
+m5
+m6
+m7
+m8
+m9
+m10
+m11
+m12
+UW Dashboard
+m13
+m14
+m15
+m16
+Agree design
+Drop 1
+Drop 2
+Drop 3
+Drop 4
+Notifications
+MI Reporting
+Org Config Admin
+External APIs
+Authentication
+Design and Epic / Story Agreement
+Deloitte Support handover
+m17
+Facilities
+Express Contracts
+Endorsements
+Corrections
+Reminders
+Reference Data
+Innovation
+--- Slide 51 ---
+EPIC Story Breakdown - Broker Dashboard
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}As a broker, I want to choose in the dashboard to display my placements at any of the following constituent levels: Placements (default), Programmes, Contracts, Endorsements, Approval Requests (for Approvers)
+As a broker, when viewing risks at a placement level, I want to search for placements by either Client or Placement name.
+As a broker, when viewing risks at a placement level, I want to order my placements list by the following characteristics, respectively: Client (name), Placement (name), Effective year, Owner (broker user), Contract inception, Status.
+As a broker, when viewing risks at a placement level, I want to filter placements by any of the following characteristics: Effective date, Owner, Inception date (from and to), Status. The filter button should show the number of categories used in a filtered view.
+As a broker, when viewing risks at a placement level, I want to toggle "Show My Placements only" so that I can focus on placements I own.
+As a broker, when viewing risks at a placement level, I want to be able to toggle my placement view by "Hide completed" to omit or include completed placements from the dashboard list.
+As a broker, when viewing risks at a placement level, I want to reassign placement ownership so that I can delegate selected placements to other users (will remove from my list). I want to select user by Branch, Team and User.
+As a broker, I want to be able to trigger the creation of a new placement from the dashboard
+As a broker, I want to be able to trigger the creation of an express contract or renewal
+As a broker, when returning to the dashboard from some other screen, I want the filters / ordering last applied retained.
+As a broker, when viewing risks at a contract level, I want to search for contracts by either Client or Contract name.
+As a broker, when viewing risks at a contract level, I want to order my contracts list by the following characteristics, respectively: Client (name), UMR (Unique Market Reference), Contract (name), Owner, Inception date, Status.
+As a broker, when viewing risks at a contract level, I want to filter contracts by Client name, UMR or contract name so that I can quickly find the corresponding contract(s). The filter button should show the number of categories used in a filtered view.
+As a broker, when viewing risks at a contract level, I want to toggle "Show My Contracts only" so that I can focus on contracts I own.
+As a broker, when viewing risks a contract level, I want to be able to toggle my placement view by "Hide completed" to omit completed contracts from the dashboard list.
+As a broker, I want to create a new placement so that I can add new client contracts to the system.
+As a broker, I want to create or renew contracts quickly using the "Express contract/renewal" option so when I press this button it should take me to the express wizard
+As a broker, I want to drag and drop a .xlsx or .csv file to create multiple placements at once so that I can save time on data entry.
+As a broker, after drag and drop a .xlsx or .csv file to create multiple placements at once I want to see these placements appear as a live update on my and others' dashboards.
+As a broker, I want to navigate through pages of placements so that I can browse all items when there are too many to view at once.
+As a broker, I want to see how many placements are currently displayed and the total count so I can understand the scope of work.
+As a broker, I want to change user preferences to select a different theme so that I can style ppl application more to my liking
+As a broker, I want to change user preferences to display more records per page so that I can see more placements in the result grid per page (and have fewer pages to scroll through)
+As a broker, I want to see new placement or changes to placements reflected in real time , without refreshing
+As a broker, I want to choose to display my facilities risks by any of the following constituents: Placements (default), Programmes, Contracts, Endorsements
+--- Slide 52 ---
+EPIC Story Breakdown - UW Dashboard
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}As an underwriter, I want to see a dashboard summarizing my broker requests by type (Firm Orders, Quotes, Endorsements, Corrections, Master Facilities, Additional Info, All), so that I can quickly understand the status and volume of my requests.
+As an underwriter, I want to filter broker requests by client, contract/endorsement, broker company, sub-type, status, inception date, received date, responsible underwriter, and section, So that I can easily find specific requests relevant to my needs.
+As an underwriter, I want to search within each column (e.g., client, contract, broker company),So that I can quickly locate a particular request or group of requests.
+As an underwriter, I want to click on a request row to view more detailed information about that broker request, So that I can review all relevant details and take appropriate action.
+As an underwriter, I want to see the status of each broker request (e.g., Not Responded, Responded, Complete),So that I know which requests require my attention.
+As an underwriter, I want to select multiple requests and reassign them to another underwriter, So that I can efficiently manage workload distribution.
+As an underwriter, I want to save my current filter and column settings as a custom view, So that I can quickly return to my preferred way of working in the future.
+As an underwriter, I want to toggle the visibility of completed requests and notifications, So that I can focus on active or relevant items.
+As an underwriter, I want to add multiple filters and clear them with a single click, So that I can refine or reset my search criteria easily.
+As an underwriter, I want to select a date range for the requests displayed (e.g., Last 30 Days),So that I can focus on recent or relevant activity.
+As an underwriter, I want to see the inception and received dates for each request, So that I can track the timeline and urgency of requests.
+As an underwriter, I want to access dashboard help from the interface, So that I can get guidance on how to use the features available.
+As a underwriter, I want to see new placement or changes to placements reflected in real time , without refreshing
+--- Slide 53 ---
+EPIC Story Breakdown - Placements
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}As a broker, I want to enter placement details so I can create a new placement.
+As a broker, I want to add programs and contracts to a placement for structured risk management.
+As a broker, I want to clone contracts to a placement to reuse existing contract structures.
+As a broker, I want to add sections to contracts to define specific coverage areas.
+As a broker, I want to view and edit contract and section details for each placement.
+As a broker, I want to upload documents to placements and contracts for record-keeping.
+As a broker, I want to add and assign underwriters to contracts and sections for risk distribution.
+As a broker, I want to assign roles and percentages to underwriters for each contract or section.
+As a broker, I want to mark contracts as ready for quote or data to progress the placement workflow.
+As a broker, I want to clone a placement to reuse existing structures.
+As a broker, I want to be able to delete a placement.
+Structure Tab
+As a broker, I want to view and manage the hierarchical structure of placements, programs, contracts, and sections.
+As a broker, I want to add, edit, or remove programs, contracts, and sections within a placement.
+Pool Tab
+As a broker, I want to view and manage the underwriter pools
+Documents Tab
+As a broker, I want to upload, view, and manage documents related to placements, contracts, and sections.
+Submissions Tab
+As a broker, I want to create and manage submission packs for underwriters.
+As a broker, I want to track the status of submissions sent to underwriters.
+Messages Tab
+As a broker, I want to send and receive messages related to placements and contracts.
+As a broker, I want to view the communication history for each placement.
+Overview Tab
+As a broker, I want to see a summary of key information and status for the placement.
+Underwriters Tab
+As a broker, I want to add, assign, and manage underwriters for contracts and sections.
+As a broker, I want to allocate participation percentages and roles to underwriters.
+As a broker, I want to request certain stamps from underwriters.
+Data Tab
+As a broker, I want to view and edit detailed data fields for contracts and sections.
+As a broker, I want to ensure all required financial and descriptive data is captured accurately.
+--- Slide 54 ---
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}Facility Placement & Dashboard
+As a broker, I want to choose in the dashboard to display my facilities at any of the following constituent levels: Placements (default), Programmes, Contracts, Endorsements, Approval Requests (for Approvers)
+As a broker, I want to create a new facility placement with required master facility data.
+As a broker, I want the create button to be inactive until all mandatory fields are completed.
+As a broker, I want the create button to be active when all mandatory fields are completed.
+As a broker, I want to be navigated to the facility placement screen after creating a facility placement.
+As a broker, I want to see a list of my facility placements and my team’s facility placements on the dashboard.
+As a broker, I want to toggle to view only my facility placements.
+As a broker, I want to filter facility placements by published, unpublished, and status.
+As a broker, I want to filter facility placements to show only those with published contracts.
+As a broker, I want to filter facility placements to show only those with unpublished contracts.
+As a broker, I want to filter facility placements by predefined status options.
+As a broker, I want the screen to lock when filtering until I save or close the filter.
+As a broker, I want to apply filters and see my facility placements updated accordingly.
+As a broker, I want to cancel and exit the filter menu without changing the dashboard.
+As a broker, I want the option to reassign facility placements to be visible only if I have permission.
+As a broker, I want to view details of a selected master facility placement from the dashboard.
+As a broker, I want pagination on the dashboard to view more facility placements.
+As a broker, I want to select page options to see more placements.
+As a broker, I want to see a counter of applied filters on the dashboard.
+As a broker, I want the default sort on the dashboard to be by inception date, earliest first.
+As a broker, I want to filter by placement, programmes, or contracts.
+Facility Contract
+As a broker, I want to add a master facility contract with required contract details.
+As a broker, I want to save a master facility contract when all mandatory fields are valid.
+As a broker, I want form validations highlighted if I try to save an invalid contract.
+As a broker, I want a warning message when cancelling contract creation.
+As a broker, I want to exit without saving and not add the contract.
+As a broker, I want to remain on the contract details page if I cancel the warning.
+As a broker, I want a warning message when navigating away from contract creation.
+As a broker, I want to exit without saving when navigating away and not create the contract.
+As a broker, I want to remain on the contract details page if I cancel the navigation warning.
+As a broker, I want to be able to create declarations against my facility
+Facility Type & Cover Type
+As a broker, I want to categorise the facility type on a contract from a pre-defined list.
+As a broker, I want to select only relevant cover types for master facilities.
+As a broker, I want to see only non-master facility cover types when not creating a master facility.
+Underwriter Roles
+As a broker, I want to assign default participant roles to each underwriter for quotes and firm orders.
+As a broker, I want to specify quote participation roles for each underwriter on a contract or section.
+As a broker, I want to specify firm order participation roles for each underwriter on a contract or section.
+EPIC Story Breakdown - Facilities
+--- Slide 55 ---
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}As a broker, I want to view a list of available placement documents and programmes so I can see what’s available to add.
+As a broker, I want to add items from the placement structure to my submission pack so I can build a custom pack.
+As a broker, I want to see which items I’ve added to my submission pack so I can review my selections.
+As a broker, I want to remove items from my submission pack so I can correct or change my selections.
+As a broker, I want to build the submission pack from my selected items so I can proceed to the next step.
+As a broker, I want to navigate between the steps of the submission process so I can complete my submission.
+As a broker, I want to see the organisation and submission pack name, so I know what I’m working on.
+Select Underwriters screen:
+As a broker, I want to view the contents of my submission pack so I can see what will be sent.
+As a broker, I want to select a document in my pack to choose underwriters for it.
+As a broker, I want to see a list of available underwriters for the selected document so I can choose who to send it to.
+As a broker, I want to select or deselect underwriters for each document in my pack.
+As a broker, I want to select all underwriters for a document with one click.
+As a broker, I want to proceed to the next step after selecting underwriters.
+Send Pack screen:
+As a broker, I want to see the underwriters I’ve selected for submission so I can review before sending.
+As a broker, I want to write a general message to all selected underwriters.
+As a broker, I want to see which documents will be sent to each underwriter.
+As a broker, I want to add a second approver before sending the pack.
+As a broker, I want to send the submission pack to the selected underwriters.
+EPIC Story Breakdown - Broker Firm Order
+--- Slide 56 ---
+Desktop integration modernizes the platform into a fully embedded part of the user's daily work — increasing productivity and improving workflows and business processes.
+Third-party app integration transforms the application into an open, flexible platform -  enabling innovation, richer functionality, and ensuring PPL is positioned for future growth.
+Integrating Blueprint 2 makes the platform fully aligned with the future of the London market — enabling digital-first operations, and seamless market connectivity.
+Turning data into actionable insights ensures the platform generates new revenue streams through premium data services and licensing opportunities
+Incorporate Agentic AI in the PPL platform to transform it from a passive tool into an intelligent digital partner - enhancing decisions and learning to adapt to business needs.
+Integrating third-party news and data feeds enables real-time risk detection, smarter underwriting and proactive broker engagement.
+Provide predictive analytics services for forecasting the insurance segments, based on internal and external information, connecting economic, insurance and credit scenarios.
+PPL FUTURE VISION
+Evolving the platform to an API-first, data-first application makes PPL adaptable, resilient, and ready to support innovation at scale.
+style.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibilitystyle.visibility
+--- Slide 57 ---
+EPIC Story Breakdown – Express Contracts
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}As a broker, I want to create a new express contract by entering client and placement details.
+As a broker, I want to input contract, insured, risk, and settlement details for the placement.
+As a broker, I want to upload and categorize documents for the contract.
+As a broker, I want to select and add underwriters or facilities to the placement.
+As a broker, I want to assign stamps to underwriters for accurate participation records.
+As a broker, I want to create and review the submission pack and send a message to all underwriters.
+As a broker, I want to delete an express placement
+As a broker, I want to exit the express contracts screen and be able to view the placement in the dashboard and full placement screens.
+--- Slide 58 ---
+EPIC Story Breakdown – UW Firm Order
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A} As a Follower, I want to view specific contract data from other Carriers (e.g., risk codes, settlement info) based on my role, so I see only relevant information.
+As an underwriter, I want to unconditionally accept, conditionally accept, or reject each Firm Order individually, so my decision is clear and the broker is notified.
+As an underwriter, I want to optionally add a message for the broker with my Firm Order decision, so I can provide context or feedback.
+As an underwriter, I want to add or edit required response data (written line %, reference, stamps) when accepting, so my acceptance is complete and accurate.
+As an underwriter, I want to select from multiple stamp options or edit existing stamps when submitting my response.
+As an underwriter, I want to view relevant legal wording when sending my Firm Order response, so I am aware of the legal context.
+As a broker, I want to enter underwriter line details (references, decisions, conditions) on behalf of others for back-loaded contracts or non-subscribed carriers.
+As an underwriter, I want to see all contracts and sections for a placement sent to me in Firm Order Submission Packs, so I have full visibility.
+As an underwriter, I want to see both standard and personal messages from the broker when reviewing a Firm Order request, so I don’t miss important information.
+As an underwriter, I want to choose or specify a line/deadline (e.g., FIR61, FIR62, FIR63, FIR64, FIR75) when responding to a Firm Order.
+As an underwriter, I want to choose one or more-line conditions from a pre-defined list when accepting conditionally.
+As an underwriter, I want to specify a deadline for a Subjectivity to be satisfied by, if required.
+As an underwriter, I want to add, edit, or remove a Subjectivity (e.g., extend the deadline or amend wording) at any time.
+As an underwriter, I want to edit, add, or remove stamps as needed for my response.
+--- Slide 59 ---
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}Renewals
+As a broker, I want the ability to quickly renew a simple contract using an express wizard
+As a broker, when renewing a contract, I want the option to copy contract details from an existing contract when populating a submission pack
+As a broker, when renewing a contract, I want to search for an existing contract to renew using either the contract description or ?
+As a broker, when renewing a contract, I want to be able to change any of the copied values such as contract description, broker code, contract reference, inception date and expiry date.
+As a broker, when renewing a contract, I want to see on screen from which contract reference the new contract was renewed, and be able to change any contract details such as risk details
+As a broker, when renewing a contract, I want to be able to change existing and attach new documents to the new contract
+As a broker, when renewing a contract, I want to be assign to change the line (coverage) for a given underwriter
+As a broker, I must not be able to renew a digital contract
+As a broker, when renewing a contract that was changed to digital in the background, the renewed contract should revert to non digital but the renewed contract should be deemed digital
+As a broker, when renewing a contract, I must only be able to renew a contract once
+As a broker, when renewing a contract, I must not be able to renew a section without renewing the covering contract itself
+As a broker, when renewing a contract, I must not be able to renew more than 6 sections within that contract
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}Endorsements
+As a broker, I want to view and navigate contracts, sections, and endorsements in a structured list.
+As a broker, I want to view and edit endorsement and section details such as type, dates, premium, and limits.
+As a broker, I want to add, view, and edit aggregate limits, excesses, and deductibles for a section.
+As a broker, I want to add and manage documents related to an endorsement or section.
+As a broker, I want to add and manage underwriters for an endorsement or section.
+As a broker, I want to create and review a submission pack for the endorsement to share with underwriters.
+EPIC Story Breakdown – Endorsements / Renewals
+--- Slide 60 ---
+EPIC Story Breakdown – Notifications
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}As a user, I want to see a list of all my alerts/notifications, So that I can stay informed about important updates and actions required.
+As a user, I want to filter alerts by category (e.g., All, Additional info, Asynchronous, Declaration, Draft, Endorsement, Facility, Firm Order, MI Report, Misc, Not Taken Up, Quote, Sign & Close),So that I can quickly find the notifications most relevant to my current task.
+As a user, I want to mark one or more alerts as read, So that I can keep track of which notifications I have already reviewed.
+As a user, I want to hide alerts that I have already read, So that my view is less cluttered and I can focus on new items.
+As a user, I want to reassign an alert to another team member, So that the appropriate person can take action on it.
+As a user, I want to select multiple alerts and perform actions (e.g., delete, mark as read) on them at once, So that I can manage my notifications more efficiently.
+As a user, I want to click on an alert to view more details about it, So that I can understand the context and take appropriate action.
+As a user, I want to see the status (e.g., Accepted, Reassigned) and available actions (e.g., Reassign, Firm Order) for each alert, So that I know what has been done and what I can do next.
+As a user, I want to search for alerts by keyword, So that I can quickly locate specific notifications.
+As a user, I want to navigate through multiple pages of alerts, So that I can access all my notifications even if there are many.
+--- Slide 61 ---
+EPIC Story Breakdown – MI Reporting
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}As an admin I want to have a dashboard for mi reports
+As an admin, I want to view a list of MI reporting roles so I can manage reporting access.
+As an admin, I want to filter MI reporting roles by criteria to quickly find relevant entries.
+As an admin, I want to see the role type, report group, and status for each entry for easy reference.
+As an admin, I want to navigate between pages of results to view all reporting roles.
+As an admin, I want to access related features like Client Onboarding, Global Line Conditions, and Bulk Upload History from the side menu.
+As an admin, I want to view a list of MI reporting config across multiple pages
+As an admin, I want to view be able to set Onboard new clients - setting up organisations , teams and users
+As an admin, I want to view be able to set new Global Line Conditions
+As an admin I want to create new reports
+As an admin, I want to select one or more carrier firms to include in my report.
+As an admin, I want to choose a report type  (e.g. Operational , Quote, and Transaction reports) from a dropdown menu.
+As an admin, I want to filter the report by specific admins or select all admins.
+As an admin, I want to specify inception date ranges for the report data.
+As an admin, I want to set the scheduling details for when the report should run.
+As an admin, I want to configure the report as a recurring or one-time report.
+As an admin, I want to set the frequency for recurring reports.
+As an admin, I want to specify the time of day the report should be generated.
+As an admin, I want to send the report to one or more email addresses via notification mechanism.
+As an admin, I want to customize the subject and body text of the report email.
+As an admin, I want to remove email addresses from the recipient list if needed.
+As an admin, I want to preview the look and feel of the email template before sending.
+As an admin, I want to clear all report parameters with a single action.
+As an admin, I want to create and schedule the report with the specified parameters.
+--- Slide 62 ---
+EPIC Story Breakdown – Organisation
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}As an admin, I want to see the full hierarchy of an organisation (organisation, company, branch, team, user) So that I can understand the structure and relationships within the organisation.
+As an admin, I want to be able to expand or collapse all levels of the organisation hierarchy So that I can focus on specific parts of the structure as needed.
+As an admin, I want to filter the hierarchy by company / branch / team and status (e.g., Active) So that I can quickly find relevant entities within the organisation.
+As an admin, I want to view the details of the selected organisation (name, effective dates, address, city, region, country, etc.) So that I can verify or review the organisation’s information.
+As an admin, I want to edit the details of the organisation (name, address, effective dates, etc.) So that I can keep the organisation’s information up to date.
+As an admin, I want to view and manage sub-entities (companies, branches, teams, users) within the organisation So that I can maintain the organisational structure.
+As an admin, I want to create new companies (and potentially branches, teams, users) under the organisation So that I can expand the organisation as needed.
+As an admin, I want to create new hierarchies via bulk upload, with the ability to edit sub entities (companies, branches teams, users) within the organisation as needed.
+As an admin, I want to see the current status of the organisation (Active/Unpublished) So that I know whether the organisation is currently operational or in draft.
+As an admin, I want to be able to reset changes or review and publish the organisation So that I can control when changes go live.
+As an admin, I want to navigate between tabs (Hierarchy, Users, Stamps, Line conditions, Points of Contact) So that I can manage all aspects of the organisation from a single interface.
+As an admin, I want to navigate assign roles to users,  So that access and workflows associated with that role are assigned to the user
+--- Slide 63 ---
+EPIC Story Breakdown – Corrections
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}As a broker I want to be able to cancel an individual line - from the submissions screen - for a specific underwriter post bind but before the contract is signed and closed.
+As a broker cancelling a line, I want to be able to send an auto populated corrections submission pack for 2nd approval if needed.
+As a broker cancelling a line, I want to send an approved corrections submission pack to relevant underwriters.
+As a broker cancelling a line, I want the option to discard a corrections submission pack before submission to the relevant underwriters (FIR172) and have that request withdrawn (FIR143).
+As an underwriter receiving a line cancellation request, I want to send the broker my acceptance so that the line is removed from the associated contract.
+As an underwriter receiving a line cancellation request, I want to send the broker my rejection so that I remain bound to the given contract.
+As a broker cancelling a line, I want to be able to withdraw a line cancellation request (FIR143) once submitted to the relevant underwriters.
+As a broker cancelling a line, I want to view the underwriters' response to my cancellation request in the overview tab
+As a broker I want to be able to cancel a contract - from the submissions screen - with the agreement of the relevant underwriters
+As a broker cancelling a contract, I want to request that any unresolved firm orders be withdrawn
+As a broker cancelling a contract, I want PPL to return an auto populated submission pack to which I can add general and personalised messages to underwriters.
+As a broker cancelling a contract, I want the option to send a corrections submission pack for 2nd approval if needed.
+As a broker cancelling a contract, I want the option to withdraw the request to cancel the contract.
+As an underwriter receiving a contract cancellation request, I want to send the broker my acceptance so that the contract lines relevant to me are removed
+As an underwriter receiving a contract cancellation request, I want to send the broker my rejection so that I remain bound to the contract.
+As a broker cancelling a contract, if the underwriters have not responded to my request, I want the option to withdraw my request.
+As a broker cancelling a contract, I want to view the underwriters' response in the placements overview tab.
+As a broker I want to be able to replace a contract - from the submissions screen - with the agreement of the relevant underwriters
+As a broker replacing a contract, I want to request that any unresolved firm orders be withdrawn (FIR174)
+As a broker replacing a contract, I want to edit any field on the existing contract and get an auto populated submission pack presented
+As a broker replacing a contract, I want to send my replacement request for 2nd approval when needed
+As a broker replacing a contract, I want the option to send or discard the submission pack (FIR172)
+As an underwriter receiving a request to replace a contract that was filled by firm order, I want to send the broker my rejection to remain bound to the original contract
+As an underwriter receiving a request to replace a contract that was filled by firm order, I want to unconditionally accept to become bound by the new version of the contract
+As an underwriter receiving a request to replace a contract that was filled by firm order, I want to send a conditional offer to the broker
+As a broker replacing a contract, I want to accept an underwriter's conditional offer to bind the latter thereto and cancel the previous version of the contract
+As a broker replacing a contract, I want to negotiate an underwriter's conditional offer and be able to create a new submission pack for agreement by the underwriter.
+As an underwriter reviewing a replacement request, I want to be able to compare the differences between the proposed new contract and the existing one.
+As a broker I want to be able to change the underwriter panel; i.e. the underwriters selected and/or their respective line percentages.
+--- Slide 64 ---
+DEEPEN DESKTOP INTEGRATION
+SEAMLESS USER EXPERIENCE WITH FEATURES AVAILABLE ACROSS ALL CHANNELS
+TEAMS
+WEB
+THIRD PARTY UNDERWRITING
+WORKBENCH E.G. SEND
+OUTLOOK
+API INTO CLIENT
+INFRASTRUCTURE
+--- Slide 65 ---
+OUR COMMERCIAL COMMITMENT
+1. Success-Based Development: We earn when you succeed
+We only get fully paid when key milestones are hit, with 35% held back until the project is successfully delivered.
+This keeps us focused on outcomes, not just activity.
+2. Flexible Run Model: Scaling down as you scale up
+Our fees reduce over time as PPL builds its own capability. We stay hands-on early, then resize as you take more control.
+3. Transparent Innovation: No surprises, just agreed value
+New features are priced by work package, with scope and costs agreed up front — so you stay in control and there are no surprises.
+{5940675A-B579-460E-94D1-54222C63F5DA}YEAR
+RUN (£’s)
+REPLATFORM (£’s)
+TOTAL COST (£’s)
+Discovery
+77,500
+Year 1
+4,464,000
+4,000,000
+8,464,000
+Year 2
+3,069,000
+3,839,000
+6,908,000
+Year 3
+1,581,000
+-
+1,581,000
+Totals
+9,191,500
+7,839.000
+17,030,500
+--- Slide 66 ---
+OUR COMMERCIAL COMMITMENT
+1. Low-cost point of entry
+Platform evolution: removed the £300K discovery phase, shortened development timeline by 1 month £460K
+2. Run rate costs will reduce over time
+Both by insourcing the operations, maintenance support, and application management, also leverage the benefits of having a modern architecture platform to generate a reduction in tickets and leverage more up-to-date automations such as automatic test harnesses etc.
+3. Based on an assumption of £13.5m run rate per year we believe each month's delay will cost you £420,000
+4. By year 3 even without complete handover to PPL we envisage the run cost reducing from £13.5m to £1.6m
+{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}
+July-Sept
+Oct-Dec
+Jan-Mar
+Apr-June
+Y1 Totals
+Y2
+Y3
+Current state
+3,375,000
+3,375,000
+3,375,000
+3,375,000
+13,500,000
+13,500,000
+13,500,000
+BIP Transition & Run
+(Inc. dual run)
+4,491,000
+1,116,000
+1,116,000
+1,116,000
+7,839,000
+3,069,000
+1,581,000
+BIP Platform Evolution
+1,000,000
+1,000,000
+1,000,000
+1,000,000
+4,000,000
+3,839,000
+-
+BIP Approach Cost
+2,116,000
+11,839,000
+6,908,000
+1,581,000
+BIP Approach Saving
+1,259,000
+1,661,000
+6,592,000
+11,919,000

@@ -30,6 +30,10 @@ Do this **once** in the Portal, then every pipeline run only swaps the image.
    - `AZURE_SQL_PASSWORD` = *(secret)*
    - `AZURE_SQL_PORT` = `1433`
    - `SHOPIFY_WEBHOOK_SECRET`, `SHOPIFY_SHOP_DOMAIN`, `SHOPIFY_WEBHOOK_ENABLED`, `SHOPIFY_WEBHOOK_VERIFY_HMAC`, `QR_CERT_SECRET`
+   - `AZURE_STORAGE_ACCOUNT_NAME` = `hagsimagestorage` (managed identity `hags-ca-mi` — **Storage Blob Data Contributor**)
+   - `STORAGE_ENABLED` = `true`
+   - `LABEL_BATCH_BLOB_CONTAINER` = `grading-exports` (label PDFs under `label-batches/{batchCode}/`)
+   - Leave `STORAGE_CONNECTION_STRING` and `STORAGE_BLOB_ENDPOINT` empty in prod (same as ximilar API)
 
 7. **Create**
 
